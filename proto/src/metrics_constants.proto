@@ -2262,5 +2262,8 @@ message MetricsEvent {
     // ACTION: QS Key Disabler tile tapped
     // CATEGORY: QUICK_SETTINGS
     QS_KEY_DISABLER = 900;
+
+    // aromer Settings
+    aromer_SETTINGS = 998;
   }
 }
