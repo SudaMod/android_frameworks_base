@@ -897,7 +897,7 @@ android.media.SubtitleController$Listener
 android.media.ToneGenerator
 android.media.audiofx.AudioEffect
 android.media.audiofx.LoudnessEnhancer
-android.mokee.location.PhoneLocation
+android.kylin.location.PhoneLocation
 android.mokee.utils.MoKeeUtils
 android.mtp.MtpDatabase
 android.mtp.MtpDevice

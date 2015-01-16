@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 - 2015 The MoKee OpenSource Project
+ * Copyright (C) 2015 The SudaMod Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.mokee.location;
+package android.kylin.location;
 
 import android.text.TextUtils;
 
@@ -24,17 +24,17 @@ import android.text.TextUtils;
 
 public final class PhoneLocation {
 
-    private static String LIBNAME = "mokee-phonelocation";
+    private static String LIBPATH = "kylin-phoneloc-jni";
 
     static {
-        System.loadLibrary(LIBNAME);
+        System.loadLibrary(LIBPATH);
     }
 
-    private static native String getPhoneNumberLocation(String number);
+    private static native String getPhoneLocationJni(String number);
 
     private synchronized static String doGetLocationFromPhone(String number) {
         if (TextUtils.isEmpty(number)) return null;
-        return getPhoneNumberLocation(number);
+        return getPhoneLocationJni(number);
     }
 
     private static String getPosFromPhone(String number, int i) {
