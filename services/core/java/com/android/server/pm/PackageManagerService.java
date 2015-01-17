@@ -4827,7 +4827,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         final int messageRes = isFirstBoot() ?
                 R.string.android_installing_apk : R.string.android_upgrading_apk;
 
-        inal String bootMsg = mContext.getResources().getString(messageRes,
+        final String bootMsg = mContext.getResources().getString(messageRes,
                                 curr, total) + "\n(" + pkg.packageName + ')';
             try {
                 ActivityManagerNative.getDefault().showBootMessage(bootMsg, true);
