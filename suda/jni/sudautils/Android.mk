@@ -1,4 +1,5 @@
 # Copyright (C) 2015 The MoKee OpenSource Project
+# Copyright (C) 2015 The SudaMod Project 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,8 +21,8 @@ include $(CLEAR_VARS)
 
 LOCAL_CFLAGS := -O3
 LOCAL_CXXFLAGS := -O3
-LOCAL_MODULE    := libmokeeutils
-LOCAL_SRC_FILES := mokeeutils.c androidjni.c
+LOCAL_MODULE    := libsudautils
+LOCAL_SRC_FILES := sudautils.c androidjni.c
 LOCAL_C_INCLUDES += $(JNI_H_INCLUDE)
 LOCAL_PRELINK_MODULE := false
 LOCAL_SHARED_LIBRARIES += liblog libcutils libc

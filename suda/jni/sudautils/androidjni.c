@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2015 The MoKee OpenSource Project
+ * Copyright (C) 2015 The SudaMod Project  
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +27,7 @@
 
 #ifdef DEBUG
 #include <android/log.h>
-#define TAG_JNI = "mokeeutils"
+#define TAG_JNI = "sudautils"
 #endif
 
 /*

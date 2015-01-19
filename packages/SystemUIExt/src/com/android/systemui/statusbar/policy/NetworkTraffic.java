@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014-2015 The MoKee OpenSource Project
+ * Copyright (C) 2015 The SudaMod Project 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +26,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
-import android.mokee.utils.MoKeeUtils;
+import android.suda.utils.SudaUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.TrafficStats;
@@ -242,7 +243,7 @@ public class NetworkTraffic extends TextView {
         GB = MB * KB;
 
         if (isSet(mState, MASK_UP) || isSet(mState, MASK_DOWN)) {
-            if (MoKeeUtils.isOnline(mContext)) {
+            if (SudaUtils.isOnline(mContext)) {
                 if (mAttached) {
                     totalRxBytes = TrafficStats.getTotalRxBytes();
                     lastUpdateTime = SystemClock.elapsedRealtime();

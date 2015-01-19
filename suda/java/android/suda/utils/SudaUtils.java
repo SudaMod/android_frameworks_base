@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 - 2015 The MoKee OpenSource Project
+ * Copyright (C) 2015 The SudaMod Project  
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +15,7 @@
  * limitations under the License.
  */
 
-package android.mokee.utils;
+package android.suda.utils;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -33,9 +34,9 @@ import java.util.Locale;
 * @hide
 */
 
-public class MoKeeUtils {
+public class SudaUtils {
 
-    private static String LIBNAME = "mokeeutils";
+    private static String LIBNAME = "sudautils";
 
     static {
         System.loadLibrary(LIBNAME);
