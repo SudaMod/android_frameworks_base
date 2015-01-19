@@ -898,7 +898,7 @@ android.media.ToneGenerator
 android.media.audiofx.AudioEffect
 android.media.audiofx.LoudnessEnhancer
 android.kylin.location.PhoneLocation
-android.mokee.utils.MoKeeUtils
+android.suda.utils.SudaUtils
 android.mtp.MtpDatabase
 android.mtp.MtpDevice
 android.mtp.MtpDeviceInfo
