@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2015 The MoKee OpenSource Project
+ * Copyright (C) 2015 The SudaMod Project  
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +20,11 @@ package com.android.systemui.utils;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 
-public class multiNetworkTrafficDownTextSpan extends MetricAffectingSpan {
-    double ratio = 0.05;
+public class NetworkTrafficSpan extends MetricAffectingSpan {
 
-    public multiNetworkTrafficDownTextSpan() {
-    }
+    double ratio = 0;
 
-    public multiNetworkTrafficDownTextSpan(double ratio) {
+    public NetworkTrafficSpan(double ratio) {
         this.ratio = ratio;
     }
 
@@ -38,4 +37,5 @@ public class multiNetworkTrafficDownTextSpan extends MetricAffectingSpan {
     public void updateMeasureState(TextPaint paint) {
         paint.baselineShift += (int) (paint.ascent() * ratio);
     }
+
 }
