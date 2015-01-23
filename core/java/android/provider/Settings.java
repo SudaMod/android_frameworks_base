@@ -3256,6 +3256,17 @@ public final class Settings {
          */
         public static final String STATUS_BAR_AM_PM = "status_bar_am_pm";
 
+        /**
+         * Put on your ear, and this will automatically call current number in dialer
+         * @hide
+         */
+        public static final String DIRECT_CALL_FOR_DIALER = "direct_call_for_dialer";
+
+        /**
+         * Put on your ear, and this will automatically call current number in message
+         * @hide
+         */
+        public static final String DIRECT_CALL_FOR_MMS = "direct_call_for_mms";
 
         /**
          * ListView Animations
