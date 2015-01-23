@@ -143,7 +143,7 @@ public class ProximitySensorManager {
         Sensor proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         Sensor acceleroMeter = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         Sensor magneticSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        if (proximitySensor == null && acceleroMeter == null && magneticSensor == null || !trueVersion.startsWith("MK")) {
+        if (proximitySensor == null && acceleroMeter == null && magneticSensor == null || !trueVersion.startsWith("SM")) {
             mProximitySensorListener = null;
         } else {
             mProximitySensorListener =
