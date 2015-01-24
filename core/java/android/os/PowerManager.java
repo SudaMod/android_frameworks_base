@@ -378,7 +378,7 @@ public final class PowerManager {
      * @hide
      */
     public static final String PROFILE_POWER_SAVE = "0";
-
+    
     /**
      * Balanced power profile
      * @hide
@@ -589,7 +589,7 @@ public final class PowerManager {
     public void userActivity(long when, int event, int flags) {
         try {
             mService.userActivity(when, event, flags);
-            UpdatePhoneState(1);
+            if (Powerstate()) setPowerSaveMode(false);
         } catch (RemoteException e) {
         }
     }
@@ -641,7 +641,7 @@ public final class PowerManager {
     public void goToSleep(long time, int reason, int flags) {
         try {
             mService.goToSleep(time, reason, flags);
-            UpdatePhoneState(0);
+            if (Powerstate()) setPowerSaveMode(true);
         } catch (RemoteException e) {
         }
     }
@@ -1224,21 +1224,6 @@ public final class PowerManager {
             }
         }
     }
-    
-    public void UpdatePhoneState(int state)
-    {
-        try {
-            ContentResolver resolver = mContext.getContentResolver();
-            int PowerSaveSate = Settings.System.getInt(
-                resolver, Settings.System.POWER_SAVE_SETTINGS, 0);
-            if (state == 0 && PowerSaveSate == 2) {
-                setPowerSaveMode(true);
-            } else {
-                if (PowerSaveSate != 1) setPowerSaveMode(false);
-            }
-        } catch (RemoteException e) {
-        }
-    }
 
     /**
      * @hide
@@ -1285,5 +1270,10 @@ public final class PowerManager {
     public int getDefaultKeyboardBrightness() {
         return mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_keyboardBrightnessSettingDefault);
+    }
+    
+    public boolean Powerstate() {
+        return Settings.System.getInt(
+                mContext.getContentResolver(), Settings.System.POWER_SAVE_SETTINGS, 0) == 2;
     }
 }
