@@ -1225,7 +1225,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_KEYGUARD_WALLPAPER_CHANGED);
-		filter.addAction(Intent.ACTION_TOGGLE_FLASHLIGHT);		
+	filter.addAction(Intent.ACTION_TOGGLE_FLASHLIGHT);		
         if (DEBUG_MEDIA_FAKE_ARTWORK) {
             filter.addAction("fake_artwork");
         }
