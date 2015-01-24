@@ -351,6 +351,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private long mKeyguardFadingAwayDuration;
 
     int mKeyguardMaxNotificationCount;
+    
+    private boolean mPowerSaveState;
 
     // carrier/wifi label
     private TextView mCarrierLabel;
@@ -461,7 +463,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mAutomaticBrightness = mode != Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL;
             mBrightnessControl = Settings.System.getInt(
                     resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0) == 1;
-            mShowStatusBarCarrier = Settings.System.getIntForUser(resolver,
+            mPowerSaveState = 1 == Settings.System.getInt(resolver,
+                  Settings.System.POWER_SAVE_SETTINGS, 0);
+            setPowerSaveSettings(mPowerSaveState);
+            
+			mShowStatusBarCarrier = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_CARRIER, 0, mCurrentUserId) == 1;
             showStatusBarCarrierLabel(mShowStatusBarCarrier);
 
@@ -3127,6 +3133,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (powerSave && getBarState() == StatusBarState.SHADE) {
             mode = MODE_WARNING;
         }
+        if (mode == MODE_WARNING) {
+        transitions.setWarningColor(Color.parseColor("#00000000"));
+        }
         transitions.transitionTo(mode, anim);
     }
 
@@ -3615,6 +3624,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 			}
         }
     };
+    
+    public void setPowerSaveSettings(boolean state) {
+        PowerManager mPowerMan = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+        mPowerMan.setPowerSaveMode(state);
+    }
 
     public void showStatusBarCarrierLabel(boolean show) {
         if (mStatusBarView == null) return;
