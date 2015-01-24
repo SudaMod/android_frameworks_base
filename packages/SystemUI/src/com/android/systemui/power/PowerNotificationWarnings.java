@@ -83,7 +83,7 @@ public class PowerNotificationWarnings implements PowerUI.WarningsUI {
     private int mBucket;
     private long mScreenOffTime;
     private int mShowing;
-z    
+    
     private int mPowerSaveState;
 
     private long mBucketDroppedNegativeTimeMs;
