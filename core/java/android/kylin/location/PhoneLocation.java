@@ -47,13 +47,33 @@ public final class PhoneLocation {
         return null;
     }
 
+    //判断亲情号760 ~ 769
+    public static boolean isFamily(String number) {
+	
+	String[] familyArray = {"760","761","762","763","764",
+				"765","766","767","768","769"};
+  
+	boolean bResult = false;
+	for(String temp:familyArray){
+	  if(temp.equals(number)){
+  	        bResult = true;
+  	        break;
+ 	    }
+	}
+	return bResult;
+    }
+
     public static String getCodeFromPhone(String number) {
         return getPosFromPhone(number, 0);
     }
 
     public static String getCityFromPhone(CharSequence number) {
         if (TextUtils.isEmpty(number)) return "";
-        String phoneLocation = getPosFromPhone(number.toString().replaceAll("(?:-| )", ""), 1);
+	String phoneLocation;
+	if(isFamily(number.toString())){
+		phoneLocation = "亲情号码";}else{
+	        phoneLocation = getPosFromPhone(number.toString().replaceAll("(?:-| )", ""), 1);
+	}
         return (TextUtils.isEmpty(phoneLocation) ? "" : phoneLocation);
     }
 }
