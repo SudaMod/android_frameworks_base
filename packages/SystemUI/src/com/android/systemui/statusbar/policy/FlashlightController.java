@@ -94,12 +94,11 @@ public class FlashlightController {
         }
     }
 
-	public synchronized void toggleFlashlight() {
- 	 		mFlashlightEnabled = !mFlashlightEnabled;
- 			mFromIntent = mFlashlightEnabled;
- 			postUpdateFlashlight();
- 	}
-
+    public synchronized void toggleFlashlight() {
+        mFlashlightEnabled = !mFlashlightEnabled;
+        mFromIntent = mFlashlightEnabled;
+        postUpdateFlashlight();
+    }
 
     public void killFlashlight() {
         boolean enabled;
@@ -116,9 +115,9 @@ public class FlashlightController {
     }
 
     public synchronized boolean isFromIntent() {
-       return mFromIntent;
+        return mFromIntent;
     }
- 
+
     public void addListener(FlashlightListener l) {
         synchronized (mListeners) {
             cleanUpListenersLocked(l);
@@ -216,8 +215,8 @@ public class FlashlightController {
                 }
             } else {
                 if (mCameraDevice != null) {
+                    mFromIntent = false;
                     mCameraDevice.close();
-		    mFromIntent = false;
                     teardown();
                 }
             }
@@ -243,7 +242,7 @@ public class FlashlightController {
     private void handleError() {
         synchronized (this) {
             mFlashlightEnabled = false;
-	    mFromIntent = false;
+            mFromIntent = false;
         }
         dispatchError();
         dispatchOff();
