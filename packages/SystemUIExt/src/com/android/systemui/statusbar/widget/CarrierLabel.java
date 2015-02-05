@@ -38,13 +38,19 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import android.util.DisplayMetrics;
+
 import com.android.systemui.R;
 
 public class CarrierLabel extends TextView {
 
-    private Context mContext;
     private boolean mAttached;
+
     private static boolean isCN;
+
+    private Context mContext;
+
+    private static int CarrierLabelSizeNumber = 5;
 
     public CarrierLabel(Context context) {
         this(context, null);
@@ -57,7 +63,7 @@ public class CarrierLabel extends TextView {
     public CarrierLabel(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
-        updateNetworkName(true, null, false, null);
+        updateNetworkName(false, null, false, null);
     }
 
     @Override
@@ -88,7 +94,7 @@ public class CarrierLabel extends TextView {
             String action = intent.getAction();
             if (TelephonyIntents.SPN_STRINGS_UPDATED_ACTION.equals(action)
                     || Intent.ACTION_CUSTOM_CARRIER_LABEL_CHANGED.equals(action)) {
-                        updateNetworkName(intent.getBooleanExtra(TelephonyIntents.EXTRA_SHOW_SPN, true),
+                        updateNetworkName(intent.getBooleanExtra(TelephonyIntents.EXTRA_SHOW_SPN, false),
                         intent.getStringExtra(TelephonyIntents.EXTRA_SPN),
                         intent.getBooleanExtra(TelephonyIntents.EXTRA_SHOW_PLMN, false),
                         intent.getStringExtra(TelephonyIntents.EXTRA_PLMN));
@@ -98,16 +104,29 @@ public class CarrierLabel extends TextView {
     };
 
     void updateNetworkName(boolean showSpn, String spn, boolean showPlmn, String plmn) {
+        if (false) {
+            Log.d("CarrierLabel", "updateNetworkName showSpn=" + showSpn + " spn=" + spn
+                    + " showPlmn=" + showPlmn + " plmn=" + plmn);
+        }
         final String str;
         final boolean plmnValid = showPlmn && !TextUtils.isEmpty(plmn);
         final boolean spnValid = showSpn && !TextUtils.isEmpty(spn);
-        if (spnValid) {
-            str = spn;
+        if (plmnValid && spnValid) {
+            str = plmn + "|" + spn;
         } else if (plmnValid) {
             str = plmn;
+        } else if (spnValid) {
+            str = spn;
         } else {
             str = "";
         }
+        int UpdateSizeStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
+           Settings.System.CARRIER_SIZE, 0, UserHandle.USER_CURRENT);
+        DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
+        int CarrierLabelSize = (int) ((UpdateSizeStyle == CarrierLabelSizeNumber ?
+           CarrierLabelSizeNumber : UpdateSizeStyle) * dm.density);
+        setTextSize(CarrierLabelSize);
+
         String customCarrierLabel = Settings.System.getStringForUser(mContext.getContentResolver(),
                 Settings.System.CUSTOM_CARRIER_LABEL, UserHandle.USER_CURRENT);
         if (!TextUtils.isEmpty(customCarrierLabel)) {
@@ -128,11 +147,14 @@ public class CarrierLabel extends TextView {
             }
             SpnOverride mSpnOverride = new SpnOverride();
             operatorName = mSpnOverride.getSpn(operator);
+            if (TextUtils.isEmpty(operatorName)) {
+                operatorName = telephonyManager.getSimOperatorName();
+            }
         } else {
             operatorName = telephonyManager.getNetworkOperatorName();
-        }
-        if (TextUtils.isEmpty(operatorName)) {
-            operatorName = telephonyManager.getSimOperatorName();
+            if (TextUtils.isEmpty(operatorName)) {
+                operatorName = telephonyManager.getSimOperatorName();
+            }
         }
         return operatorName.toUpperCase();
     }
