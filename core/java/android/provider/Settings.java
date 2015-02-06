@@ -3061,10 +3061,10 @@ public final class Settings {
          */
         public static final String POINTER_SPEED = "pointer_speed";
 
-		/**
-		 * use second date.
-		 */
-  		public static final String CLOCK_USE_SECOND = "clock_second";
+	/**
+	 * The time accurate to the second.
+	 */
+  	public static final String CLOCK_USE_SECOND = "clock_second";
 
         /**
          * Show icon when stylus is used?
