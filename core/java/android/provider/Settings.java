@@ -3307,6 +3307,12 @@ public final class Settings {
         public static final String INCREASING_RING_START_VOLUME = "increasing_ring_start_vol";
 
         /**
+         * Height of navigation bar buttons
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
+
+        /**
          * Ramp up time (seconds) for increasing ring
          * @hide
          */
