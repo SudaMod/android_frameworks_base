@@ -2129,13 +2129,7 @@ public final class Settings {
          */
         public static final String STATUS_BAR_BRIGHTNESS_CONTROL = "status_bar_brightness_control";
 
-		/**
-		* Status bar greeting
-		* @hide
-		*/
-		 public static final String STATUS_BAR_GREETING = "status_bar_greeting";
-    
-	    /**
+        /**
          * Whether to show the IME switcher in the status bar
          * @hide
          */
