@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.kylin.location;
+package android.suda.location;
 
 import android.text.TextUtils;
 
@@ -24,7 +24,7 @@ import android.text.TextUtils;
 
 public final class PhoneLocation {
 
-    private static String LIBPATH = "kylin-phoneloc-jni";
+    private static String LIBPATH = "suda-phoneloc-jni";
 
     static {
         System.loadLibrary(LIBPATH);

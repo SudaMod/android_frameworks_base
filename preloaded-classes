@@ -898,7 +898,7 @@ android.media.ToneGenerator
 android.media.audiofx.AudioEffect
 android.media.audiofx.LoudnessEnhancer
 android.suda.hardware.ProximitySensorManager
-android.kylin.location.PhoneLocation
+android.suda.location.PhoneLocation
 android.suda.utils.SudaUtils
 android.mtp.MtpDatabase
 android.mtp.MtpDevice
