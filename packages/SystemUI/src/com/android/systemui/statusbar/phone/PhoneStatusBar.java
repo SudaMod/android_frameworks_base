@@ -2397,23 +2397,19 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 animateStatusBarHide(mNotificationIconArea, animate);
             } else {
                                 if (mGreeting != null && !TextUtils.isEmpty(mGreeting) && mShowLabel) {
-					if (animate) {
-						mSudaLabel.setVisibility(View.VISIBLE);
-						mSudaLabel.animate().cancel();
-						mSudaLabel.animate()
-								.alpha(1f)
-								.setDuration(320)
-								.setInterpolator(ALPHA_IN)
-								.setStartDelay(50)
-								.withEndAction(new Runnable() {
-							@Override
-							public void run() {
-								labelAnimatorFadeOut(animate);
-							}
-						});
-					} else {
-						labelAnimatorFadeOut(animate);
-					}
+					mSudaLabel.setVisibility(View.VISIBLE);
+					mSudaLabel.animate().cancel();
+					mSudaLabel.animate()
+							.alpha(1f)
+							.setDuration(320)
+							.setInterpolator(ALPHA_IN)
+							.setStartDelay(50)
+							.withEndAction(new Runnable() {
+						@Override
+						public void run() {
+							labelAnimatorFadeOut(animate);
+						}
+					});
 					mShowLabel = false;
 				} else {
 					animateStatusBarShow(mNotificationIconArea, animate);
@@ -2428,6 +2424,24 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mHeadsUpObserver.onChange(true);
         }
     }
+
+
+    protected void labelAnimatorFadeOut(final boolean animate) {
+		mSudaLabel.animate().cancel();
+		mSudaLabel.animate()
+				.alpha(0f)
+				.setDuration(200)
+				.setStartDelay(1200)
+				.setInterpolator(ALPHA_OUT)
+				.withEndAction(new Runnable() {
+			@Override
+			public void run() {
+				mSudaLabel.setVisibility(View.GONE);
+				animateStatusBarShow(mNotificationIconArea, animate);
+			}
+		});
+	}
+	
 
     /**
      * Animates {@code v}, a view that is part of the status bar, out.
@@ -2483,23 +2497,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     }
 
-
-    protected void labelAnimatorFadeOut(final boolean animate) {
-		mSudaLabel.animate().cancel();
-		mSudaLabel.animate()
-				.alpha(0f)
-				.setDuration(200)
-				.setStartDelay(1200)
-				.setInterpolator(ALPHA_OUT)
-				.withEndAction(new Runnable() {
-			@Override
-			public void run() {
-				mSudaLabel.setVisibility(View.GONE);
-				animateStatusBarShow(mNotificationIconArea, animate);
-			}
-		});
-	}
-	
     @Override
     protected BaseStatusBar.H createHandler() {
         return new PhoneStatusBar.H();
