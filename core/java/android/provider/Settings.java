@@ -2057,7 +2057,8 @@ public final class Settings {
         /**
          * @hide
          */
-        public static final String SHOW_SU_ICON = "show_su_icon";		
+        public static final String SHOW_SU_ICON = "show_su_icon";
+				
         /**
          * Scaling factor for fonts, float.
          */
@@ -3066,10 +3067,10 @@ public final class Settings {
          */
         public static final String POINTER_SPEED = "pointer_speed";
 
-	/**
-	 * The time accurate to the second.
-	 */
-  	public static final String CLOCK_USE_SECOND = "clock_second";
+		/**
+	 	 * The time accurate to the second.
+		 */
+  		public static final String CLOCK_USE_SECOND = "clock_second";
 
         /**
          * Show icon when stylus is used?
@@ -3234,6 +3235,24 @@ public final class Settings {
          * @hide
          */
         public static final String KEY_MENU_LONG_PRESS_ACTION = "key_menu_long_press_action";
+
+        /**
+         * Width and height of output vide expressed in WxH
+         * @hide
+         */
+        public static final String SCREEN_RECORDER_OUTPUT_DIMENSIONS = "screen_recorder_output_dimensions";
+
+        /**
+         * Screen recorder framerate in bits per second
+         * @hide
+         */
+        public static final String SCREEN_RECORDER_BITRATE = "screen_recorder_bitrate";
+
+        /**
+         * Whether to include audio when recording a video
+         * @hide
+         */
+        public static final String SCREEN_RECORDER_RECORD_AUDIO = "screen_recorder_record_audio";
 
         /**
          * Action to perform when the assistant (search) key is pressed. (Default is 3)
