@@ -20,18 +20,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.TextView;
 import java.util.Calendar;
 import android.suda.lunar.Lunar;
 import android.suda.utils.SudaUtils;
-
-import com.android.systemui.R;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class ChineseDateView extends TextView {
     private static final String TAG = "ChineseDateView";
