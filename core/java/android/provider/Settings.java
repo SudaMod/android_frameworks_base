@@ -7578,6 +7578,24 @@ public final class Settings {
         public static final String LOW_POWER_MODE_TRIGGER_LEVEL = "low_power_trigger_level";
 
         /**
+         * Night Mode Switch
+         * 1: black
+         * 2: red
+         * 3: yellow
+         * @hide
+         */
+        public static final String NIGHT_MODE = "night_mode";
+
+        /**
+         * Night Mode Color
+         * 1: black
+         * 2: red
+         * 3: yellow
+         * @hide
+         */
+        public static final String NIGHT_MODE_COLOR = "night_mode_color";
+
+        /**
          * Whether to sound when charger power is connected/disconnected
          * @hide
          */
