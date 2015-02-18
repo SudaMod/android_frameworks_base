@@ -57,7 +57,7 @@ public class SudaService extends SystemUI {
             @Override
             public void onChange(boolean selfChange) {
                 UpdateSettings();
-        		m.UpdateUI( trueVersion.startsWith("SM") && mNightMode == 1 ? mNightModeColor : 0);
+                m.UpdateUI( trueVersion.startsWith("SM") && mNightMode == 1 ? mNightModeColor : 0);
             }
         };
         final ContentResolver resolver = mContext.getContentResolver();
