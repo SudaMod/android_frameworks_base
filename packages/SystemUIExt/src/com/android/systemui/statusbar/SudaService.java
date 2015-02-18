@@ -95,9 +95,9 @@ public class SudaService extends SystemUI {
 
         public void UpdateUI(int v) {
             if (view != null) {
-            localWindowManager.removeView(view);
-			localWindowManager = null ;
-			view = null;	 		
+            	localWindowManager.removeView(view);
+		localWindowManager = null ;
+		view = null;	 		
             }
 	    	if (v == 0) return;
             ScreenviewInit();
