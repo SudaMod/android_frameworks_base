@@ -51,13 +51,11 @@ public class SudaService extends SystemUI {
     private String trueVersion = SystemProperties.get("ro.modversion");	
 
     public void start() {
-        localWindowManager = (WindowManager) mContext.getSystemService("window");
         mParams = new WindowManager.LayoutParams();
         ContentObserver obs = new ContentObserver(mHandler) {
             @Override
             public void onChange(boolean selfChange) {
                 UpdateSettings();
-                m.UpdateUI( trueVersion.startsWith("SM") && mNightMode == 1 ? mNightModeColor : 0);
             }
         };
         final ContentResolver resolver = mContext.getContentResolver();
@@ -67,9 +65,8 @@ public class SudaService extends SystemUI {
         resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.NIGHT_MODE),
                 false, obs, UserHandle.USER_ALL);
-        UpdateSettings();
         m.init();
-        m.UpdateUI( trueVersion.startsWith("SM") && mNightMode == 1 ? mNightModeColor : 0);
+        UpdateSettings();
     }
 
     private final class Receiver extends BroadcastReceiver {
@@ -82,6 +79,7 @@ public class SudaService extends SystemUI {
         }
 
         public void ScreenviewInit() {
+			localWindowManager = (WindowManager) mContext.getSystemService("window");
             mParams.type = 2006;
             mParams.flags = 280;
             mParams.format = 1;
@@ -97,14 +95,13 @@ public class SudaService extends SystemUI {
 
         public void UpdateUI(int v) {
             if (view != null) {
-               ((WindowManager)
-                 mContext.getSystemService("window")).removeView(view);
+            localWindowManager.removeView(view);
+			localWindowManager = null ;
+			view = null;	 		
             }
+	    	if (v == 0) return;
             ScreenviewInit();
             switch(v) {
-              case 0:
-                view.setBackgroundColor(Color.argb(0, 255, 255, 255));
-              break;
               case 1:
                 view.setBackgroundColor(Color.argb(150, 0, 0, 0));
               break;
@@ -131,6 +128,8 @@ public class SudaService extends SystemUI {
 
         mNightMode = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.NIGHT_MODE, 0);
+
+        m.UpdateUI( trueVersion.startsWith("SM") && mNightMode == 1 ? mNightModeColor : 0);
 
     }
 
