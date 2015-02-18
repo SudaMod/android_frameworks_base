@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.graphics.Color;
+import android.os.SystemProperties;
 
 import com.android.systemui.SystemUI;
 
@@ -47,6 +48,7 @@ public class SudaService extends SystemUI {
     private LayoutParams mParams;
     private View view;
     private WindowManager localWindowManager;
+    private String trueVersion = SystemProperties.get("ro.modversion");	
 
     public void start() {
         localWindowManager = (WindowManager) mContext.getSystemService("window");
@@ -55,7 +57,7 @@ public class SudaService extends SystemUI {
             @Override
             public void onChange(boolean selfChange) {
                 UpdateSettings();
-        		m.UpdateUI(mNightMode == 1 ? mNightModeColor : 0);
+        		m.UpdateUI( trueVersion.startsWith("SM") && mNightMode == 1 ? mNightModeColor : 0);
             }
         };
         final ContentResolver resolver = mContext.getContentResolver();
@@ -67,7 +69,7 @@ public class SudaService extends SystemUI {
                 false, obs, UserHandle.USER_ALL);
         UpdateSettings();
         m.init();
-        m.UpdateUI(mNightMode == 1 ? mNightModeColor : 0);
+        m.UpdateUI( trueVersion.startsWith("SM") && mNightMode == 1 ? mNightModeColor : 0);
     }
 
     private final class Receiver extends BroadcastReceiver {
