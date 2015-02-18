@@ -79,7 +79,7 @@ public class SudaService extends SystemUI {
         }
 
         public void ScreenviewInit() {
-			localWindowManager = (WindowManager) mContext.getSystemService("window");
+            localWindowManager = (WindowManager) mContext.getSystemService("window");
             mParams.type = 2006;
             mParams.flags = 280;
             mParams.format = 1;
@@ -99,7 +99,7 @@ public class SudaService extends SystemUI {
 		localWindowManager = null ;
 		view = null;	 		
             }
-	    	if (v == 0) return;
+            if (v == 0) return;
             ScreenviewInit();
             switch(v) {
               case 1:
