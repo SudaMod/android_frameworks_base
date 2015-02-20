@@ -25,6 +25,7 @@ import android.content.IntentFilter;
 import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -35,6 +36,7 @@ import android.widget.TextView;
 
 import com.android.systemui.DemoMode;
 import com.android.systemui.R;
+import com.android.systemui.cm.UserContentObserver;
 
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
@@ -78,24 +80,30 @@ public class Clock implements DemoMode {
     private final Handler handler = new Handler();
     TimerTask second;
     
-	class SettingsObserver extends ContentObserver {
+    class SettingsObserver extends UserContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
         }
 
-        void observe() {
+        @Override
+        protected void observe() {
+            super.observe();
+
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_AM_PM), false, this);
+                    Settings.System.STATUS_BAR_AM_PM), false, this, UserHandle.USER_ALL);
             updateSettings();
         }
 
-        void unobserve() {
+        @Override
+        protected void unobserve() {
+            super.unobserve();
+
             mContext.getContentResolver().unregisterContentObserver(this);
         }
 
         @Override
-        public void onChange(boolean selfChange) {
+        public void update() {
             updateSettings();
         }
     }
@@ -280,8 +288,8 @@ public class Clock implements DemoMode {
 
     void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-        mAmPmStyle = (Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_AM_PM, 2));
+        mAmPmStyle = (Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_AM_PM, 2, UserHandle.USER_CURRENT));
         mClockFormatString = "";
 
         second = new TimerTask()
