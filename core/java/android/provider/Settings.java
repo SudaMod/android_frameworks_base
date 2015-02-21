@@ -3434,6 +3434,12 @@ public final class Settings {
 		 */
 	    public static final String CARRIER_SIZE = "carrier_size";
 
+         /**
+         * Whether to dismiss all recents tasks
+         * @hide
+         */
+        public static final String RECENTS_CLEAR_ALL_DISMISS_ALL = "recents_clear_all_dismiss_all";
+
         /**
          * show traffic in statusbar. The value is
          * int (0: Hide  or 1: Only Rx 2: Rx&Tx).
