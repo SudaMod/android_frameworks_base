@@ -348,6 +348,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     
     private boolean mPowerSaveState;
 
+
     // carrier/wifi label
     private TextView mCarrierLabel;
     private boolean mCarrierLabelVisible = false;
@@ -355,6 +356,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private int mStatusBarHeaderHeight;
 
     private boolean mShowCarrierInPanel = false;
+
+    private static int ClockSizeNumber = 5;
+    private static int UpdateSizeStyle;
 
     // Status bar carrier
     private boolean mShowStatusBarCarrier;
@@ -449,6 +453,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_CLOCK), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVBAR_LEFT_IN_LANDSCAPE), false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.CLOCK_SIZE), false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -479,6 +485,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 Settings.System.STATUS_BAR_CARRIER, 0, mCurrentUserId) == 1;
             showStatusBarCarrierLabel(mShowStatusBarCarrier);
 
+            UpdateSizeStyle = Settings.System.getIntForUser(
+                    resolver, Settings.System.CLOCK_SIZE , 0,
+                    UserHandle.USER_CURRENT);
             final int oldClockLocation = mClockLocation;
             final View oldClockView = mClockView;
             mClockLocation = Settings.System.getIntForUser(
@@ -536,7 +545,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 mClockView.setVisibility(View.VISIBLE);
                 break;
         }
-
+        DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
+        int ClockSize = (int) ((UpdateSizeStyle == ClockSizeNumber ?
+        ClockSizeNumber : UpdateSizeStyle) * dm.density);
+        mClockView.setTextSize(ClockSize);
         setClockAndDateStatus();
         mClockController.updateClockView(mClockView);
     }
