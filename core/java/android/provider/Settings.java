@@ -2623,7 +2623,7 @@ public final class Settings {
 		 */
 		 public static final String RECENTS_USE_OMNISWITCH = "recents_use_omniswitch";
 
-  /**
+        /**
          * Heads Up Notifications
          *
          * @hide
