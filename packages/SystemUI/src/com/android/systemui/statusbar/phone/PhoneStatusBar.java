@@ -521,6 +521,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             UpdateSizeStyle = Settings.System.getIntForUser(
                     resolver, Settings.System.CLOCK_SIZE , 0,
                     UserHandle.USER_CURRENT);
+
             final int oldClockLocation = mClockLocation;
             final View oldClockView = mClockView;
             mClockLocation = Settings.System.getIntForUser(
@@ -582,7 +583,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 break;
         }
         DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
-        int ClockSize = (int) ((UpdateSizeStyle == ClockSizeNumber ?
+        int ClockSize = (int) ((UpdateSizeStyle == 0 ?
         ClockSizeNumber : UpdateSizeStyle) * dm.density);
         mClockView.setTextSize(ClockSize);
         setClockAndDateStatus();

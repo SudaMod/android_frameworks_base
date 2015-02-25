@@ -123,7 +123,7 @@ public class CarrierLabel extends TextView {
         int UpdateSizeStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
            Settings.System.CARRIER_SIZE, 0, UserHandle.USER_CURRENT);
         DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
-        int CarrierLabelSize = (int) ((UpdateSizeStyle == CarrierLabelSizeNumber ?
+        int CarrierLabelSize = (int) ((UpdateSizeStyle == 0 ?
            CarrierLabelSizeNumber : UpdateSizeStyle) * dm.density);
         setTextSize(CarrierLabelSize);
 
