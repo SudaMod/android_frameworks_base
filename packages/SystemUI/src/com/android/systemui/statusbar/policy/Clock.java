@@ -208,10 +208,10 @@ public class Clock implements DemoMode {
         }
         String result = is24 ? sdf.format(mCalendar.getTime()) : DateFormat.format(format, mCalendar.getTime()).toString();
 
-	if (Settings.System.getInt(mContext.getContentResolver(), Settings.System.CLOCK_USE_SECOND, 0) == 1) {
-		String temp = result;
-		result = String.format("%s:%02d", temp, new GregorianCalendar().get(Calendar.SECOND));
-	}
+    if (Settings.System.getInt(mContext.getContentResolver(), Settings.System.CLOCK_USE_SECOND, 0) == 1) {
+        String temp = result;
+        result = String.format("%s:%02d", temp, new GregorianCalendar().get(Calendar.SECOND));
+    }
 
         if (mAmPmStyle != AM_PM_STYLE_NORMAL) {
             int magic1 = result.indexOf(MAGIC1);

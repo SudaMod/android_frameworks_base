@@ -515,17 +515,17 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mPowerSaveState = 1 == Settings.System.getInt(resolver,
                   Settings.System.POWER_SAVE_SETTINGS, 0);
             setPowerSaveSettings(mPowerSaveState);
-            
-			mShowStatusBarCarrier = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_CARRIER, 0, mCurrentUserId) == 1;
-            showStatusBarCarrierLabel(mShowStatusBarCarrier);
 
-            UpdateSizeStyle = Settings.System.getIntForUser(
-                    resolver, Settings.System.CLOCK_SIZE , 0,
-                    UserHandle.USER_CURRENT);
+            mShowStatusBarCarrier = Settings.System.getIntForUser(
+                    resolver, Settings.System.STATUS_BAR_CARRIER, 0,
+                    UserHandle.USER_CURRENT) == 1;
+            showStatusBarCarrierLabel(mShowStatusBarCarrier);
 
             final int oldClockLocation = mClockLocation;
             final View oldClockView = mClockView;
+            UpdateSizeStyle = Settings.System.getIntForUser(
+                    resolver, Settings.System.CLOCK_SIZE , 0,
+                    UserHandle.USER_CURRENT);
             mClockLocation = Settings.System.getIntForUser(
                     resolver, Settings.System.STATUS_BAR_CLOCK, Clock.STYLE_CLOCK_RIGHT,
                     UserHandle.USER_CURRENT);
@@ -1575,7 +1575,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mNavigationBarView.reorient();
         mNavigationBarView.setListeners(mRecentsClickListener, mRecentsPreloadOnTouchListener,
                 mLongPressBackRecentsListener, mHomeActionListener);
-
         updateSearchPanel();
     }
 
@@ -3699,11 +3698,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
         }
     };
-    
+
     public void setPowerSaveSettings(boolean state) {
         PowerManager mPowerMan = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mPowerMan.setPowerSaveMode(state);
-    }
+}
 
     public void showStatusBarCarrierLabel(boolean show) {
         if (mStatusBarView == null) return;

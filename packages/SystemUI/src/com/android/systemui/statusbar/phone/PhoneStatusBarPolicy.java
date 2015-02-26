@@ -79,7 +79,7 @@ public class PhoneStatusBarPolicy {
     private final CastController mCast;
     private final SuController mSuController;
     private boolean mAlarmIconVisible;
-	private boolean mSuIconVisible;	
+    private boolean mSuIconVisible;
 
     // Assume it's all good unless we hear otherwise.  We don't always seem
     // to get broadcasts that it *is* there.
@@ -201,9 +201,9 @@ public class PhoneStatusBarPolicy {
         mContext.getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(Settings.System.SHOW_ALARM_ICON),
                 false, mIconObserver);
-		mContext.getContentResolver().registerContentObserver(
-		        Settings.System.getUriFor(Settings.System.SHOW_SU_ICON),
-			    false, mIconObserver);		
+        mContext.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.SHOW_SU_ICON),
+                false, mIconObserver);
     }
 
     private final ContentObserver mIconObserver = new ContentObserver(null) {
@@ -211,10 +211,10 @@ public class PhoneStatusBarPolicy {
         public void onChange(boolean selfChange, Uri uri) {
             mAlarmIconVisible = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.SHOW_ALARM_ICON, 1) == 1;
-			mSuIconVisible = Settings.System.getInt(mContext.getContentResolver(),
-					Settings.System.SHOW_SU_ICON, 1) == 1;		
+            mSuIconVisible = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.SHOW_SU_ICON, 1) == 1;
             updateAlarm();
-			updateSu();
+            updateSu();
         }
 
         @Override
