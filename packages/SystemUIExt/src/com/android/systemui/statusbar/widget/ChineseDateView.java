@@ -73,15 +73,15 @@ public class ChineseDateView extends TextView {
     }
 
     protected void updateChineseDate() {
-	Calendar cal = Calendar.getInstance();
- 	Lunar lunar = new Lunar(cal);
+    Calendar cal = Calendar.getInstance();
+    Lunar lunar = new Lunar(cal);
 
-	int YEAR = cal.get(Calendar.YEAR); 
-	int MONTH = cal.get(Calendar.MONTH); 
-	int DATE = cal.get(Calendar.DATE); 
- 	cal.set(YEAR,MONTH,DATE);
+    int YEAR = cal.get(Calendar.YEAR); 
+    int MONTH = cal.get(Calendar.MONTH); 
+    int DATE = cal.get(Calendar.DATE); 
+    cal.set(YEAR,MONTH,DATE);
 
-	final String text = SudaUtils.isSupportLanguage(true) ? lunar.toString():"";
+    final String text = SudaUtils.isSupportLanguage(true) ? lunar.toString():"";
 
        
         if (!text.equals(mLastText)) {

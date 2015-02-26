@@ -133,22 +133,44 @@ public class PowerNotificationWarnings implements PowerUI.WarningsUI {
     }
 
     private void updateNotification() {
-        if (DEBUG) Slog.d(TAG, "updateNotification mSaver=" + mSaver);
+        if (DEBUG) Slog.d(TAG, "updateNotification mWarning=" + mWarning + " mPlaySound="
+                + mPlaySound + " mSaver=" + mSaver + " mInvalidCharger=" + mInvalidCharger);
         ContentResolver resolver = mContext.getContentResolver();
         mPowerSaveState = Settings.System.getInt(
                 resolver, Settings.System.POWER_SAVE_SETTINGS, 0);
-        if (mWarning) {
+        if (mInvalidCharger) {
+            showInvalidChargerNotification();
+            mShowing = SHOWING_INVALID_CHARGER;
+        } else if (mWarning) {
             showWarningNotification();
             mShowing = SHOWING_WARNING;
-        }
-        if (mPowerSaveState == 1 && mSaver) {
+        } else if (mSaver && mPowerSaveState == 1) {
             showSaverNotification();
             mShowing = SHOWING_SAVER;
-        }
-        if (mPowerSaveState == 0 || mPowerSaveState == 2) {
+        } else {
             mNoMan.cancel(TAG_NOTIFICATION, ID_NOTIFICATION);
             mShowing = SHOWING_NOTHING;
         }
+    }
+
+    private void showInvalidChargerNotification() {
+        final Notification.Builder nb = new Notification.Builder(mContext)
+                .setSmallIcon(R.drawable.ic_power_low)
+                .setWhen(0)
+                .setShowWhen(false)
+                .setOngoing(true)
+                .setContentTitle(mContext.getString(R.string.invalid_charger_title))
+                .setContentText(mContext.getString(R.string.invalid_charger_text))
+                .setPriority(Notification.PRIORITY_MAX)
+                .setCategory(Notification.CATEGORY_SYSTEM)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setColor(mContext.getResources().getColor(
+                        com.android.internal.R.color.system_notification_accent_color));
+        final Notification n = nb.build();
+        if (n.headsUpContentView != null) {
+            n.headsUpContentView.setViewVisibility(com.android.internal.R.id.right_icon, View.GONE);
+        }
+        mNoMan.notifyAsUser(TAG_NOTIFICATION, ID_NOTIFICATION, n, UserHandle.CURRENT);
     }
 
     private void showWarningNotification() {
@@ -167,6 +189,9 @@ public class PowerNotificationWarnings implements PowerUI.WarningsUI {
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setColor(mContext.getResources().getColor(
                         com.android.internal.R.color.battery_saver_mode_color));
+        if (hasBatterySettings()) {
+            nb.setContentIntent(pendingBroadcast(ACTION_SHOW_BATTERY_SETTINGS));
+        }
         if (!mSaver) {
             nb.addAction(0,
                     mContext.getString(R.string.battery_saver_start_action),
@@ -196,6 +221,10 @@ public class PowerNotificationWarnings implements PowerUI.WarningsUI {
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setColor(mContext.getResources().getColor(
                         com.android.internal.R.color.battery_saver_mode_color));
+        addStopSaverAction(nb);
+        if (hasSaverSettings()) {
+            nb.setContentIntent(pendingActivity(mOpenSaverSettings));
+        }
         mNoMan.notifyAsUser(TAG_NOTIFICATION, ID_NOTIFICATION, nb.build(), UserHandle.CURRENT);
     }
 

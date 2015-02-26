@@ -120,12 +120,15 @@ public class CarrierLabel extends TextView {
         } else {
             str = "";
         }
+
+        boolean mShowStatusBarCarrier = Settings.System.getIntForUser(mContext.getContentResolver(),
+           Settings.System.STATUS_BAR_CARRIER, 0, UserHandle.USER_CURRENT) == 0;
         int UpdateSizeStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
            Settings.System.CARRIER_SIZE, 0, UserHandle.USER_CURRENT);
         DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
         int CarrierLabelSize = (int) ((UpdateSizeStyle == 0 ?
            CarrierLabelSizeNumber : UpdateSizeStyle) * dm.density);
-        setTextSize(CarrierLabelSize);
+        setTextSize(mShowStatusBarCarrier ? 0 : CarrierLabelSize);
 
         String customCarrierLabel = Settings.System.getStringForUser(mContext.getContentResolver(),
                 Settings.System.CUSTOM_CARRIER_LABEL, UserHandle.USER_CURRENT);

@@ -35,9 +35,9 @@ import android.os.SystemProperties;
 
 import com.android.systemui.SystemUI;
 
-public class SudaService extends SystemUI {
+public class NightModeService extends SystemUI {
 
-    static final String TAG = "SudaService";
+    static final String TAG = "NightModeService";
 
     private final Handler mHandler = new Handler();
     private final Receiver m = new Receiver();
@@ -73,8 +73,6 @@ public class SudaService extends SystemUI {
 
         public void init() {
             IntentFilter filter = new IntentFilter();
-            filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
-            filter.addAction(Intent.ACTION_USER_SWITCHED);
             mContext.registerReceiver(this, filter, null, mHandler);
         }
 
@@ -117,7 +115,6 @@ public class SudaService extends SystemUI {
         }
         @Override
         public void onReceive(Context context, Intent intent) {
-            UpdateSettings();
         }
     };
 

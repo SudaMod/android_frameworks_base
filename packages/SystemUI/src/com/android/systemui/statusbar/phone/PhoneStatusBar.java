@@ -350,9 +350,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private long mKeyguardFadingAwayDuration;
 
     int mKeyguardMaxNotificationCount;
-    
-    private boolean mPowerSaveState;
 
+    private boolean mPowerSaveState;
 
     // carrier/wifi label
     private TextView mCarrierLabel;

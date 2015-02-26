@@ -378,7 +378,7 @@ public final class PowerManager {
      * @hide
      */
     public static final String PROFILE_POWER_SAVE = "0";
-    
+
     /**
      * Balanced power profile
      * @hide
@@ -559,6 +559,7 @@ public final class PowerManager {
     public void userActivity(long when, boolean noChangeLights) {
         userActivity(when, USER_ACTIVITY_EVENT_OTHER,
                 noChangeLights ? USER_ACTIVITY_FLAG_NO_CHANGE_LIGHTS : 0);
+            if (Powerstate()) setPowerSaveMode(false);
     }
 
     /**
@@ -615,6 +616,7 @@ public final class PowerManager {
      */
     public void goToSleep(long time) {
         goToSleep(time, GO_TO_SLEEP_REASON_APPLICATION, 0);
+        if (Powerstate()) setPowerSaveMode(true);
     }
 
     /**
