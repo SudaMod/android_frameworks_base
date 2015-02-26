@@ -144,7 +144,7 @@ public class PowerNotificationWarnings implements PowerUI.WarningsUI {
         } else if (mWarning) {
             showWarningNotification();
             mShowing = SHOWING_WARNING;
-        } else if (mSaver && mPowerSaveState == 1) {
+        } else if (mSaver && mPowerSaveState != 2) {
             showSaverNotification();
             mShowing = SHOWING_SAVER;
         } else {
