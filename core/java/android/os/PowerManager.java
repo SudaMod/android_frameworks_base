@@ -1276,6 +1276,6 @@ public final class PowerManager {
     
     public boolean Powerstate() {
         return Settings.System.getInt(
-                mContext.getContentResolver(), Settings.System.POWER_SAVE_SETTINGS, 0) == 2;
+                mContext.getContentResolver(), Settings.System.POWER_SAVE_SETTINGS, 0) == 1;
     }
 }

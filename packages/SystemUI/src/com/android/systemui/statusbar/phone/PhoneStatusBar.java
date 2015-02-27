@@ -351,8 +351,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     int mKeyguardMaxNotificationCount;
 
-    private boolean mPowerSaveState;
-
     // carrier/wifi label
     private TextView mCarrierLabel;
     private boolean mCarrierLabelVisible = false;
@@ -455,8 +453,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.POWER_SAVE_SETTINGS), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CLOCK), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVBAR_LEFT_IN_LANDSCAPE), false, this, UserHandle.USER_ALL);
@@ -505,10 +501,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mBrightnessControl = Settings.System.getIntForUser(
                     resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0,
                     UserHandle.USER_CURRENT) == 1;
-
-            mPowerSaveState = 1 == Settings.System.getInt(resolver,
-                  Settings.System.POWER_SAVE_SETTINGS, 0);
-            setPowerSaveSettings(mPowerSaveState);
 
             final int oldClockLocation = mClockLocation;
             final View oldClockView = mClockView;
@@ -3688,10 +3680,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     };
 
-    public void setPowerSaveSettings(boolean state) {
-        PowerManager mPowerMan = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        mPowerMan.setPowerSaveMode(state);
-}
 
     private BroadcastReceiver mPackageBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {

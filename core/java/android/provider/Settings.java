@@ -3407,15 +3407,13 @@ public final class Settings {
          */
         public static final String INCREASING_RING_RAMP_UP_TIME = "increasing_ring_ramp_up_time";
 
-   	    /**
-		 * New One PowerSave Settings
-         * Settingb Power Save
+        /**
+         * Setting Power Save
          * 0: Off the Power Save
-         * 1: On the Power Save
-         * 2: On the Power Save Off screen
+         * 1: On the Power Save Off screen
          * @hide
-		 */
-		public static final String POWER_SAVE_SETTINGS = "power_save_settings";		
+         */
+         public static final String POWER_SAVE_SETTINGS = "power_save_settings";
 
         /**
          * Display style of AM/PM next to clock in status bar
