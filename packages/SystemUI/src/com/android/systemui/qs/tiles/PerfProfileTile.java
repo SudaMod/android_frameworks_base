@@ -142,7 +142,21 @@ public class PerfProfileTile extends QSTile<PerfProfileTile.ProfileState> {
         if (current >= mPerfProfileValues.length) {
             current = 0;
         }
+        performanceUpdatePowerSaveSettings(current);
         mPm.setPowerProfile(mPerfProfileValues[current]); // content observer will notify
+    }
+
+    private void performanceUpdatePowerSaveSettings(int mode) {
+                if (mode == 0) {
+                     Settings.System.putInt(mContext.getContentResolver(),
+                             Settings.System.POWER_SAVE_SETTINGS, 1);
+                } else if (mode == 1) {
+                     Settings.System.putInt(mContext.getContentResolver(),
+                             Settings.System.POWER_SAVE_SETTINGS, 2);
+                } else if (mode == 2) {
+                     Settings.System.putInt(mContext.getContentResolver(),
+                             Settings.System.POWER_SAVE_SETTINGS, 0);
+                }
     }
 
     public static class ProfileState extends QSTile.State {
