@@ -364,9 +364,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private static int ClockSizeNumber = 5;
     private static int UpdateSizeStyle;
 
-    // Status bar Carrier
-    private boolean mShowStatusBarCarrier;
-
     // Status bar Network traffic;
     private NetworkTraffic mNetworkTraffic;
 
@@ -456,8 +453,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CARRIER), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.POWER_SAVE_SETTINGS), false, this);
@@ -514,11 +509,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mPowerSaveState = 1 == Settings.System.getInt(resolver,
                   Settings.System.POWER_SAVE_SETTINGS, 0);
             setPowerSaveSettings(mPowerSaveState);
-
-            mShowStatusBarCarrier = Settings.System.getIntForUser(
-                    resolver, Settings.System.STATUS_BAR_CARRIER, 0,
-                    UserHandle.USER_CURRENT) == 1;
-            showStatusBarCarrierLabel(mShowStatusBarCarrier);
 
             final int oldClockLocation = mClockLocation;
             final View oldClockView = mClockView;
@@ -3702,15 +3692,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         PowerManager mPowerMan = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mPowerMan.setPowerSaveMode(state);
 }
-
-    public void showStatusBarCarrierLabel(boolean show) {
-        if (mStatusBarView == null) return;
-        ContentResolver resolver = mContext.getContentResolver();
-        View statusBarCarrierLabel = mStatusBarView.findViewById(R.id.status_bar_carrier_label);
-        if (statusBarCarrierLabel != null) {
-            statusBarCarrierLabel.setVisibility(show ? (mShowStatusBarCarrier ? View.VISIBLE : View.GONE) : View.GONE);
-        }
-    }
 
     private BroadcastReceiver mPackageBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
