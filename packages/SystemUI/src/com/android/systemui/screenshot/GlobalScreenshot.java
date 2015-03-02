@@ -44,6 +44,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Process;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -527,21 +528,23 @@ class GlobalScreenshot {
             return;
         }
 
+            Bitmap ss = Bitmap.createBitmap(mDisplayMetrics.widthPixels,
+                mDisplayMetrics.heightPixels, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(ss);
+
         if (requiresRotation) {
             // Rotate the screenshot to the current orientation
-            Bitmap ss = Bitmap.createBitmap(mDisplayMetrics.widthPixels,
-                    mDisplayMetrics.heightPixels, Bitmap.Config.ARGB_8888);
-            Canvas c = new Canvas(ss);
             c.translate(ss.getWidth() / 2, ss.getHeight() / 2);
             c.rotate(degrees);
             c.translate(-dims[0] / 2, -dims[1] / 2);
-            c.drawBitmap(mScreenBitmap, 0, 0, null);
-            c.setBitmap(null);
-            // Recycle the previous bitmap
-            mScreenBitmap.recycle();
-            mScreenBitmap = ss;
         }
 
+        c.drawBitmap(mScreenBitmap, 0, 0, null);
+        c.setBitmap(null);
+
+        // Recycle the previous bitmap
+        mScreenBitmap.recycle();
+        mScreenBitmap = ss;
         // Optimizations
         mScreenBitmap.setHasAlpha(false);
         mScreenBitmap.prepareToDraw();
@@ -589,7 +592,9 @@ class GlobalScreenshot {
             @Override
             public void run() {
                 // Play the shutter sound to notify that we've taken a screenshot
-                mCameraSound.play(MediaActionSound.SHUTTER_CLICK);
+                if (Settings.System.getInt(mContext.getContentResolver(),
+            			Settings.System.SCREENSHOT_SOUND, 0) == 1)
+            		mCameraSound.play(MediaActionSound.SHUTTER_CLICK);
 
                 mScreenshotView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
                 mScreenshotView.buildLayer();
