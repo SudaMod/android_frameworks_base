@@ -24,6 +24,7 @@ import android.app.IUiModeManager;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.StatusBarManager;
+import android.app.SudaModDialog;
 import android.app.UiModeManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -6268,18 +6269,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         screenTurningOn(null);
     }
 
-    ProgressDialog mBootMsgDialog = null;
+    SudaModDialog mBootMsgDialog = null;
 
     /** {@inheritDoc} */
     @Override
     public void showBootMessage(final CharSequence msg, final boolean always) {
- 	
-		final String installingMsg = mContext.getResources().getString(
-				com.android.internal.R.string.android_installing_apk);
-		
-		final int titleRes = (msg != null && msg.toString().contains(installingMsg)) ?
-                      R.string.android_installing_title :
-                      R.string.android_upgrading_title;
 
         mHandler.post(new Runnable() {
             @Override public void run() {
@@ -6295,32 +6289,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         theme = 0;
                     }
 
-                    mBootMsgDialog = new ProgressDialog(mContext, theme) {
-                        // This dialog will consume all events coming in to
-                        // it, to avoid it trying to do things too early in boot.
-                        @Override public boolean dispatchKeyEvent(KeyEvent event) {
-                            return true;
-                        }
-                        @Override public boolean dispatchKeyShortcutEvent(KeyEvent event) {
-                            return true;
-                        }
-                        @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-                            return true;
-                        }
-                        @Override public boolean dispatchTrackballEvent(MotionEvent ev) {
-                            return true;
-                        }
-                        @Override public boolean dispatchGenericMotionEvent(MotionEvent ev) {
-                            return true;
-                        }
-                        @Override public boolean dispatchPopulateAccessibilityEvent(
-                                AccessibilityEvent event) {
-                            return true;
-                        }
-                    };
-                    mBootMsgDialog.setTitle(titleRes);
-                    mBootMsgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    mBootMsgDialog.setIndeterminate(true);
+                    mBootMsgDialog = new SudaModDialog(mContext, android.R.style.Theme_Translucent_NoTitleBar);
                     mBootMsgDialog.getWindow().setType(
                             WindowManager.LayoutParams.TYPE_BOOT_PROGRESS);
                     mBootMsgDialog.getWindow().addFlags(

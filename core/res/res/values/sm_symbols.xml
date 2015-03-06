@@ -51,4 +51,10 @@
   <java-symbol type="string" name="global_action_screen_record" />
   <java-symbol type="bool" name="config_enableScreenrecordChord" />
 
+  <!-- SudaModDialog -->
+  <java-symbol type="layout" name="sm_dlg" />
+  <java-symbol type="id" name="sm_dlg_title" />
+  <java-symbol type="id" name="sm_color_layout" />
+  <java-symbol type="color" name="default_background" />
+
 </resources>
