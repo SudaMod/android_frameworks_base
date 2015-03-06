@@ -35,4 +35,5 @@
     <!-- label for screen record item in phone options dialog -->
     <string name="global_action_screen_record">Screen record</string>
 
+    <string name="android_installing_apk_complete">Congratulations, system upgrade is complete.</string>
 </resources>

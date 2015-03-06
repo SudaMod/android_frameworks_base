@@ -56,5 +56,6 @@
   <java-symbol type="id" name="sm_dlg_title" />
   <java-symbol type="id" name="sm_color_layout" />
   <java-symbol type="color" name="default_background" />
+  <java-symbol type="string" name="android_installing_apk_complete" />
 
 </resources>
