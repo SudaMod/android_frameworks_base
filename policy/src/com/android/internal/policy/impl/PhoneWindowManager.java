@@ -6304,7 +6304,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mBootMsgDialog.show();
                 }
                 mBootMsgDialog.setMessage(mContext.getResources().getString(
-                    com.android.internal.R.string.android_installing_apk).equals(msg) ? cte : msg);
+                    com.android.internal.R.string.android_upgrading_starting_apps).equals(msg) ? cte : msg);
             }
         });
     }
