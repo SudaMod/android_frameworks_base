@@ -54,7 +54,7 @@ public class SudaModDialog extends Dialog {
         mColorLayout = (LinearLayout) v.findViewById(R.id.sm_color_layout);
         mMessage = (TextView) v.findViewById(R.id.sm_dlg_title);
         //setBackgroundColor(ctx);
-        int currHourColor = Color.parseColor("#ff0288d1");
+        int currHourColor = Color.parseColor("#1E90FF");
         mColorLayout.setBackgroundColor(currHourColor);
         this.setContentView(v);
 
