@@ -1231,9 +1231,7 @@ public class VolumePanel extends Handler {
             int stream = (streamType == STREAM_REMOTE_MUSIC) ? -1 : streamType;
             // when the stream is for remote playback, use -1 to reset the stream type evaluation
             mAudioManager.forceVolumeControlStream(stream);
-            if (mDialog != null) {
-                mDialog.show();
-            }
+            mDialog.show();
             if (mCallback != null) {
                 mCallback.onVisible(true);
             }
@@ -1485,14 +1483,11 @@ public class VolumePanel extends Handler {
 
             case MSG_TIMEOUT: {
                 if (isShowing()) {
-                    hideVolumePanel();
-                    if (mDialog != null) {
-                        mDialog.dismiss();
-                        clearRemoteStreamController();
-                        mActiveStreamType = -1;
-                        if (mCallback != null) {
-                            mCallback.onVisible(false);
-                        }
+                    mDialog.dismiss();
+                    clearRemoteStreamController();
+                    mActiveStreamType = -1;
+                    if (mCallback != null) {
+                        mCallback.onVisible(false);
                     }
                 }
                 synchronized (sSafetyWarningLock) {
