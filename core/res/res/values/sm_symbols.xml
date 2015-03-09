@@ -58,6 +58,7 @@
   <java-symbol type="color" name="default_background" />
   <java-symbol type="string" name="android_installing_apk_complete" />
 
-    <java-symbol type="drawable" name="sm_platlogo" />
+  <!-- Sm platlogo -->
+  <java-symbol type="drawable" name="sm_platlogo" />
 
 </resources>
