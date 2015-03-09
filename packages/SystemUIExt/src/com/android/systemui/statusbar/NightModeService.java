@@ -16,12 +16,9 @@
 
 package com.android.systemui;
 
-import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
@@ -40,7 +37,6 @@ public class NightModeService extends SystemUI {
     static final String TAG = "NightModeService";
 
     private final Handler mHandler = new Handler();
-    private final Receiver m = new Receiver();
 
     private int mNightModeColor;
     private int mNightMode;
@@ -48,6 +44,7 @@ public class NightModeService extends SystemUI {
     private LayoutParams mParams;
     private View view;
     private WindowManager localWindowManager;
+
     private String trueVersion = SystemProperties.get("ro.modversion");	
 
     public void start() {
@@ -65,58 +62,44 @@ public class NightModeService extends SystemUI {
         resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.NIGHT_MODE),
                 false, obs, UserHandle.USER_ALL);
-        m.init();
         UpdateSettings();
     }
 
-    private final class Receiver extends BroadcastReceiver {
+    public void ScreenviewInit() {
+        localWindowManager = (WindowManager) mContext.getSystemService("window");
+        mParams.type = 2006;
+        mParams.flags = 280;
+        mParams.format = 1;
+        mParams.gravity = 51;
+        mParams.x = 0;
+        mParams.y = 0;
+        mParams.width = -1;
+        mParams.height = -1;
+        view = new View(mContext);
+        view.setFocusable(false);
+        view.setFocusableInTouchMode(false);
+    }
 
-        public void init() {
-            IntentFilter filter = new IntentFilter();
-            mContext.registerReceiver(this, filter, null, mHandler);
+    public void UpdateUI(int v) {
+        if (view != null) {
+            localWindowManager.removeView(view);
+            view = null;
         }
-
-        public void ScreenviewInit() {
-            localWindowManager = (WindowManager) mContext.getSystemService("window");
-            mParams.type = 2006;
-            mParams.flags = 280;
-            mParams.format = 1;
-            mParams.gravity = 51;
-            mParams.x = 0;
-            mParams.y = 0;
-            mParams.width = -1;
-            mParams.height = -1;
-            view = new View(mContext);
-            view.setFocusable(false);
-            view.setFocusableInTouchMode(false);
-        }
-
-        public void UpdateUI(int v) {
-            if (view != null) {
-                localWindowManager.removeView(view);
-                localWindowManager = null ;
-                view = null;
-            }
-            if (v == 0) return;
-            ScreenviewInit();
-            switch(v) {
-              case 1:
+        if (v == 0) return;
+        ScreenviewInit();
+        switch(v) {
+            case 1:
                 view.setBackgroundColor(Color.argb(150, 0, 0, 0));
-              break;
-              case 2:
+                break;
+            case 2:
                 view.setBackgroundColor(Color.argb(100, 255, 0, 0));
-              break;
-              case 3:
+                break;
+            case 3:
                 view.setBackgroundColor(Color.argb(80, 255, 255, 0));
-              break;
-            }
-            localWindowManager.addView(view, mParams);
-
+                break;
         }
-        @Override
-        public void onReceive(Context context, Intent intent) {
+        localWindowManager.addView(view, mParams);
         }
-    };
 
     private void UpdateSettings() {
 
@@ -126,7 +109,7 @@ public class NightModeService extends SystemUI {
         mNightMode = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.NIGHT_MODE, 0);
 
-        m.UpdateUI( trueVersion.startsWith("SM") && mNightMode == 1 ? mNightModeColor : 0);
+        UpdateUI( trueVersion.startsWith("SM") && mNightMode == 1 ? mNightModeColor : 0);
 
     }
 
