@@ -288,8 +288,8 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
     };
 
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
+    private class SettingsObserver extends ContentObserver {
+        public SettingsObserver(Handler handler) {
             super(handler);
         }
 
@@ -320,7 +320,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
     };
 
-    private SettingsObserver mHeadsUpSettingsObserver = new SettingsObserver(mHandler);
 
     private RemoteViews.OnClickHandler mOnClickHandler = new RemoteViews.OnClickHandler() {
         @Override
@@ -523,12 +522,11 @@ public abstract class BaseStatusBar extends SystemUI implements
                 ServiceManager.checkService(DreamService.DREAM_SERVICE));
         mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
 
-        SettingsObserver observer = new SettingsObserver(mHandler);
-        observer.observe();
-
         mDndList = new ArrayList<String>();
         mBlacklist = new ArrayList<String>();
 
+        SettingsObserver observer = new SettingsObserver(mHandler);
+        observer.observe();
         mSettingsObserver.onChange(false); // set up
         mContext.getContentResolver().registerContentObserver(
                 Settings.Global.getUriFor(Settings.Global.DEVICE_PROVISIONED), true,
@@ -1201,8 +1199,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     public abstract void resetHeadsUpDecayTimer();
-
-    public abstract void hideHeadsUp();
 
     public abstract void scheduleHeadsUpOpen();
 
@@ -2146,12 +2142,18 @@ public abstract class BaseStatusBar extends SystemUI implements
         final KeyguardTouchDelegate keyguard = KeyguardTouchDelegate.getInstance(mContext);
         boolean keyguardIsShowing = keyguard.isShowingAndNotOccluded()
                 && keyguard.isInputRestricted();
+
+        boolean isExpanded = false;
+        if (mStackScroller != null) {
+            isExpanded = mStackScroller.getIsExpanded();
+        }
+
         boolean interrupt = (isFullscreen || (isHighPriority && (isNoisy || hasTicker)))
                 && isAllowed
-                && !isOngoing
                 && !accessibilityForcesLaunch
                 && mPowerManager.isScreenOn()
-                && !keyguardIsShowing;
+                && !keyguardIsShowing
+                && !isExpanded;
         try {
             interrupt = interrupt && !mDreamManager.isDreaming();
         } catch (RemoteException e) {
@@ -2160,7 +2162,7 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         // its below our threshold priority, we might want to always display
         // notifications from certain apps
-        if (!isHighPriority && !isOngoing && !keyguardIsShowing) {
+        if (!isHighPriority && !isOngoing && !keyguardIsShowing && !isExpanded) {
             // However, we don't want to interrupt if we're in an application that is
             // in Do Not Disturb
             if (!isPackageInDnd(getTopLevelPackage())) {

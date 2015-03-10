@@ -657,7 +657,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             boolean wasUsing = mUseHeadsUp;
             mUseHeadsUp = ENABLE_HEADS_UP && !mDisableNotificationAlerts && Settings.System.getIntForUser(
                     mContext.getContentResolver(),
-                    Settings.System.HEADS_UP_NOTIFICATION, 0, UserHandle.USER_CURRENT) == 1;
+                    Settings.System.HEADS_UP_NOTIFICATION, 1, UserHandle.USER_CURRENT) == 1;
             mHeadsUpTicker = mUseHeadsUp && 0 != Settings.Global.getInt(
                     mContext.getContentResolver(), SETTING_HEADS_UP_TICKER, 0);
             Log.d(TAG, "heads up is " + (mUseHeadsUp ? "enabled" : "disabled"));
@@ -1783,12 +1783,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 && mHeadsUpNotificationView.isClearable()) {
             mHandler.sendEmptyMessageDelayed(MSG_DECAY_HEADS_UP, mHeadsUpNotificationDecay);
         }
-    }
-
-    @Override
-    public void hideHeadsUp() {
-        mHandler.removeMessages(MSG_HIDE_HEADS_UP);
-        mHandler.sendEmptyMessage(MSG_HIDE_HEADS_UP);
     }
 
     @Override
@@ -3793,14 +3787,19 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mHeadsUpNotificationView.setVisibility(vis ? View.VISIBLE : View.GONE);
     }
 
-    public void onHeadsUpDismissed(int direction) {
-        if (direction == HeadsUpNotificationView.DIRECTION_X) {
+    public void onHeadsUpDismissed(boolean direction) {
+        // If direction == true we know that the notification
+        // was dismissed to the right. So we just hide it that
+        // the notification will stay in our notification
+        // drawer. Left swipe as usual dismisses the notification
+        // completely if the notification is clearable.
+    if (direction) {
+        scheduleHeadsUpClose();
+    } else {
              mHeadsUpNotificationView.dismiss();
-        } else if (direction == HeadsUpNotificationView.DIRECTION_Y) {
-             mHeadsUpNotificationView.release();
-             scheduleHeadsUpClose();
         }
     }
+
 
     private static void copyNotifications(ArrayList<Pair<String, StatusBarNotification>> dest,
             NotificationData source) {
