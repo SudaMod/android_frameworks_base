@@ -3688,6 +3688,12 @@ public final class Settings {
          */
         public static final String NAVBAR_LEFT_IN_LANDSCAPE = "navigation_bar_left";
 
+        /** The delay when killing the app on long press takes place
+         *
+         * @hide
+         */
+        public static final String LONG_PRESS_KILL_DELAY = "long_press_kill_delay";
+
         /**
          * Locale for secondary overlay on dialer for t9 search input
          * @hide
