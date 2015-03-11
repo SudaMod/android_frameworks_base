@@ -513,6 +513,7 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                 // Remove visible TaskViews
                 long dismissDelay = 0;
                 int childCount = getChildCount();
+                if (!dismissAll() && childCount > 1) childCount--;
                 int delay = mConfig.taskViewRemoveAnimDuration / childCount;
                 for (int i = 0; i < childCount; i++) {
                     TaskView tv = (TaskView) getChildAt(i);
@@ -522,7 +523,6 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                 }
 
                 int size = tasks.size();
-
                 if (size > 0) {
                     // Remove possible alive Tasks
                     for (int i = 0; i < size; i++) {
@@ -535,7 +535,9 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
 
                 // And remove all the excluded or all the other tasks
                 SystemServicesProxy ssp = RecentsTaskLoader.getInstance().getSystemServicesProxy();
-                ssp.removeAllUserTask(UserHandle.myUserId());
+                if (size > 0) {
+                    ssp.removeAllUserTask(UserHandle.myUserId());
+                }
             }
         });
     }
