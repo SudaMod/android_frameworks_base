@@ -3770,7 +3770,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         //updateClockSize();
         updateResources(newConfig);
-        updateClockSize();
         repositionNavigationBar();
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
         updateShowSearchHoldoff();
