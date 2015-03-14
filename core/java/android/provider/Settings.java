@@ -2061,6 +2061,13 @@ public final class Settings {
         public static final String SHOW_ALARM_ICON = "show_alarm_icon";
 
         /**
+         * Chinese date view
+         * @hide
+         */
+        public static final String CHINESE_DATE_VIEW = "chinese_date_view";
+
+
+        /**
          * @hide
          */
         public static final String SHOW_SU_ICON = "show_su_icon";

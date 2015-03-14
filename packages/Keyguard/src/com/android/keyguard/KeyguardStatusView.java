@@ -21,6 +21,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.provider.AlarmClock;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
@@ -47,6 +49,8 @@ public class KeyguardStatusView extends GridLayout {
     private TextClock mDateView;
     private TextClock mClockView;
     private TextView mOwnerInfo;
+    private TextView mChineseDate;
+
 
     private KeyguardUpdateMonitorCallback mInfoCallback = new KeyguardUpdateMonitorCallback() {
 
@@ -72,6 +76,9 @@ public class KeyguardStatusView extends GridLayout {
         @Override
         public void onScreenTurnedOff(int why) {
             setEnableMarquee(false);
+            boolean mShow = Settings.System.getIntForUser(getContext().getContentResolver(),
+                  Settings.System.CHINESE_DATE_VIEW, 0, UserHandle.USER_CURRENT) == 1;
+            mChineseDate.setVisibility(mShow ? View.VISIBLE : View.GONE);
         }
 
         @Override
@@ -106,6 +113,7 @@ public class KeyguardStatusView extends GridLayout {
         mDateView = (TextClock) findViewById(R.id.date_view);
         mClockView = (TextClock) findViewById(R.id.clock_view);
         mOwnerInfo = (TextView) findViewById(R.id.owner_info);
+        mChineseDate = (TextView) findViewById(R.id.date_chinese);
         mLockPatternUtils = new LockPatternUtils(getContext());
         final boolean screenOn = KeyguardUpdateMonitor.getInstance(mContext).isScreenOn();
         setEnableMarquee(screenOn);
