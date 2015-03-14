@@ -251,4 +251,14 @@
          1. Right
          2. Left -->
     <integer name="def_qs_quick_pulldown">0</integer>
+
+    <!-- Default NightMode Color -->
+    <integer name="def_night_mode_color">1</integer>
+
+    <!-- Default Clock Size -->
+    <integer name="def_clock_size">5</integer>
+
+    <!-- Default Carrier Size -->
+    <integer name="def_carrier_size">5</integer>
+
 </resources>
