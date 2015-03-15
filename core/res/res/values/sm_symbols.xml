@@ -61,4 +61,6 @@
   <!-- Sm platlogo -->
   <java-symbol type="drawable" name="sm_platlogo" />
 
+  <!-- Doze Settings -->
+  <java-symbol type="bool" name="config_dozeUseAccelerometer" />
 </resources>
