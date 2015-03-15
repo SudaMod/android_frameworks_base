@@ -59,7 +59,6 @@ public class DozeService extends DreamService implements ProximitySensorManager.
 
     private final String mTag = String.format(TAG + ".%08x", hashCode());
     private final Context mContext = this;
-    private final DozeParameters mDozeParameters = new DozeParameters(mContext);
     private final Handler mHandler = new Handler();
 
     private DozeHost mHost;
@@ -79,6 +78,7 @@ public class DozeService extends DreamService implements ProximitySensorManager.
     private boolean mCarMode;
     private long mNotificationPulseTime;
     private int mScheduleResetsRemaining;
+    private DozeParameters mDozeParameters;
 
     private boolean mUseAccelerometer;
     private boolean mIsFar = true;
@@ -123,7 +123,7 @@ public class DozeService extends DreamService implements ProximitySensorManager.
         if (mHost == null) Log.w(TAG, "No doze service host found.");
 
         setWindowless(true);
-
+        mDozeParameters = new DozeParameters(mContext);
         mSensors = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
         mUseAccelerometer = mDozeParameters.setUsingAccelerometerAsSensorPickUp();
         if (!mUseAccelerometer) {
