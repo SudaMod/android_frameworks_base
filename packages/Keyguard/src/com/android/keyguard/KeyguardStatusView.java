@@ -71,6 +71,9 @@ public class KeyguardStatusView extends GridLayout {
         @Override
         public void onScreenTurnedOn() {
             setEnableMarquee(true);
+            boolean mShow = Settings.System.getIntForUser(getContext().getContentResolver(),
+                  Settings.System.CHINESE_DATE_VIEW, 0, UserHandle.USER_CURRENT) == 1;
+            mChineseDate.setVisibility(mShow ? View.VISIBLE : View.GONE);
         }
 
         @Override
