@@ -3451,7 +3451,7 @@ public final class Settings {
         /**
          * Setting Power Save
          * 0: LOW BATTERY
-         * 1: HIGH BATTERUY
+         * 1: HIGH BATTERY
          * @hide
          */
          public static final String POWER_SAVE_SETTINGS_BATTERY = "power_save_settings_battery";
