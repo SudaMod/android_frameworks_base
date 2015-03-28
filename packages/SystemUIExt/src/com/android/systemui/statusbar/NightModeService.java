@@ -16,8 +16,11 @@
 
 package com.android.systemui;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -41,6 +44,9 @@ public class NightModeService extends SystemUI {
     private int mNightModeColor;
     private int mNightMode;
 
+    private final Receiver m = new Receiver();
+    private int level;
+
     private LayoutParams mParams;
     private View view;
     private WindowManager localWindowManager;
@@ -62,7 +68,11 @@ public class NightModeService extends SystemUI {
         resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.NIGHT_MODE),
                 false, obs, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.POWER_SAVE_SETTINGS_BATTERY),
+                false, obs, UserHandle.USER_ALL);
         UpdateSettings();
+        m.init();
     }
 
     public void ScreenviewInit() {
@@ -112,5 +122,24 @@ public class NightModeService extends SystemUI {
         UpdateUI( trueVersion.startsWith("SM") && mNightMode == 1 ? mNightModeColor : 0);
 
     }
+
+    private final class Receiver extends BroadcastReceiver {
+
+        public void init() {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+            mContext.registerReceiver(this, filter, null, mHandler);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+             if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
+                level = intent.getIntExtra("level", 0);
+                Settings.System.putInt(mContext.getContentResolver(),
+                       Settings.System.POWER_SAVE_SETTINGS_BATTERY, level > 15 ? 1 : 0);
+            }
+        }
+    };
 
 }

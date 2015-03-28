@@ -3449,6 +3449,14 @@ public final class Settings {
          public static final String POWER_SAVE_SETTINGS = "power_save_settings";
 
         /**
+         * Setting Power Save
+         * 0: LOW BATTERY
+         * 1: HIGH BATTERUY
+         * @hide
+         */
+         public static final String POWER_SAVE_SETTINGS_BATTERY = "power_save_settings_battery";
+
+        /**
          * Display style of AM/PM next to clock in status bar
          * 0: Normal display (Eclair stock)
          * 1: Small display (Froyo stock)
