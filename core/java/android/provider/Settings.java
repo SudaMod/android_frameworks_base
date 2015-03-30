@@ -2396,6 +2396,13 @@ public final class Settings {
         };
 
         /**
+         * Chinese date view
+         * @hide
+         */
+        public static final String CHINESE_DATE_VIEW = "chinese_date_view";
+
+
+        /**
          * Scaling factor for fonts, float.
          */
         public static final String FONT_SCALE = "font_scale";

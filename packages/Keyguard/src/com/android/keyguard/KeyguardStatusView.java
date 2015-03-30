@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.UserHandle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
@@ -49,6 +50,8 @@ public class KeyguardStatusView extends GridLayout {
     private TextClock mDateView;
     private TextClock mClockView;
     private TextView mOwnerInfo;
+    private TextView mChineseDate;
+
 
     private KeyguardUpdateMonitorCallback mInfoCallback = new KeyguardUpdateMonitorCallback() {
 
@@ -69,11 +72,17 @@ public class KeyguardStatusView extends GridLayout {
         @Override
         public void onStartedWakingUp() {
             setEnableMarquee(true);
+            boolean mShow = Settings.System.getIntForUser(getContext().getContentResolver(),
+                  Settings.System.CHINESE_DATE_VIEW, 1, UserHandle.USER_CURRENT) == 1;
+            mChineseDate.setVisibility(mShow ? View.VISIBLE : View.GONE);
         }
 
         @Override
         public void onFinishedGoingToSleep(int why) {
             setEnableMarquee(false);
+            boolean mShow = Settings.System.getIntForUser(getContext().getContentResolver(),
+                  Settings.System.CHINESE_DATE_VIEW, 1, UserHandle.USER_CURRENT) == 1;
+            mChineseDate.setVisibility(mShow ? View.VISIBLE : View.GONE);
         }
 
         @Override
@@ -112,9 +121,16 @@ public class KeyguardStatusView extends GridLayout {
         mDateView.setShowCurrentUserTime(true);
         mClockView.setShowCurrentUserTime(true);
         mOwnerInfo = (TextView) findViewById(R.id.owner_info);
+<<<<<<< HEAD
 
         boolean shouldMarquee = KeyguardUpdateMonitor.getInstance(mContext).isDeviceInteractive();
         setEnableMarquee(shouldMarquee);
+=======
+        mChineseDate = (TextView) findViewById(R.id.date_chinese);
+        mLockPatternUtils = new LockPatternUtils(getContext());
+        final boolean screenOn = KeyguardUpdateMonitor.getInstance(mContext).isScreenOn();
+        setEnableMarquee(screenOn);
+>>>>>>> d5d2a8e... base:Settings:chinese_date_view(1/2)
         refresh();
         updateOwnerInfo();
 
