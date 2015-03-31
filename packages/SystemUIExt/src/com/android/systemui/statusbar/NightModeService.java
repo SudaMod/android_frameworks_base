@@ -114,7 +114,7 @@ public class NightModeService extends SystemUI {
     private void UpdateSettings() {
 
         mNightModeColor = Settings.Global.getInt(mContext.getContentResolver(),
-             Settings.Global.NIGHT_MODE_COLOR, 0);
+             Settings.Global.NIGHT_MODE_COLOR, 1);
 
         mNightMode = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.NIGHT_MODE, 0);

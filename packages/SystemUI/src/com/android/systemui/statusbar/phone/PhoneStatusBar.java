@@ -505,7 +505,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             final int oldClockLocation = mClockLocation;
             final View oldClockView = mClockView;
             UpdateSizeStyle = Settings.System.getIntForUser(
-                    resolver, Settings.System.CLOCK_SIZE , 0,
+                    resolver, Settings.System.CLOCK_SIZE , 5,
                     UserHandle.USER_CURRENT);
             mClockLocation = Settings.System.getIntForUser(
                     resolver, Settings.System.STATUS_BAR_CLOCK, Clock.STYLE_CLOCK_RIGHT,
