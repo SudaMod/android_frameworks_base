@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2015 The SudaMod Project 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +23,7 @@ import android.app.IUiModeManager;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.StatusBarManager;
+import android.app.SudaModDialog;
 import android.app.UiModeManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -6515,11 +6517,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         screenTurningOn(null);
     }
 
-    ProgressDialog mBootMsgDialog = null;
+    SudaModDialog mBootMsgDialog = null;
 
     /** {@inheritDoc} */
     @Override
     public void showBootMessage(final CharSequence msg, final boolean always) {
+        final CharSequence cte = mContext.getResources().getString(R.string.android_installing_apk_complete);
+
         mHandler.post(new Runnable() {
             @Override public void run() {
                 if (mBootMsgDialog == null) {
@@ -6534,36 +6538,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         theme = 0;
                     }
 
-                    mBootMsgDialog = new ProgressDialog(mContext, theme) {
-                        // This dialog will consume all events coming in to
-                        // it, to avoid it trying to do things too early in boot.
-                        @Override public boolean dispatchKeyEvent(KeyEvent event) {
-                            return true;
-                        }
-                        @Override public boolean dispatchKeyShortcutEvent(KeyEvent event) {
-                            return true;
-                        }
-                        @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-                            return true;
-                        }
-                        @Override public boolean dispatchTrackballEvent(MotionEvent ev) {
-                            return true;
-                        }
-                        @Override public boolean dispatchGenericMotionEvent(MotionEvent ev) {
-                            return true;
-                        }
-                        @Override public boolean dispatchPopulateAccessibilityEvent(
-                                AccessibilityEvent event) {
-                            return true;
-                        }
-                    };
-                    if (mContext.getPackageManager().isUpgrade()) {
-                        mBootMsgDialog.setTitle(R.string.android_upgrading_title);
-                    } else {
-                        mBootMsgDialog.setTitle(R.string.android_start_title);
-                    }
-                    mBootMsgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    mBootMsgDialog.setIndeterminate(true);
+                    mBootMsgDialog = new SudaModDialog(mContext, android.R.style.Theme_Translucent_NoTitleBar);
                     mBootMsgDialog.getWindow().setType(
                             WindowManager.LayoutParams.TYPE_BOOT_PROGRESS);
                     mBootMsgDialog.getWindow().addFlags(
@@ -6576,7 +6551,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mBootMsgDialog.setCancelable(false);
                     mBootMsgDialog.show();
                 }
-                mBootMsgDialog.setMessage(msg);
+                mBootMsgDialog.setMessage(mContext.getResources().getString(
+                    com.android.internal.R.string.android_upgrading_starting_apps).equals(msg) ? cte : msg);
             }
         });
     }

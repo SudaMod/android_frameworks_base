@@ -46,6 +46,12 @@
   <java-symbol type="string" name="status_year" />
   <java-symbol type="string" name="status_day" />
 
+  <!-- SudaModDialog -->
+  <java-symbol type="layout" name="sm_dlg" />
+  <java-symbol type="id" name="sm_dlg_title" />
+  <java-symbol type="id" name="sm_color_layout" />
+  <java-symbol type="string" name="android_installing_apk_complete" />
+
   <!-- Sm platlogo -->
   <java-symbol type="drawable" name="sm_platlogo" />
 </resources>
