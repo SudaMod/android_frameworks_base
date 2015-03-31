@@ -50,8 +50,6 @@ public class CarrierLabel extends TextView {
 
     private Context mContext;
 
-    private static int CarrierLabelSizeNumber = 5;
-
     public CarrierLabel(Context context) {
         this(context, null);
     }
@@ -122,8 +120,7 @@ public class CarrierLabel extends TextView {
         int UpdateSizeStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
            Settings.System.CARRIER_SIZE, 5, UserHandle.USER_CURRENT);
         DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
-        int CarrierLabelSize = (int) ((UpdateSizeStyle == 0 ?
-           CarrierLabelSizeNumber : UpdateSizeStyle) * dm.density);
+        int CarrierLabelSize = (int) (UpdateSizeStyle * dm.density);
         setTextSize(CarrierLabelSize);
 
         String customCarrierLabel = Settings.System.getStringForUser(mContext.getContentResolver(),
