@@ -50,7 +50,6 @@ public class CarrierText extends TextView {
     private boolean mDisplayAirplaneMode;
     private boolean mAirplaneModeActive;
 
-    private static int CarrierLabelSizeNumber = 5;
 
     private KeyguardUpdateMonitorCallback mCallback = new KeyguardUpdateMonitorCallback() {
         @Override
@@ -171,10 +170,9 @@ public class CarrierText extends TextView {
             text.append(carrierText);
         }
         int UpdateSizeStyle = Settings.System.getIntForUser(getContext().getContentResolver(),
-           Settings.System.CARRIER_SIZE, 0, UserHandle.USER_CURRENT);
+           Settings.System.CARRIER_SIZE, 5, UserHandle.USER_CURRENT);
         DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
-        int CarrierLabelSize = (int) ((UpdateSizeStyle == 0 ?
-           CarrierLabelSizeNumber : UpdateSizeStyle) * dm.density);
+        int CarrierLabelSize = (int) (UpdateSizeStyle * dm.density);
         setTextSize(CarrierLabelSize);
 
         String customCarrierLabel = Settings.System.getStringForUser(getContext().getContentResolver(),
