@@ -3343,7 +3343,7 @@ public final class Settings {
          * @hide
          */
         public static final String INCREASING_RING_RAMP_UP_TIME = "increasing_ring_ramp_up_time";
-        /**
+
         /**
          * ListView Animations
          * 0 == None
@@ -3370,6 +3370,7 @@ public final class Settings {
          * 7 == bounce_interpolator
          */
         public static final String LISTVIEW_INTERPOLATOR = "listview_interpolator";
+
         /**
          * show carrier in statusbar. The value is
          * int (1: Show or 0: Hide).
