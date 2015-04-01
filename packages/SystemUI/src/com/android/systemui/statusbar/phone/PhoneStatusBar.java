@@ -361,7 +361,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private boolean mShowCarrierInPanel = false;
 
-    private static int ClockSizeNumber = 5;
     private static int UpdateSizeStyle;
 
     // Status bar Network traffic;
@@ -566,8 +565,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 break;
         }
         DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
-        int ClockSize = (int) ((UpdateSizeStyle == 0 ?
-        ClockSizeNumber : UpdateSizeStyle) * dm.density);
+        int ClockSize = (int) (UpdateSizeStyle * dm.density);
         mClockView.setTextSize(ClockSize);
         setClockAndDateStatus();
         mClockController.updateClockView(mClockView);
