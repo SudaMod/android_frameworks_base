@@ -372,6 +372,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private boolean mShowCarrierInPanel = false;
 
+    private static int UpdateSizeStyle;
+
     // Status bar Network traffic;
     private NetworkTraffic mNetworkTraffic;
 
@@ -467,6 +469,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_CLOCK), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVBAR_LEFT_IN_LANDSCAPE), false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.CLOCK_SIZE), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.RECENTS_LONG_PRESS_ACTIVITY), false, this);
             update();
@@ -493,6 +497,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
             final int oldClockLocation = mClockLocation;
             final View oldClockView = mClockView;
+            UpdateSizeStyle = Settings.System.getIntForUser(
+                    resolver, Settings.System.CLOCK_SIZE , 5,
+                    UserHandle.USER_CURRENT);
             mClockLocation = Settings.System.getIntForUser(
                     resolver, Settings.System.STATUS_BAR_CLOCK, Clock.STYLE_CLOCK_RIGHT,
                     UserHandle.USER_CURRENT);
@@ -551,7 +558,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 mClockView.setVisibility(View.VISIBLE);
                 break;
         }
-
+        DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
+        int ClockSize = (int) (UpdateSizeStyle * dm.density);
+        mClockView.setTextSize(ClockSize);
         setClockAndDateStatus();
         mClockController.updateClockView(mClockView);
     }
@@ -3806,7 +3815,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         updateDisplaySize(); // populates mDisplayMetrics
 
         updateResources(newConfig);
-        updateClockSize();
+        //updateClockSize();
         repositionNavigationBar();
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
         updateShowSearchHoldoff();

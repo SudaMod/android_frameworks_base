@@ -3396,6 +3396,12 @@ public final class Settings {
          */
         public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
 
+        /**
+        * clock size.
+        * int (5: default or 4: Small or 6: Big).
+        */
+        public static final String CLOCK_SIZE = "clock_size";
+
          /**
          * carrier size.
          * int (5: default or 4: Small or 6: Big).
