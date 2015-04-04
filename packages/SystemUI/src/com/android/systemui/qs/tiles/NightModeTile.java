@@ -55,23 +55,23 @@ public class NightModeTile extends QSTile<QSTile.BooleanState> {
 
     protected void toggleState() {
          Settings.Global.putInt(mContext.getContentResolver(),
-                        Settings.Global.NIGHT_MODE, !navbarEnabled() ? 1 : 0);
+                        Settings.Global.NIGHT_MODE, !nightModeEnabled() ? 1 : 0);
     }
 
 
     @Override
     protected void handleUpdateState(BooleanState state, Object arg) {
         state.visible = true;
-    if (navbarEnabled()) {
-        state.iconId = R.drawable.ic_qs_nightmode_on;
+    if (nightModeEnabled()) {
+        state.icon = ResourceIcon.get(R.drawable.ic_qs_nightmode_on);
         state.label = mContext.getString(R.string.quick_settings_nightmode);
     } else {
-        state.iconId = R.drawable.ic_qs_nightmode_off;
+        state.icon = ResourceIcon.get(R.drawable.ic_qs_nightmode_off);
         state.label = mContext.getString(R.string.quick_settings_nightmode);
         }
     }
 
-    private boolean navbarEnabled() {
+    private boolean nightModeEnabled() {
         return Settings.Global.getInt(mContext.getContentResolver(),
                 Settings.Global.NIGHT_MODE, 1) == 1;
     }
