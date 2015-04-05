@@ -3412,6 +3412,11 @@ public final class Settings {
         public static final Validator LOCK_TO_APP_ENABLED_VALIDATOR = sBooleanValidator;
 
         /**
+         * Call log delete limit
+         */
+        public static final String CALL_LOG_DELETE_LIMIT = "call_log_delete_limit";
+
+        /**
          * show traffic in statusbar. The value is
          * int (0: Hide  or 1: Only Rx 2: Rx&Tx).
          */
