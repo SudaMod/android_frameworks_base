@@ -18,6 +18,7 @@ package android.media;
 
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.SystemProperties;
 import android.util.Log;
 
 /**
@@ -43,6 +44,7 @@ import android.util.Log;
  */
 public class MediaActionSound {
     private static final int NUM_MEDIA_SOUND_STREAMS = 1;
+    private static final String PROP_CAMERA_SOUND = "persist.sys.camera-sound";
 
     private SoundPool mSoundPool;
     private int[]     mSoundIds;
@@ -119,6 +121,9 @@ public class MediaActionSound {
      * @see #STOP_VIDEO_RECORDING
      */
     public synchronized void load(int soundName) {
+        if (!SystemProperties.getBoolean(PROP_CAMERA_SOUND, true)) {
+            return;
+        }
         if (soundName < 0 || soundName >= SOUND_FILES.length) {
             throw new RuntimeException("Unknown sound requested: " + soundName);
         }
@@ -160,6 +165,9 @@ public class MediaActionSound {
      * @see #STOP_VIDEO_RECORDING
      */
     public synchronized void play(int soundName) {
+        if (!SystemProperties.getBoolean(PROP_CAMERA_SOUND, true)) {
+            return;
+        }
         if (soundName < 0 || soundName >= SOUND_FILES.length) {
             throw new RuntimeException("Unknown sound requested: " + soundName);
         }
