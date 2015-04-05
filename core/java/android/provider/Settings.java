@@ -3425,6 +3425,11 @@ public final class Settings {
         public static final String LISTVIEW_INTERPOLATOR = "listview_interpolator";
 
         /**
+         * Call log delete limit
+         */
+        public static final String CALL_LOG_DELETE_LIMIT = "call_log_delete_limit";
+
+        /**
          * show carrier in statusbar. The value is
          * int (1: Show or 0: Hide).
          */
