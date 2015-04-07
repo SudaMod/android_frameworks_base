@@ -23,6 +23,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
+import android.content.ContentResolver;
+import android.provider.Settings;
 
 /**
  * This class gives you control of the power state of the device.
@@ -557,6 +559,7 @@ public final class PowerManager {
     public void userActivity(long when, boolean noChangeLights) {
         userActivity(when, USER_ACTIVITY_EVENT_OTHER,
                 noChangeLights ? USER_ACTIVITY_FLAG_NO_CHANGE_LIGHTS : 0);
+            if (Powerstate()) setPowerSaveMode(false);
     }
 
     /**
@@ -587,6 +590,7 @@ public final class PowerManager {
     public void userActivity(long when, int event, int flags) {
         try {
             mService.userActivity(when, event, flags);
+            if (Powerstate()) setPowerSaveMode(false);
         } catch (RemoteException e) {
         }
     }
@@ -612,6 +616,7 @@ public final class PowerManager {
      */
     public void goToSleep(long time) {
         goToSleep(time, GO_TO_SLEEP_REASON_APPLICATION, 0);
+        if (Powerstate()) setPowerSaveMode(true);
     }
 
     /**
@@ -638,6 +643,7 @@ public final class PowerManager {
     public void goToSleep(long time, int reason, int flags) {
         try {
             mService.goToSleep(time, reason, flags);
+            if (Powerstate()) setPowerSaveMode(true);
         } catch (RemoteException e) {
         }
     }
@@ -1288,5 +1294,12 @@ public final class PowerManager {
     public int getDefaultKeyboardBrightness() {
         return mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_keyboardBrightnessSettingDefault);
+    }
+    
+    public boolean Powerstate() {
+        return Settings.System.getInt(
+                mContext.getContentResolver(), Settings.System.POWER_SAVE_SETTINGS, 1) == 1 && 
+              Settings.System.getInt(
+                mContext.getContentResolver(), Settings.System.POWER_SAVE_SETTINGS_TRIGGER_LEVEL, 1) == 1;
     }
 }

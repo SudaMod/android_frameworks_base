@@ -16,8 +16,11 @@
 
 package com.android.systemui;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -41,11 +44,15 @@ public class NightModeService extends SystemUI {
     private int mNightModeColor;
     private int mNightMode;
 
+    private final Receiver m = new Receiver();
+    private int level;
+    private int trigger_level;
+
     private LayoutParams mParams;
     private View view;
     private WindowManager localWindowManager;
 
-    private String trueVersion = SystemProperties.get("ro.modversion");	
+    private String trueVersion = SystemProperties.get("ro.modversion");
 
     public void start() {
         mParams = new WindowManager.LayoutParams();
@@ -62,7 +69,14 @@ public class NightModeService extends SystemUI {
         resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.NIGHT_MODE),
                 false, obs, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.POWER_SAVE_SETTINGS_TRIGGER_LEVEL),
+                false, obs, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.Global.getUriFor(
+                Settings.Global.LOW_POWER_MODE_TRIGGER_LEVEL),
+                false, obs, UserHandle.USER_ALL);
         UpdateSettings();
+        m.init();
     }
 
     public void ScreenviewInit() {
@@ -112,5 +126,26 @@ public class NightModeService extends SystemUI {
         UpdateUI( trueVersion.startsWith("SM") && mNightMode == 1 ? mNightModeColor : 0);
 
     }
+
+    private final class Receiver extends BroadcastReceiver {
+
+        public void init() {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+            mContext.registerReceiver(this, filter, null, mHandler);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+             if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
+                level = intent.getIntExtra("level", 0);
+                trigger_level = Settings.Global.getInt(mContext.getContentResolver(),
+                                   Settings.Global.LOW_POWER_MODE_TRIGGER_LEVEL, 15);
+                Settings.System.putInt(mContext.getContentResolver(),
+                       Settings.System.POWER_SAVE_SETTINGS_TRIGGER_LEVEL, level > trigger_level ? 1 : 0);
+            }
+        }
+    };
 
 }

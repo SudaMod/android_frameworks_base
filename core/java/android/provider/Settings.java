@@ -3417,6 +3417,22 @@ public final class Settings {
         public static final String INCREASING_RING_RAMP_UP_TIME = "increasing_ring_ramp_up_time";
 
         /**
+         * Setting Power Save
+         * 0: Off the Power Save
+         * 1: On the Power Save Off screen
+         * @hide
+         */
+         public static final String POWER_SAVE_SETTINGS = "power_save_settings";
+
+        /**
+         * Setting Power Save
+         * 0: LOW BATTERY
+         * 1: HIGH BATTERY
+         * @hide
+         */
+         public static final String POWER_SAVE_SETTINGS_TRIGGER_LEVEL= "power_save_settings_battery";
+
+        /**
          * Put on your ear, and this will automatically call current number in dialer
          * @hide
          */
