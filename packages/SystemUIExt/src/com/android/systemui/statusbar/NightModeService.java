@@ -46,12 +46,13 @@ public class NightModeService extends SystemUI {
 
     private final Receiver m = new Receiver();
     private int level;
+    private int trigger_level;
 
     private LayoutParams mParams;
     private View view;
     private WindowManager localWindowManager;
 
-    private String trueVersion = SystemProperties.get("ro.modversion");	
+    private String trueVersion = SystemProperties.get("ro.modversion");
 
     public void start() {
         mParams = new WindowManager.LayoutParams();
@@ -70,6 +71,9 @@ public class NightModeService extends SystemUI {
                 false, obs, UserHandle.USER_ALL);
         resolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.POWER_SAVE_SETTINGS_BATTERY),
+                false, obs, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.Global.getUriFor(
+                Settings.Global.LOW_POWER_MODE_TRIGGER_LEVEL),
                 false, obs, UserHandle.USER_ALL);
         UpdateSettings();
         m.init();
@@ -136,8 +140,10 @@ public class NightModeService extends SystemUI {
             String action = intent.getAction();
              if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
                 level = intent.getIntExtra("level", 0);
+                trigger_level = Settings.Global.getInt(mContext.getContentResolver(),
+                                   Settings.Global.LOW_POWER_MODE_TRIGGER_LEVEL, 15);
                 Settings.System.putInt(mContext.getContentResolver(),
-                       Settings.System.POWER_SAVE_SETTINGS_BATTERY, level > 15 ? 1 : 0);
+                       Settings.System.POWER_SAVE_SETTINGS_BATTERY, level > trigger_level ? 1 : 0);
             }
         }
     };
