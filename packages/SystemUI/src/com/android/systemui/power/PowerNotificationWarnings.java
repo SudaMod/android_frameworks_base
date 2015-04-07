@@ -137,7 +137,7 @@ public class PowerNotificationWarnings implements PowerUI.WarningsUI {
                 + mPlaySound + " mSaver=" + mSaver + " mInvalidCharger=" + mInvalidCharger);
         ContentResolver resolver = mContext.getContentResolver();
         mPowerSaveState = Settings.System.getInt(
-                resolver, Settings.System.POWER_SAVE_SETTINGS, 0);
+                resolver, Settings.System.POWER_SAVE_SETTINGS, 1);
         if (mInvalidCharger) {
             showInvalidChargerNotification();
             mShowing = SHOWING_INVALID_CHARGER;
