@@ -2069,12 +2069,17 @@ public final class Settings {
          */
         public static final String CHINESE_DATE_VIEW = "chinese_date_view";
 
+        /**
+        * Enable navigation bar double tap gesture on to put device to sleep
+         * @hide
+         */
+        public static final String DOUBLE_TAP_SLEEP_NAVBAR = "double_tap_sleep_navbar";
 
         /**
          * @hide
          */
         public static final String SHOW_SU_ICON = "show_su_icon";
-				
+
         /**
          * Scaling factor for fonts, float.
          */
