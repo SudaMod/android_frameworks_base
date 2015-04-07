@@ -34,6 +34,7 @@ import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSLUCE
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_WARNING;
 
+import android.graphics.Color;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.TimeInterpolator;
@@ -384,6 +385,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private int mNavigationBarWindowState = WINDOW_STATE_SHOWING;
 
+    private boolean mPowerSaveState;
+
     // the tracker view
     int mTrackingPosition; // the position of the top of the tracking view.
 
@@ -465,6 +468,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.POWER_SAVE_SETTINGS), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CLOCK), false, this, UserHandle.USER_ALL);
@@ -512,6 +518,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mAutomaticBrightness = mode != Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL;
             mBrightnessControl = Settings.System.getIntForUser(
                     resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0,
+                    UserHandle.USER_CURRENT) == 1;
+            mPowerSaveState = Settings.System.getIntForUser(
+                    resolver, Settings.System.POWER_SAVE_SETTINGS, 1,
                     UserHandle.USER_CURRENT) == 1;
 
             final int oldClockLocation = mClockLocation;
@@ -3269,6 +3278,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 && !powerSave;
         if (powerSave && getBarState() == StatusBarState.SHADE) {
             mode = MODE_WARNING;
+        }
+        if (mode == MODE_WARNING && mPowerSaveState) {
+            transitions.setWarningColor(Color.parseColor("#00000000"));
         }
         transitions.transitionTo(mode, anim);
     }
