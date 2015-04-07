@@ -85,6 +85,8 @@ public class PowerNotificationWarnings implements PowerUI.WarningsUI {
     private int mBucket;
     private long mScreenOffTime;
     private int mShowing;
+    
+    private int mPowerSaveState;
 
     private long mBucketDroppedNegativeTimeMs;
 
@@ -135,13 +137,16 @@ public class PowerNotificationWarnings implements PowerUI.WarningsUI {
     private void updateNotification() {
         if (DEBUG) Slog.d(TAG, "updateNotification mWarning=" + mWarning + " mPlaySound="
                 + mPlaySound + " mSaver=" + mSaver + " mInvalidCharger=" + mInvalidCharger);
+        ContentResolver resolver = mContext.getContentResolver();
+        mPowerSaveState = Settings.System.getInt(
+                resolver, Settings.System.POWER_SAVE_SETTINGS, 1);
         if (mInvalidCharger) {
             showInvalidChargerNotification();
             mShowing = SHOWING_INVALID_CHARGER;
         } else if (mWarning) {
             showWarningNotification();
             mShowing = SHOWING_WARNING;
-        } else if (mSaver) {
+        } else if (mSaver && mPowerSaveState != 1) {
             showSaverNotification();
             mShowing = SHOWING_SAVER;
         } else {
