@@ -3430,7 +3430,7 @@ public final class Settings {
          * 1: HIGH BATTERY
          * @hide
          */
-         public static final String POWER_SAVE_SETTINGS_TRIGGER_LEVEL= "power_save_settings_battery";
+         public static final String POWER_SAVE_SETTINGS_TRIGGER_LEVEL= "power_save_settings_tigger_level";
 
         /**
          * Put on your ear, and this will automatically call current number in dialer
