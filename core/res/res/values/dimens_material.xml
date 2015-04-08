@@ -68,7 +68,7 @@
     <dimen name="text_size_display_1_material">34sp</dimen>
     <dimen name="text_size_headline_material">24sp</dimen>
     <dimen name="text_size_title_material">20sp</dimen>
-    <dimen name="text_size_subhead_material">16sp</dimen>
+    <dimen name="text_size_subhead_material">15sp</dimen>
     <dimen name="text_size_title_material_toolbar">20dp</dimen>
     <dimen name="text_size_subtitle_material_toolbar">16dp</dimen>
     <dimen name="text_size_menu_material">16sp</dimen>
