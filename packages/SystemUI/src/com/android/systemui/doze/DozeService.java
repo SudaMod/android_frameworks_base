@@ -124,6 +124,7 @@ public class DozeService extends DreamService implements ProximitySensorManager.
 
         setWindowless(true);
 
+        mDozeParameters = new DozeParameters(mContext);
         mSensors = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
         mSigMotionSensor = new TriggerSensor(Sensor.TYPE_SIGNIFICANT_MOTION,
             mDozeParameters.getPulseOnSigMotion(), mDozeParameters.getVibrateOnSigMotion());
