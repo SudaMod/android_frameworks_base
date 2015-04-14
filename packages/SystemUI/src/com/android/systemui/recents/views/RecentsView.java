@@ -106,8 +106,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         super(context, attrs, defStyleAttr, defStyleRes);
         mConfig = RecentsConfiguration.getInstance();
         mInflater = LayoutInflater.from(context);
-	mAm = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-	mTotalMem = getTotalMemory();
+        mAm = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        mTotalMem = getTotalMemory();
     }
 
     /** Sets the callbacks */
@@ -432,7 +432,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         MemoryInfo memInfo = new MemoryInfo();
         mAm.getMemoryInfo(memInfo);
             int available = (int)(memInfo.availMem / 1048576L);
-            mMemText.setText("Free RAM: " + String.valueOf(available) + "MB");
+            mMemText.setText(getResources().getString(R.string.free_ram) + ": " + String.valueOf(available) + "MB");
             mMemBar.setMax(mTotalMem);
             mMemBar.setProgress(available);
     }
@@ -494,7 +494,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                 startHideClearRecentsButtonAnimation();
 
                 dismissAllTasksAnimated();
-		updateMemoryStatus();
+                updateMemoryStatus();
             }
         });
         mMemText = (TextView) ((View)getParent()).findViewById(R.id.recents_memory_text);
@@ -740,7 +740,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         // Remove the old task from activity manager
         loader.getSystemServicesProxy().removeTask(t.key.id);
 
-	updateMemoryStatus();
+        updateMemoryStatus();
     }
 
     @Override
