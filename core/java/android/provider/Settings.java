@@ -2070,11 +2070,11 @@ public final class Settings {
          */
         public static final String DOUBLE_TAP_SLEEP_NAVBAR = "double_tap_sleep_navbar";
 
-	/**
-	* show the membar in recents
-	* @hide
-	*/
-	public static final String SYSTEMUI_RECENTS_MEM_DISPLAY = "systemui_recents_mem_display";
+        /**
+         * show the membar in recents
+         * @hide
+         */
+        public static final String SYSTEMUI_RECENTS_MEM_DISPLAY = "systemui_recents_mem_display";
 
         /**
          * Scaling factor for fonts, float.
