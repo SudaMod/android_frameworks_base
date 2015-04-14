@@ -42,6 +42,22 @@ public class SudaUtils {
         System.loadLibrary(LIBNAME);
     }
 
+    //2015年法定节假日
+    //一月
+    private static int[] JANH = {1, 2, 3};
+    //二月
+    private static int[] FEBH = {18, 19, 20, 21, 22, 23, 24};
+    //四月
+    private static int[] APRH = {4, 5, 6};
+    //五月
+    private static int[] MAYH = {1, 2, 3};
+    //六月
+    private static int[] JUNH = {20, 21, 22};
+    //九月
+    private static int[] SEPH = {26, 27};
+    //十月
+    private static int[] OCTH = {1, 2, 3, 4, 5, 6, 7};
+
     public static native boolean isSupportLanguage(boolean excludeTW);
 
     public static boolean isOnline(Context context) {
@@ -81,6 +97,60 @@ public class SudaUtils {
             return false;
         }
         return ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
+    }
+
+    public static boolean isChineseHoliday(int y, int m, int d) {
+        boolean bResult = false;
+        if( y == 2015 ){
+            switch(m) {
+                case 1:
+                  for(int tmp:JANH){
+                      if(d == tmp) bResult=true;
+                  }
+                break;
+                case 2:
+                  for(int tmp:FEBH){
+                      if(d == tmp) bResult=true;
+                  }
+                break;
+                case 3:
+                break;
+                case 4:
+                  for(int tmp:APRH){
+                      if(d == tmp) bResult=true;
+                  }
+                break;
+                case 5:
+                  for(int tmp:MAYH){
+                      if(d == tmp) bResult=true;
+                  }
+                break;
+                case 6:
+                  for(int tmp:JUNH){
+                      if(d == tmp) bResult=true;
+                  }
+                break;
+                case 7:
+                break;
+                case 8:
+                break;
+                case 9:
+                  for(int tmp:SEPH){
+                      if(d == tmp) bResult=true;
+                  }
+                break;
+                case 10:
+                  for(int tmp:OCTH){
+                      if(d == tmp) bResult=true;
+                  }
+                break;
+                case 11:
+                break;
+                case 12:
+                break;
+            }
+        }
+        return bResult;
     }
 
     public static String formatFileSize(long size) {
