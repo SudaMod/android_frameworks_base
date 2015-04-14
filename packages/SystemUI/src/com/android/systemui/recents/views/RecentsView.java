@@ -432,23 +432,34 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         MemoryInfo memInfo = new MemoryInfo();
         mAm.getMemoryInfo(memInfo);
             int available = (int)(memInfo.availMem / 1048576L);
-            mMemText.setText(getResources().getString(R.string.free_ram) + ": " + String.valueOf(available) + "MB");
+            mMemText.setText( available + "/" + mTotalMem + "MB");
             mMemBar.setMax(mTotalMem);
             mMemBar.setProgress(available);
     }
 
-    public int getTotalMemory() {
-        int memory = 0;
+    private int getTotalMemory() {
+        int result = 0;
         try {
+            /* /proc/meminfo entries follow this format:
+             * MemTotal:         362096 kB
+             * MemFree:           29144 kB
+             * Buffers:            5236 kB
+             * Cached:            81652 kB
+             */
             final FileReader localFileReader = new FileReader("/proc/meminfo");
             final BufferedReader localBufferedReader = new BufferedReader(localFileReader, 8192);
-            String str2 = localBufferedReader.readLine(); // meminfo
-            String[] arrayOfString = str2.split("\\s+");
-            memory = Integer.valueOf(arrayOfString[1]).intValue() * 1024;
-            localBufferedReader.close();
+
+            String firstLine = localBufferedReader.readLine(); // meminfo
+            if (firstLine != null) {
+                String parts[] = firstLine.split("\\s+");
+                if (parts.length == 3) {
+                    result = Integer.parseInt(parts[1]) / 1024;
+                }
+            }
         } catch (IOException e) {
-        }
-        return memory / 1048576;
+            }
+
+        return result;
     }
 
     public void noUserInteraction() {
