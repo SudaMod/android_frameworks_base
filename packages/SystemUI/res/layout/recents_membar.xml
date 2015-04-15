@@ -15,14 +15,14 @@
 -->
 
 <!-- This expects to be included inside a RelativeLayout -->
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/recents_membar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    android:layout_gravity="top"
+    android:layout_gravity="bottom"
     android:elevation="@dimen/floating_action_button_translation_z">
 
     <ProgressBar android:id="@+id/recents_memory_bar"
@@ -43,4 +43,4 @@
         android:layout_marginRight="5dp"
         android:layout_marginLeft="25dp"
         />
-</LinearLayout>
+</FrameLayout>
