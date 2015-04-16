@@ -409,6 +409,11 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         mAm.getMemoryInfo(memInfo);
             int available = (int)(memInfo.availMem / 1048576L);
             int use = mTotalMem - available;
+            if (use > (int)(mTotalMem * 0.75)) {
+                mMemBar.setProgressDrawable(getResources().getDrawable(R.drawable.ram_warn));
+            } else {
+                mMemBar.setProgressDrawable(getResources().getDrawable(R.drawable.ram_normal));
+            }
             mMemText.setText( available + getResources().getString(R.string.ram_left) + "/" + mTotalMem + "M");
             mMemBar.setMax(mTotalMem);
             mMemBar.setProgress(use);
