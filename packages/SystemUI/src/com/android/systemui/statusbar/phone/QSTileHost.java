@@ -58,6 +58,7 @@ import com.android.systemui.qs.tiles.NightModeTile;
 import com.android.systemui.qs.tiles.ProfilesTile;
 import com.android.systemui.qs.tiles.PerfProfileTile;
 import com.android.systemui.qs.tiles.RoamingTile;
+import com.android.systemui.qs.tiles.RotationLockTile;
 import com.android.systemui.qs.tiles.ScreenshotTile;
 import com.android.systemui.qs.tiles.UsbTetherTile;
 import com.android.systemui.qs.tiles.VisualizerTile;
@@ -288,7 +289,7 @@ public class QSTileHost implements QSTile.Host {
             case QSConstants.TILE_AIRPLANE:
                 return new AirplaneModeTile(this);
             case QSConstants.TILE_ROTATION:
-                return new RotationLockTile(this);
+		return new RotationLockTile(this);
             case QSConstants.TILE_FLASHLIGHT:
                 return new FlashlightTile(this);
             case QSConstants.TILE_LOCATION:
