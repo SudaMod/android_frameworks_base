@@ -28,6 +28,7 @@ import android.content.ContentResolver;
 import android.content.res.Resources;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -402,13 +403,15 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     private void updateMemoryStatus() {
         MemoryInfo memInfo = new MemoryInfo();
         mAm.getMemoryInfo(memInfo);
-            int available = (int)(memInfo.availMem / 1048576L);
-            int use = mTotalMem - available;
-            int percent = (int)((use * 100) / mTotalMem);
-            if (use > (int)(mTotalMem * 0.75)) {
-            } else {
-            }
-            mClearRecents.setText( percent + "%");
+        int available = (int)(memInfo.availMem / 1048576L);
+        int use = mTotalMem - available;
+        int percent = (int)((use * 100) / mTotalMem);
+        if (percent < 80) {
+            mClearRecents.setTextColor(Color.parseColor("#00000000"));
+        } else {
+            mClearRecents.setTextColor(Color.parseColor("#ffff4444"));
+        }
+        mClearRecents.setText( percent + "%");
     }
 
     private int getTotalMemory() {
@@ -430,8 +433,9 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                     result = Integer.parseInt(parts[1]) / 1024;
                 }
             }
+            localBufferedReader.close();
         } catch (IOException e) {
-            }
+        }
 
         return result;
     }
