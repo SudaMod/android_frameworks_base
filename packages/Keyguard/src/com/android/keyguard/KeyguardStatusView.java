@@ -189,7 +189,7 @@ public class KeyguardStatusView extends GridLayout implements
 
         refreshTime();
         refreshAlarmStatus(nextAlarm);
-	updateWeatherSettings(false);
+        updateWeatherSettings(false);
     }
 
     void refreshAlarmStatus(AlarmManager.AlarmClockInfo nextAlarm) {
@@ -230,15 +230,15 @@ public class KeyguardStatusView extends GridLayout implements
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         KeyguardUpdateMonitor.getInstance(mContext).registerCallback(mInfoCallback);
-	updateWeatherSettings(false);
-	mWeatherController.addCallback(this);
+        updateWeatherSettings(false);
+        mWeatherController.addCallback(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         KeyguardUpdateMonitor.getInstance(mContext).removeCallback(mInfoCallback);
-	mWeatherController.removeCallback(this);
+        mWeatherController.removeCallback(this);
     }
 
     public int getAppWidgetId() {
