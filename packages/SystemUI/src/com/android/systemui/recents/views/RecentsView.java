@@ -40,8 +40,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.Button;
 import com.android.systemui.recents.Constants;
 import com.android.systemui.recents.RecentsConfiguration;
 import com.android.systemui.recents.misc.SystemServicesProxy;
@@ -83,11 +82,9 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     ArrayList<TaskStack> mStacks;
     View mSearchBar;
     RecentsViewCallbacks mCb;
-    View mClearRecents;
+    Button mClearRecents;
     View mFloatingButton;
     boolean mAlreadyLaunchingTask;
-    TextView mMemText;
-    ProgressBar mMemBar;
 
     private ActivityManager mAm;
     private int mTotalMem;
@@ -321,14 +318,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                     MeasureSpec.makeMeasureSpec(searchBarSpaceBounds.width(), MeasureSpec.EXACTLY),
                     MeasureSpec.makeMeasureSpec(searchBarSpaceBounds.height(), MeasureSpec.EXACTLY));
 
-            boolean enableMemDisplay = Settings.System.getInt(resolver,
-                    Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 1) == 1;
-            int padding = enableMemDisplay
-                    ? searchBarSpaceBounds.height() + 25
-                    : mContext.getResources().getDimensionPixelSize(R.dimen.status_bar_header_height);
-            mMemBar.setPadding(0, padding, 0, 0);
         }
-        showMemDisplay();
 
         boolean showClearAllRecents = Settings.System.getInt(resolver,
                 Settings.System.SHOW_CLEAR_ALL_RECENTS, 1) == 1;
@@ -385,38 +375,16 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         setMeasuredDimension(width, height);
     }
 
-    private boolean showMemDisplay() {
-        boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
-
-        if (!enableMemDisplay) {
-            mMemText.setVisibility(View.GONE);
-            mMemBar.setVisibility(View.GONE);
-            return false;
-        }
-        mMemText.setVisibility(View.VISIBLE);
-        mMemBar.setVisibility(View.VISIBLE);
-
-        updateMemoryStatus();
-        return true;
-    }
-
     private void updateMemoryStatus() {
-        if (mMemText.getVisibility() == View.GONE
-                || mMemBar.getVisibility() == View.GONE) return;
-
         MemoryInfo memInfo = new MemoryInfo();
         mAm.getMemoryInfo(memInfo);
             int available = (int)(memInfo.availMem / 1048576L);
             int use = mTotalMem - available;
+            int percent = (int)((use * 100) / mTotalMem);
             if (use > (int)(mTotalMem * 0.75)) {
-                mMemBar.setProgressDrawable(getResources().getDrawable(R.drawable.ram_warn));
             } else {
-                mMemBar.setProgressDrawable(getResources().getDrawable(R.drawable.ram_normal));
             }
-            mMemText.setText( available + getResources().getString(R.string.ram_left) + "/" + mTotalMem + "M");
-            mMemBar.setMax(mTotalMem);
-            mMemBar.setProgress(use);
+            mClearRecents.setText( percent + "%");
     }
 
     private int getTotalMemory() {
@@ -476,7 +444,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     protected void onAttachedToWindow () {
         super.onAttachedToWindow();
         mFloatingButton = ((View)getParent()).findViewById(R.id.floating_action_button);
-        mClearRecents = ((View)getParent()).findViewById(R.id.clear_recents);
+        mClearRecents = (Button)((View)getParent()).findViewById(R.id.clear_recents);
+        updateMemoryStatus();
         mClearRecents.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (mFloatingButton.getAlpha() != 1f) {
@@ -490,8 +459,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                 updateMemoryStatus();
             }
         });
-        mMemText = (TextView) ((View)getParent()).findViewById(R.id.recents_memory_text);
-        mMemBar = (ProgressBar) ((View)getParent()).findViewById(R.id.recents_memory_bar);
     }
 
     /**
