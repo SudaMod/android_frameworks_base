@@ -33,8 +33,6 @@
         android:layout_height="match_parent"
         android:focusable="true" />
 
-    <include layout="@layout/recents_membar" />
-
     <!-- Empty View -->
     <ViewStub android:id="@+id/empty_view_stub"
            android:layout="@layout/recents_empty"
