@@ -407,7 +407,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         int use = mTotalMem - available;
         int percent = (int)((use * 100) / mTotalMem);
         if (percent < 80) {
-            mClearRecents.setTextColor(Color.parseColor("#00000000"));
+            mClearRecents.setTextColor(Color.parseColor("#ffffffff"));
         } else {
             mClearRecents.setTextColor(Color.parseColor("#ffff4444"));
         }
