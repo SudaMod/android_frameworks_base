@@ -16,6 +16,7 @@
 
 package com.android.systemui.recents.views;
 
+import android.animation.ValueAnimator;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.animation.Animator;
@@ -89,6 +90,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
 
     private ActivityManager mAm;
     private int mTotalMem;
+    private MemoryInfo memInfo;
 
     public RecentsView(Context context) {
         super(context);
@@ -272,6 +274,21 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         }
     }
 
+    public void startRefreshRecentsButtonAnimation() {
+        if (mFloatingButton != null) {
+            ValueAnimator valueAnimator = ValueAnimator.ofInt(0, getCurrentMemoryPercent());
+            valueAnimator.setDuration(500);
+            valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                        mClearRecents.setText(valueAnimator.getAnimatedValue()
+                                                           .toString() + "%");
+                    }
+                });
+            valueAnimator.start();
+        }
+    }
+
     /** Adds the search bar */
     public void setSearchBar(View searchBar) {
         // Create the search bar (and hide it if we have no recent tasks)
@@ -320,6 +337,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                     MeasureSpec.makeMeasureSpec(searchBarSpaceBounds.height(), MeasureSpec.EXACTLY));
 
         }
+
+        updateMemoryStatus();
 
         boolean showClearAllRecents = Settings.System.getInt(resolver,
                 Settings.System.SHOW_CLEAR_ALL_RECENTS, 1) == 1;
@@ -377,17 +396,24 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     }
 
     private void updateMemoryStatus() {
-        MemoryInfo memInfo = new MemoryInfo();
-        mAm.getMemoryInfo(memInfo);
-        int available = (int)(memInfo.availMem / 1048576L);
-        int use = mTotalMem - available;
-        int percent = (int)((use * 100) / mTotalMem);
+        int percent = getCurrentMemoryPercent();
         if (percent < 80) {
-            mClearRecents.setTextColor(Color.parseColor("#00000000"));
+            mClearRecents.setTextColor(Color.parseColor("#ffffffff"));
         } else {
             mClearRecents.setTextColor(Color.parseColor("#ffff4444"));
         }
         mClearRecents.setText( percent + "%");
+    }
+
+    private int getCurrentMemoryPercent() {
+        if (memInfo != null) {
+            memInfo = null;
+        }
+        memInfo = new MemoryInfo();
+        mAm.getMemoryInfo(memInfo);
+        int available = (int)(memInfo.availMem / 1048576L);
+        int use = mTotalMem - available;
+        return (int)((use * 100) / mTotalMem);
     }
 
     private int getTotalMemory() {
@@ -400,7 +426,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
              * Cached:            81652 kB
              */
             final FileReader localFileReader = new FileReader("/proc/meminfo");
-            final BufferedReader localBufferedReader = new BufferedReader(localFileReader, 8192);
+            final BufferedReader localBufferedReader = new BufferedReader(localFileReader, 256);
 
             String firstLine = localBufferedReader.readLine(); // meminfo
             if (firstLine != null) {
@@ -449,7 +475,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         super.onAttachedToWindow();
         mFloatingButton = ((View)getParent()).findViewById(R.id.floating_action_button);
         mClearRecents = (Button)((View)getParent()).findViewById(R.id.clear_recents);
-        updateMemoryStatus();
         mClearRecents.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (mFloatingButton.getAlpha() != 1f) {
@@ -457,10 +482,10 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                 }
 
                 // Hide clear recents button before dismiss all tasks
-                startHideClearRecentsButtonAnimation();
+                //startHideClearRecentsButtonAnimation();
 
                 clearRecents();
-                updateMemoryStatus();
+                startRefreshRecentsButtonAnimation();
             }
         });
     }
