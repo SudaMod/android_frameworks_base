@@ -136,6 +136,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mHasTelephony;
     private boolean mHasVibrator;
     private final boolean mShowSilentToggle;
+    private final boolean mShowScreenRecord;
     private Profile mChosenProfile;
 
     // Power menu customizations
@@ -180,6 +181,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 com.android.internal.R.bool.config_useFixedVolume);
 
         updatePowerMenuActions();
+
+        mShowScreenRecord = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_enableScreenrecordChord);
     }
 
     /**
@@ -319,6 +323,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mItems.add(new RebootAction());
             } else if (GLOBAL_ACTION_KEY_SCREENSHOT.equals(actionKey)) {
                 mItems.add(getScreenshotAction());
+            } else if (GLOBAL_ACTION_KEY_SCREENRECORD.equals(actionKey)) {
+                if (mShowScreenRecord) {
+                    mItems.add(getScreenRecordAction());
+                }
             } else if (GLOBAL_ACTION_KEY_AIRPLANE.equals(actionKey)) {
                 mItems.add(mAirplaneModeOn);
             } else if (GLOBAL_ACTION_KEY_BUGREPORT.equals(actionKey)) {
@@ -549,6 +557,28 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
             public void onPress() {
                 takeScreenshot();
+            }
+
+            public boolean showDuringKeyguard() {
+                return true;
+            }
+
+            public boolean showBeforeProvisioning() {
+                return true;
+            }
+        };
+    }
+
+    private Action getScreenRecordAction() {
+        return new SinglePressAction(com.android.internal.R.drawable.ic_lock_screen_record,
+                R.string.global_action_screen_record) {
+
+            public void onPress() {
+                toggleScreenRecord();
+            }
+
+            public boolean onLongPress() {
+                return false;
             }
 
             public boolean showDuringKeyguard() {
@@ -810,6 +840,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mHandler.postDelayed(mScreenshotTimeout, 10000);
             }
         }
+    }
+
+    private void toggleScreenRecord() {
+        final Intent recordIntent = new Intent("org.chameleonos.action.NOTIFY_RECORD_SERVICE");
+        mContext.sendBroadcast(recordIntent, Manifest.permission.RECORD_SCREEN);
     }
 
     private void prepareDialog() {
