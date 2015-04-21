@@ -17,4 +17,5 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="quick_settings_nightmode">NightMode</string>
   <string name="quick_settings_screenshot">Screenshot</string>
+  <string name="headset_enabled">Headset Enabled.</string>
 </resources>
