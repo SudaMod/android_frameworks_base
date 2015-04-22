@@ -120,7 +120,7 @@ public class PhoneStatusBarPolicy {
                 updateAlarm();
             }
             else if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
-                updateHeadset(intent);
+                //updateHeadset(intent);
             }
         }
     };
