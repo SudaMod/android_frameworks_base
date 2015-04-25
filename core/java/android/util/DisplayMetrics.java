@@ -124,9 +124,7 @@ public class DisplayMetrics {
     @Deprecated
     public static int DENSITY_DEVICE;
 
-    /**
-     * @hide
-     */
+    /** @hide */
     public static int DENSITY_CURRENT;
 
     static {
@@ -224,9 +222,7 @@ public class DisplayMetrics {
      */
     public float noncompatYdpi;
 
-    /**
-     * @hide
-     */
+    /** @hide */
     public void updateDensity() {
         density = DENSITY_CURRENT / (float) DENSITY_DEFAULT;
         densityDpi = DENSITY_CURRENT;
@@ -332,9 +328,7 @@ public class DisplayMetrics {
             ", xdpi=" + xdpi + ", ydpi=" + ydpi + "}";
     }
 
-    /**
-     * @hide
-     */
+    /** @hide */
     public static int getDeviceDensity() {
         return DENSITY_CURRENT;
     }
