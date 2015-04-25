@@ -148,7 +148,7 @@ public class PowerNotificationWarnings implements PowerUI.WarningsUI {
             showSaverNotification();
             mShowing = SHOWING_SAVER;
         } else {
-            mNoMan.cancel(TAG_NOTIFICATION, ID_NOTIFICATION);
+            mNoMan.cancelAsUser(TAG_NOTIFICATION, ID_NOTIFICATION, UserHandle.ALL);
             mShowing = SHOWING_NOTHING;
         }
     }
