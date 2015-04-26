@@ -402,13 +402,13 @@ public class PhoneStatusBarPolicy {
             }
         break;
         case 1:
-            if (mic == 1) {
-                mService.setIcon("headset", R.drawable.stat_sys_headset_mic, 0,
-                    mContext.getResources().getString(R.string.headset_enabled));
-            } else {
+            //if (mic == 1) {
+            //    mService.setIcon("headset", R.drawable.stat_sys_headset_mic, 0,
+             //       mContext.getResources().getString(R.string.headset_enabled));
+            //} else {
                 mService.setIcon("headset", R.drawable.stat_sys_headset, 0,
                     mContext.getResources().getString(R.string.headset_enabled));
-            }
+           // }
             mService.setIconVisibility("headset", true);
         break;
         }
