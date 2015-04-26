@@ -19,9 +19,9 @@ package com.android.systemui.qs.tiles;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-import android.provider.Settings.Global;
+import android.provider.Settings.System;
 
-import com.android.systemui.qs.GlobalSetting;
+import com.android.systemui.qs.SystemSetting;
 import com.android.systemui.qs.QSTile;
 import com.android.systemui.R;
 
@@ -30,12 +30,12 @@ public class HeadsUpTile extends QSTile<QSTile.BooleanState> {
 
     private static final Intent NOTIFICATION_SETTINGS = new Intent("android.settings.NOTIFICATION_MANAGER");
 
-    private final GlobalSetting mSetting;
+    private final SystemSetting mSetting;
 
     public HeadsUpTile(Host host) {
         super(host);
 
-        mSetting = new GlobalSetting(mContext, mHandler, Global.HEADS_UP_NOTIFICATIONS_ENABLED) {
+        mSetting = new SystemSetting(mContext, mHandler, System.HEADS_UP_NOTIFICATION) {
             @Override
             protected void handleValueChanged(int value) {
                 handleRefreshState(value);
@@ -60,8 +60,8 @@ public class HeadsUpTile extends QSTile<QSTile.BooleanState> {
     }
 
     private void setEnabled(boolean enabled) {
-        Settings.Global.putInt(mContext.getContentResolver(),
-                Settings.Global.HEADS_UP_NOTIFICATIONS_ENABLED,
+        Settings.System.putInt(mContext.getContentResolver(),
+                Settings.System.HEADS_UP_NOTIFICATION,
                 enabled ? 1 : 0);
     }
 
