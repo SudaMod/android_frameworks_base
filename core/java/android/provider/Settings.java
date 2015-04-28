@@ -3707,6 +3707,12 @@ public final class Settings {
         public static final String SHOW_CLEAR_ALL_RECENTS = "show_clear_all_recents";
 
         /**
+         * Clean recent by shake
+         * @hide
+         */
+        public static final String SHAKE_CLEAN_RECENT = "shake_clean_recent";
+
+        /**
          * location of the clear all rectents button
          * @hide
          */
