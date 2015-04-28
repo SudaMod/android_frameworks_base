@@ -948,11 +948,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     @Override
     public synchronized void onShake() {
-       if (mShakeClean) {
+       if (mExpandedVisible && mShakeClean) {
            clearAllNotifications();
        }
     }
-
 
     // ================================================================================
     // Constructing the view
