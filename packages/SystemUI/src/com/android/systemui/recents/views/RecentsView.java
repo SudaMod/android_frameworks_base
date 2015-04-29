@@ -121,7 +121,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         if (enableShakeClean && enableShakeCleanByUser) {
             startRefreshRecentsButtonAnimation();
             dismissAllTasksAnimated();
-            enableShakeClean = false;
        }
     }
 
