@@ -1358,10 +1358,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private void interceptScreenRecordChord() {
         if (mScreenRecordChordEnabled
-                && mVolumeUpKeyTriggered && mPowerKeyTriggered && !mVolumeDownKeyTriggered) {
+                && mVolumeUpKeyTriggered && mScreenshotChordPowerKeyTriggered && !mScreenshotChordVolumeDownKeyTriggered) {
             final long now = SystemClock.uptimeMillis();
             if (now <= mVolumeUpKeyTime + SCREENSHOT_CHORD_DEBOUNCE_DELAY_MILLIS
-                    && now <= mPowerKeyTime + SCREENSHOT_CHORD_DEBOUNCE_DELAY_MILLIS) {
+                    && now <= mScreenshotChordPowerKeyTime + SCREENSHOT_CHORD_DEBOUNCE_DELAY_MILLIS) {
                 mVolumeUpKeyConsumedByScreenRecordChord = true;
                 cancelPendingPowerKeyAction();
 
@@ -5527,6 +5527,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             mVolumeUpKeyConsumedByScreenshotChord = false;
                             mScreenshotChordVolumeUpKeyTriggered = true;
                             cancelPendingPowerKeyAction();
+                            cancelPendingScreenshotChordAction();
                             interceptScreenshotLog();
                             interceptScreenRecordChord();
                         }
