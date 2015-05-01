@@ -116,14 +116,12 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
 
     @Override
     public synchronized void onShake() {
-        if (enableShakeCleanByUser) {
-            startRefreshRecentsButtonAnimation();
-            dismissAllTasksAnimated();
-       }
+        dismissAllTasksAnimated();
+        startRefreshRecentsButtonAnimation();
     }
 
     public void enableShake(Boolean enableShakeClean) {
-        if (enableShakeClean) {
+        if (enableShakeClean && enableShakeCleanByUser) {
             mShakeSensorManager.enable(20);
         } else {
             mShakeSensorManager.disable();

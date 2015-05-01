@@ -316,7 +316,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private PointF mScreenOnTouchLocation;
 
     private ShakeSensorManager mShakeSensorManager;
-    private Boolean mShakeClean;
+    private Boolean enableShakeCleanByUser;
 
     int mPixelFormat;
     Object mQueueLock = new Object();
@@ -529,7 +529,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mPowerSaveState = Settings.System.getIntForUser(
                     resolver, Settings.System.POWER_SAVE_SETTINGS, 1,
                     UserHandle.USER_CURRENT) == 1;
-            mShakeClean = Settings.System.getIntForUser(
+            enableShakeCleanByUser = Settings.System.getIntForUser(
                     resolver, Settings.System.SHAKE_CLEAN_NOTIFICATION, 1,
                     UserHandle.USER_CURRENT) == 1;
 
@@ -948,13 +948,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     @Override
     public synchronized void onShake() {
-       if (mShakeClean) {
-           clearAllNotifications();
-       }
+        clearAllNotifications();
     }
 
     public void enableShake(Boolean enableShakeClean) {
-        if (enableShakeClean) {
+        if (enableShakeClean && enableShakeCleanByUser) {
             mShakeSensorManager.enable(20);
         } else {
             mShakeSensorManager.disable();
