@@ -91,7 +91,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     private int mTotalMem;
     private MemoryInfo memInfo;
     private ShakeSensorManager mShakeSensorManager;
-    private Boolean enableShakeClean; 
     private Boolean enableShakeCleanByUser; 
 
     public RecentsView(Context context) {
@@ -113,19 +112,22 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         mShakeSensorManager = new ShakeSensorManager(mContext, this);
         mAm = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
         mTotalMem = getTotalMemory();
-        mShakeSensorManager.enable(20);
     }
 
     @Override
     public synchronized void onShake() {
-        if (enableShakeClean && enableShakeCleanByUser) {
+        if (enableShakeCleanByUser) {
             startRefreshRecentsButtonAnimation();
             dismissAllTasksAnimated();
        }
     }
 
-    public void enableShake (Boolean enableShakeClean) {
-        this.enableShakeClean = enableShakeClean;
+    public void enableShake(Boolean enableShakeClean) {
+        if (enableShakeClean) {
+            mShakeSensorManager.enable(20);
+        } else {
+            mShakeSensorManager.disable();
+        }
     }
 
     /** Sets the callbacks */
@@ -506,7 +508,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
 
     public void endFABanimation() {
         // Animate the action button away
-        enableShakeClean = false;
+        enableShake(false);
         mFloatingButton = ((View)getParent()).findViewById(R.id.floating_action_button);
         mFloatingButton.animate().alpha(0f)
                 .setStartDelay(0)

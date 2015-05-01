@@ -948,9 +948,17 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     @Override
     public synchronized void onShake() {
-       if (mExpandedVisible && mShakeClean) {
+       if (mShakeClean) {
            clearAllNotifications();
        }
+    }
+
+    public void enableShake(Boolean enableShakeClean) {
+        if (enableShakeClean) {
+            mShakeSensorManager.enable(20);
+        } else {
+            mShakeSensorManager.disable();
+        }
     }
 
     // ================================================================================
@@ -2786,6 +2794,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         mExpandedVisible = true;
+        enableShake(true);
         if (mNavigationBarView != null)
             mNavigationBarView.setSlippery(true);
 
@@ -2966,6 +2975,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mNotificationPanel.closeQs();
 
         mExpandedVisible = false;
+        enableShake(false);
         if (mNavigationBarView != null)
             mNavigationBarView.setSlippery(false);
         visibilityChanged(false);
