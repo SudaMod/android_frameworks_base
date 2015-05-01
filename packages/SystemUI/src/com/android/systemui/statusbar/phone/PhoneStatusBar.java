@@ -951,7 +951,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         clearAllNotifications();
     }
 
-    public void enableShake(Boolean enableShakeClean) {
+    public void enableShake(boolean enableShakeClean) {
         if (enableShakeClean && enableShakeCleanByUser) {
             mShakeSensorManager.enable(20);
         } else {

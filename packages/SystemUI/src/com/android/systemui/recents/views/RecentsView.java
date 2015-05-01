@@ -91,7 +91,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     private int mTotalMem;
     private MemoryInfo memInfo;
     private ShakeSensorManager mShakeSensorManager;
-    private Boolean enableShakeCleanByUser; 
 
     public RecentsView(Context context) {
         super(context);
@@ -109,9 +108,9 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         super(context, attrs, defStyleAttr, defStyleRes);
         mConfig = RecentsConfiguration.getInstance();
         mInflater = LayoutInflater.from(context);
-        mShakeSensorManager = new ShakeSensorManager(mContext, this);
         mAm = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
         mTotalMem = getTotalMemory();
+        mShakeSensorManager = new ShakeSensorManager(mContext, this);
     }
 
     @Override
@@ -120,8 +119,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         startRefreshRecentsButtonAnimation();
     }
 
-    public void enableShake(Boolean enableShakeClean) {
-        if (enableShakeClean && enableShakeCleanByUser) {
+    public void enableShake(boolean enableShakeClean) {
+        if (enableShakeClean) {
             mShakeSensorManager.enable(20);
         } else {
             mShakeSensorManager.disable();
@@ -379,9 +378,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                     MeasureSpec.makeMeasureSpec(searchBarSpaceBounds.height(), MeasureSpec.EXACTLY));
 
         }
-
-        enableShakeCleanByUser = Settings.System.getInt(resolver,
-                Settings.System.SHAKE_CLEAN_RECENT, 1) == 1;
 
         updateMemoryStatus();
 
