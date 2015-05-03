@@ -952,7 +952,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     public void enableShake(boolean enableShakeClean) {
-        if (enableShakeClean && enableShakeCleanByUser) {
+        if (enableShakeClean && enableShakeCleanByUser && mScreenOnFromKeyguard) {
             mShakeSensorManager.enable(20);
         } else {
             mShakeSensorManager.disable();
