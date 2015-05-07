@@ -507,6 +507,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mAutomaticBrightness = mode != Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL;
             mBrightnessControl = Settings.System.getIntForUser(
                     resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0,
+                    UserHandle.USER_CURRENT) == 1;
             enableShakeCleanByUser = Settings.System.getIntForUser(
                     resolver, Settings.System.SHAKE_CLEAN_NOTIFICATION, 1,
                     UserHandle.USER_CURRENT) == 1;
