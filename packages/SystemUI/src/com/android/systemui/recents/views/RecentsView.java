@@ -50,6 +50,7 @@ import com.android.systemui.recents.model.RecentsPackageMonitor;
 import com.android.systemui.recents.model.RecentsTaskLoader;
 import com.android.systemui.recents.model.Task;
 import com.android.systemui.recents.model.TaskStack;
+import com.android.systemui.doze.ShakeSensorManager;
 
 import com.android.systemui.R;
 
@@ -66,7 +67,7 @@ import java.util.HashSet;
  * to their SpaceNode bounds.
  */
 public class RecentsView extends FrameLayout implements TaskStackView.TaskStackViewCallbacks,
-        RecentsPackageMonitor.PackageCallbacks {
+        RecentsPackageMonitor.PackageCallbacks,ShakeSensorManager.ShakeListener {
 
     /** The RecentsView callbacks */
     public interface RecentsViewCallbacks {
@@ -87,6 +88,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     View mFloatingButton;
     boolean mAlreadyLaunchingTask;
 
+    private ShakeSensorManager mShakeSensorManager;
 
     public RecentsView(Context context) {
         super(context);
@@ -104,6 +106,21 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         super(context, attrs, defStyleAttr, defStyleRes);
         mConfig = RecentsConfiguration.getInstance();
         mInflater = LayoutInflater.from(context);
+        mShakeSensorManager = new ShakeSensorManager(mContext, this);
+    }
+
+    @Override
+    public synchronized void onShake() {
+        dismissAllTasksAnimated();
+        startRefreshRecentsButtonAnimation();
+    }
+
+    public void enableShake(boolean enableShakeClean) {
+        if (enableShakeClean) {
+            mShakeSensorManager.enable(20);
+        } else {
+            mShakeSensorManager.disable();
+        }
     }
 
     /** Sets the callbacks */
@@ -392,6 +409,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
 
     public void endFABanimation() {
         // Animate the action button away
+        enableShake(false);
         mFloatingButton = ((View)getParent()).findViewById(R.id.floating_action_button);
         mFloatingButton.animate().alpha(0f)
                 .setStartDelay(0)
@@ -604,6 +622,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         final Runnable launchRunnable = new Runnable() {
             @Override
             public void run() {
+                enableShake(false);
                 if (task.isActive) {
                     // Bring an active task to the foreground
                     ssp.moveTaskToFront(task.key.id, launchOpts);
