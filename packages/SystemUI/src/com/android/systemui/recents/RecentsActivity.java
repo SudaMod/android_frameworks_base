@@ -251,11 +251,18 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
             }
             mRecentsView.enableShake(false);
             mEmptyView.setVisibility(View.VISIBLE);
+            mEmptyView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dismissRecentsToHome(true);
+                }
+            });
             mRecentsView.setSearchBarVisibility(View.GONE);
             findViewById(R.id.floating_action_button).setVisibility(View.GONE);
         } else {
             if (mEmptyView != null) {
                 mEmptyView.setVisibility(View.GONE);
+                mEmptyView.setOnClickListener(null);
             }
             mRecentsView.enableShake(true && enableShakeCleanByUser);
             findViewById(R.id.floating_action_button).setVisibility(View.VISIBLE);
