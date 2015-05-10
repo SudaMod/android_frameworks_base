@@ -23,10 +23,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Settings;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -80,15 +82,15 @@ public class NightModeService extends SystemUI {
     }
 
     public void ScreenviewInit() {
-        localWindowManager = (WindowManager) mContext.getSystemService("window");
-        mParams.type = 2006;
+        localWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        mParams.type = LayoutParams.TYPE_SYSTEM_OVERLAY;
         mParams.flags = 280;
-        mParams.format = 1;
-        mParams.gravity = 51;
+        mParams.format = PixelFormat.RGBA_8888;
+        mParams.gravity = Gravity.LEFT | Gravity.TOP;
         mParams.x = 0;
         mParams.y = 0;
-        mParams.width = -1;
-        mParams.height = -1;
+        mParams.width = LayoutParams.FILL_PARENT;
+        mParams.height = LayoutParams.FILL_PARENT;
         view = new View(mContext);
         view.setFocusable(false);
         view.setFocusableInTouchMode(false);
@@ -109,7 +111,7 @@ public class NightModeService extends SystemUI {
                 view.setBackgroundColor(Color.argb(100, 255, 0, 0));
                 break;
             case 3:
-                view.setBackgroundColor(Color.argb(80, 255, 255, 0));
+                view.setBackgroundColor(Color.argb(60, 255, 255, 0));
                 break;
         }
         localWindowManager.addView(view, mParams);
