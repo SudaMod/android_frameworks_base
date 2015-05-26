@@ -67,12 +67,12 @@ public final class PhoneLocation {
         return getPosFromPhone(number, 0);
     }
 
-    public static String getCityFromPhone(CharSequence number) {
+    public static String getCityFromPhone(String number) {
         if (TextUtils.isEmpty(number)) return "";
 	String phoneLocation;
 	if(isFamily(number.toString())){
 		phoneLocation = "亲情号码";}else{
-	        phoneLocation = getPosFromPhone(number.toString().replaceAll("(?:-| )", ""), 1);
+	        phoneLocation = getPosFromPhone(number.replaceAll("(?:-| )", ""), 1);
 	}
         return (TextUtils.isEmpty(phoneLocation) ? "" : phoneLocation);
     }
