@@ -942,11 +942,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         updateCustomRecentsLongPressHandler(true);
     }
 
-<<<<<<< HEAD
-    boolean isMSim() {
-        return (TelephonyManager.getDefault().getPhoneCount() > 1);
-    }
-
     @Override
     public synchronized void onShake() {
         clearAllNotifications();
@@ -960,8 +955,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     }
 
-=======
->>>>>>> aab323eabe38b678f95e8786e6c3a883c3eb2c58
     // ================================================================================
     // Constructing the view
     // ================================================================================

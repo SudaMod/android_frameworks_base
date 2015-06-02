@@ -39,11 +39,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-<<<<<<< HEAD
-import android.os.UserHandle;
-=======
 import android.os.SystemProperties;
->>>>>>> aab323eabe38b678f95e8786e6c3a883c3eb2c58
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
@@ -53,10 +50,7 @@ import android.telephony.SubscriptionManager;
 import android.telephony.SubscriptionManager.OnSubscriptionsChangedListener;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-<<<<<<< HEAD
-=======
 import android.text.format.DateFormat;
->>>>>>> aab323eabe38b678f95e8786e6c3a883c3eb2c58
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -130,7 +124,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
     private final BitSet mValidatedTransports = new BitSet();
 
     // States that don't belong to a subcontroller.
-    private boolean mAirplaneMode = false;
+    private static boolean mAirplaneMode = false;
     private boolean mHasNoSims;
     private Locale mLocale = null;
     // This list holds our ordering.
@@ -149,6 +143,11 @@ public class NetworkControllerImpl extends BroadcastReceiver
 
     // The current user ID.
     private int mCurrentUserId;
+
+    private static String mSpn;
+    private static String mPlmn;
+    private static boolean mShowSpn = false;
+    private static boolean mShowPlmn = false;
 
     /**
      * Construct this controller object and register for updates.
@@ -218,6 +217,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
         filter.addAction(TelephonyIntents.SPN_STRINGS_UPDATED_ACTION);
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION_IMMEDIATE);
         filter.addAction(ConnectivityManager.INET_CONDITION_ACTION);
+        filter.addAction(Intent.ACTION_CUSTOM_CARRIER_LABEL_CHANGED);
         filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
         mContext.registerReceiver(this, filter);
@@ -436,71 +436,6 @@ public class NetworkControllerImpl extends BroadcastReceiver
         refreshCarrierLabel();
     }
 
-<<<<<<< HEAD
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        final String action = intent.getAction();
-        if (action.equals(WifiManager.RSSI_CHANGED_ACTION)
-                || action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)
-                || action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-            updateWifiState(intent);
-            refreshViews();
-        } else if (action.equals(TelephonyIntents.ACTION_SIM_STATE_CHANGED)) {
-            updateSimState(intent);
-            updateDataIcon();
-            refreshViews();
-        } else if (action.equals(TelephonyIntents.SPN_STRINGS_UPDATED_ACTION)) {
-            mShowSpn = intent.getBooleanExtra(TelephonyIntents.EXTRA_SHOW_SPN, false);
-            mShowPlmn = intent.getBooleanExtra(TelephonyIntents.EXTRA_SHOW_PLMN, false);
-            mSpn = intent.getStringExtra(TelephonyIntents.EXTRA_SPN);
-            mPlmn = intent.getStringExtra(TelephonyIntents.EXTRA_PLMN);
-            mOriginalTelephonySpn = mSpn;
-            mOriginalTelephonyPlmn = mPlmn;
-            if (mContext.getResources().getBoolean(
-                    com.android.internal.R.bool.config_monitor_locale_change)) {
-                if (mShowSpn && mSpn != null) {
-                    mSpn = getLocaleString(mOriginalTelephonySpn);
-                }
-                if (mShowPlmn && mPlmn != null) {
-                    mPlmn = getLocaleString(mOriginalTelephonyPlmn);
-                }
-            }
-            updateNetworkName(mShowSpn, mSpn , mShowPlmn , mPlmn);
-            refreshViews();
-        } else if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION_IMMEDIATE) ||
-                 action.equals(ConnectivityManager.INET_CONDITION_ACTION)) {
-            updateConnectivity(intent);
-            refreshViews();
-        } else if (action.equals(Intent.ACTION_CUSTOM_CARRIER_LABEL_CHANGED)) {
-            refreshViews();
-        } else if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
-            //parse the string to current language string in public resources
-            if (mContext.getResources().getBoolean(
-                    com.android.internal.R.bool.config_monitor_locale_change)) {
-                if (mShowSpn && mSpn != null) {
-                    mSpn = getLocaleString(mOriginalTelephonySpn);
-                }
-                if (mShowPlmn && mPlmn != null) {
-                    mPlmn = getLocaleString(mOriginalTelephonyPlmn);
-                }
-            }
-            updateNetworkName( mShowSpn, mSpn , mShowPlmn , mPlmn);
-            refreshLocale();
-            refreshViews();
-        } else if (action.equals(Intent.ACTION_LOCALE_CHANGED)) {
-            updateNetworkName(false, null, false, null);
-            refreshViews();
-        } else if (action.equals(Intent.ACTION_AIRPLANE_MODE_CHANGED)) {
-            refreshLocale();
-            updateAirplaneMode();
-            updateSimIcon();
-            refreshViews();
-        } else if (action.equals(WimaxManagerConstants.NET_4G_STATE_CHANGED_ACTION) ||
-                action.equals(WimaxManagerConstants.SIGNAL_LEVEL_CHANGED_ACTION) ||
-                action.equals(WimaxManagerConstants.WIMAX_NETWORK_STATE_CHANGED_ACTION)) {
-            updateWimaxState(intent);
-            refreshViews();
-=======
     private void updateMobileControllers() {
         if (!mListening) {
             return;
@@ -508,7 +443,6 @@ public class NetworkControllerImpl extends BroadcastReceiver
         List<SubscriptionInfo> subscriptions = mSubscriptionManager.getActiveSubscriptionInfoList();
         if (subscriptions == null) {
             subscriptions = Collections.emptyList();
->>>>>>> aab323eabe38b678f95e8786e6c3a883c3eb2c58
         }
         // If there have been no relevant changes to any of the subscriptions, we can leave as is.
         if (hasCorrectMobileControllers(subscriptions)) {
@@ -1225,34 +1159,6 @@ public class NetworkControllerImpl extends BroadcastReceiver
             mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_EHRPD, TelephonyIcons.THREE_G);
             mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_UMTS, TelephonyIcons.THREE_G);
 
-<<<<<<< HEAD
-        final String customCarrierLabel = Settings.System.getStringForUser(context.getContentResolver(),
-                Settings.System.CUSTOM_CARRIER_LABEL, UserHandle.USER_CURRENT);
-
-        if (!mHasMobileDataFeature) {
-            mDataSignalIconId = mPhoneSignalIconId = 0;
-            mQSPhoneSignalIconId = 0;
-            mobileLabel = "";
-        } else {
-            // We want to show the carrier name if in service and either:
-            //   - We are connected to mobile data, or
-            //   - We are not connected to mobile data, as long as the *reason* packets are not
-            //     being routed over that link is that we have better connectivity via wifi.
-            // If data is disconnected for some other reason but wifi (or ethernet/bluetooth)
-            // is connected, we show nothing.
-            // Otherwise (nothing connected) we show "No internet connection".
-
-            if (mDataConnected) {
-                mobileLabel = mNetworkName;
-            } else if (mConnected || emergencyOnly) {
-                if (hasService() || emergencyOnly) {
-                    // The isEmergencyOnly test covers the case of a phone with no SIM
-                    mobileLabel = mNetworkName;
-                } else {
-                    // Tablets, basically
-                    mobileLabel = "";
-                }
-=======
             if (!mConfig.showAtLeast3G) {
                 mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_UNKNOWN,
                         TelephonyIcons.UNKNOWN);
@@ -1261,7 +1167,6 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_1xRTT, TelephonyIcons.ONE_X);
 
                 mDefaultIcons = TelephonyIcons.G;
->>>>>>> aab323eabe38b678f95e8786e6c3a883c3eb2c58
             } else {
                 mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_UNKNOWN,
                         TelephonyIcons.THREE_G);
@@ -1383,13 +1288,17 @@ public class NetworkControllerImpl extends BroadcastReceiver
         public void handleBroadcast(Intent intent) {
             String action = intent.getAction();
             if (action.equals(TelephonyIntents.SPN_STRINGS_UPDATED_ACTION)) {
-                updateNetworkName(intent.getBooleanExtra(TelephonyIntents.EXTRA_SHOW_SPN, false),
-                        intent.getStringExtra(TelephonyIntents.EXTRA_SPN),
-                        intent.getBooleanExtra(TelephonyIntents.EXTRA_SHOW_PLMN, false),
-                        intent.getStringExtra(TelephonyIntents.EXTRA_PLMN));
+                mShowSpn = intent.getBooleanExtra(TelephonyIntents.EXTRA_SHOW_SPN, false);
+                mSpn = intent.getStringExtra(TelephonyIntents.EXTRA_SPN);
+                mShowPlmn = intent.getBooleanExtra(TelephonyIntents.EXTRA_SHOW_PLMN, false);
+                mPlmn = intent.getStringExtra(TelephonyIntents.EXTRA_PLMN);
+                updateNetworkName(mShowSpn, mSpn, mShowPlmn, mPlmn);
                 notifyListenersIfNecessary();
             } else if (action.equals(TelephonyIntents.ACTION_DEFAULT_DATA_SUBSCRIPTION_CHANGED)) {
                 updateDataSim();
+            } else if (action.equals(Intent.ACTION_CUSTOM_CARRIER_LABEL_CHANGED)) {
+                updateNetworkName(mShowSpn, mSpn, mShowPlmn, mPlmn);
+                notifyListenersIfNecessary();
             }
         }
 
@@ -1429,7 +1338,9 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 str.append(spn);
             }
             if (str.length() != 0) {
-                mCurrentState.networkName = str.toString();
+                String mCustomCarrierLabel = Settings.System.getStringForUser(mContext.getContentResolver(),
+                        Settings.System.CUSTOM_CARRIER_LABEL, UserHandle.USER_CURRENT);
+                mCurrentState.networkName = !TextUtils.isEmpty(mCustomCarrierLabel) && !mAirplaneMode ? mCustomCarrierLabel : str.toString();
             } else {
                 mCurrentState.networkName = mNetworkNameDefault;
             }
@@ -1463,125 +1374,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
 
             mCurrentState.showSeparateRoaming = false;
             if (isRoaming()) {
-<<<<<<< HEAD
-                mDataTypeIconId = TelephonyIcons.ROAMING_ICON;
-                mQSDataTypeIconId = TelephonyIcons.QS_DATA_R[mInetCondition];
-            }
-        }
-
-        if (mDemoMode) {
-            mQSWifiIconId = mDemoWifiLevel < 0 ? R.drawable.ic_qs_wifi_no_network
-                    : WifiIcons.QS_WIFI_SIGNAL_STRENGTH[mDemoInetCondition][mDemoWifiLevel];
-            mQSPhoneSignalIconId = mDemoMobileLevel < 0 ? R.drawable.ic_qs_signal_no_signal :
-                    TelephonyIcons.QS_TELEPHONY_SIGNAL_STRENGTH[mDemoInetCondition][mDemoMobileLevel];
-            mQSDataTypeIconId = mDemoQSDataTypeIconId;
-        }
-
-        if (!TextUtils.isEmpty(customCarrierLabel)) {
-            combinedLabel = customCarrierLabel;
-            mobileLabel = customCarrierLabel;
-        }
-
-        if (!mAirplaneMode && mSimState == IccCardConstants.State.ABSENT) {
-            // look again; your radios are now sim cards
-            mPhoneSignalIconId = mDataSignalIconId = mDataTypeIconId = mQSDataTypeIconId = 0;
-            mQSPhoneSignalIconId = 0;
-        }
-
-        if (DEBUG) {
-            Log.d(TAG, "refreshViews connected={"
-                    + (mWifiConnected?" wifi":"")
-                    + (mDataConnected?" data":"")
-                    + " } level="
-                    + ((mSignalStrength == null)?"??":Integer.toString(mSignalStrength.getLevel()))
-                    + " combinedSignalIconId=0x"
-                    + Integer.toHexString(combinedSignalIconId)
-                    + "/" + getResourceName(combinedSignalIconId)
-                    + " combinedActivityIconId=0x" + Integer.toHexString(combinedActivityIconId)
-                    + " mobileLabel=" + mobileLabel
-                    + " wifiLabel=" + wifiLabel
-                    + " emergencyOnly=" + emergencyOnly
-                    + " combinedLabel=" + combinedLabel
-                    + " mAirplaneMode=" + mAirplaneMode
-                    + " mDataActivity=" + mDataActivity
-                    + " mPhoneSignalIconId=0x"
-                    + Integer.toHexString(mPhoneSignalIconId)
-                    + "/" + getResourceName(mPhoneSignalIconId)
-                    + " mQSPhoneSignalIconId=0x"
-                    + Integer.toHexString(mQSPhoneSignalIconId)
-                    + "/" + getResourceName(mQSPhoneSignalIconId)
-                    + " mDataDirectionIconId=0x"
-                    + Integer.toHexString(mDataDirectionIconId)
-                    + "/" + getResourceName(mDataDirectionIconId)
-                    + " mDataSignalIconId=0x"
-                    + Integer.toHexString(mDataSignalIconId)
-                    + "/" + getResourceName(mDataSignalIconId)
-                    + " mDataTypeIconId=0x"
-                    + Integer.toHexString(mDataTypeIconId)
-                    + "/" + getResourceName(mDataTypeIconId)
-                    + " mQSDataTypeIconId=0x"
-                    + Integer.toHexString(mQSDataTypeIconId)
-                    + "/" + getResourceName(mQSDataTypeIconId)
-                    + " mNoSimIconId=0x"
-                    + Integer.toHexString(mNoSimIconId)
-                    + "/" + getResourceName(mNoSimIconId)
-                    + " mWifiIconId=0x"
-                    + Integer.toHexString(mWifiIconId)
-                    + "/" + getResourceName(mWifiIconId)
-                    + " mQSWifiIconId=0x"
-                    + Integer.toHexString(mQSWifiIconId)
-                    + "/" + getResourceName(mQSWifiIconId)
-                    + " mWifiActivityIconId=0x"
-                    + Integer.toHexString(mWifiActivityIconId)
-                    + "/" + getResourceName(mWifiActivityIconId)
-                    + " mBluetoothTetherIconId=0x"
-                    + Integer.toHexString(mBluetoothTetherIconId)
-                    + "/" + getResourceName(mBluetoothTetherIconId));
-        }
-
-        // update QS
-        for (NetworkSignalChangedCallback cb : mSignalsChangedCallbacks) {
-            notifySignalsChangedCallbacks(cb);
-        }
-
-        if (mLastPhoneSignalIconId          != mPhoneSignalIconId
-         || mLastDataDirectionOverlayIconId != combinedActivityIconId
-         || mLastWifiIconId                 != mWifiIconId
-         || mLastInetCondition              != mInetCondition
-         || mLastWimaxIconId                != mWimaxIconId
-         || mLastDataTypeIconId             != mDataTypeIconId
-         || mLastAirplaneMode               != mAirplaneMode
-         || mLastLocale                     != mLocale
-         || mLastConnectedNetworkType       != mConnectedNetworkType
-         || mLastSimIconId                  != mNoSimIconId
-         || mLastMobileActivityIconId       != mMobileActivityIconId)
-        {
-            // NB: the mLast*s will be updated later
-            for (SignalCluster cluster : mSignalClusters) {
-                refreshSignalCluster(cluster);
-            }
-        }
-
-        if (mLastAirplaneMode != mAirplaneMode) {
-            mLastAirplaneMode = mAirplaneMode;
-        }
-
-        if (mLastLocale != mLocale) {
-            mLastLocale = mLocale;
-        }
-
-        // the phone icon on phones
-        if (mLastPhoneSignalIconId != mPhoneSignalIconId) {
-            mLastPhoneSignalIconId = mPhoneSignalIconId;
-            N = mPhoneSignalIconViews.size();
-            for (int i = 0; i < N; i++) {
-                final ImageView v = mPhoneSignalIconViews.get(i);
-                if (mPhoneSignalIconId == 0) {
-                    v.setVisibility(View.GONE);
-=======
                 if (SystemProperties.getBoolean("ro.config.always_show_roaming", false)) {
                     mCurrentState.showSeparateRoaming = true;
->>>>>>> aab323eabe38b678f95e8786e6c3a883c3eb2c58
                 } else {
                     mCurrentState.iconGroup = TelephonyIcons.ROAMING;
                 }
