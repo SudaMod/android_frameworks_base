@@ -31,8 +31,6 @@ import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.Outline;
 import android.graphics.Rect;
-import android.graphics.Color;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -191,7 +189,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         loadDimens();
         updateVisibilities();
         updateClockScale();
-	updateBackgroundColor();
         updateAvatarScale();
         addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -263,14 +260,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                 FontSizeUtils.LARGE_TEXT_SCALE) - 1f) / (FontSizeUtils.LARGE_TEXT_SCALE - 1f);
         mClockMarginBottomCollapsed = Math.round((1 - largeFactor) * padding + largeFactor * largePadding);
         requestLayout();
-    }
-
-    private void updateBackgroundColor() {
-        ContentResolver resolver = mContext.getContentResolver();
-        int backgroundColor = Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_EXPANDED_HEADER_BG_COLOR, 0xee263238);
-
-        getBackground().setColorFilter(backgroundColor, Mode.MULTIPLY);
     }
 
     private void requestCaptureValues() {
@@ -360,7 +349,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         updateAvatarScale();
         updateClockLp();
         requestCaptureValues();
-	updateBackgroundColor();
     }
 
     private void updateHeights() {
@@ -850,11 +838,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             transition(mQsDetailHeader, showingDetail);
             mShowingDetail = showingDetail;
             if (showingDetail) {
-                int color = Settings.System.getInt(
-                        getContext().getContentResolver(),
-                        Settings.System.QS_TEXT_COLOR, 0xffffffff);
                 mQsDetailHeaderTitle.setText(detail.getTitle());
-                mQsDetailHeaderTitle.setTextColor(color);
                 final Boolean toggleState = detail.getToggleState();
                 if (toggleState == null) {
                     mQsDetailHeaderSwitch.setVisibility(INVISIBLE);
@@ -924,14 +908,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         }
 
         @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_EXPANDED_HEADER_BG_COLOR))) {
-                updateBackgroundColor();
-            }
-
-        }
-
         public void update() {
 
             ContentResolver resolver = mContext.getContentResolver();

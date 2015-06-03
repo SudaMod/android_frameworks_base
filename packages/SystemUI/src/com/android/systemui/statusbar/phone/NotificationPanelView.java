@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -44,7 +43,6 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.net.Uri;
 
 import com.android.internal.util.cm.LockscreenShortcutsHelper;
 import com.android.keyguard.KeyguardStatusView;
@@ -194,8 +192,6 @@ public class NotificationPanelView extends PanelView implements
     private int mStatusBarHeaderHeight;
     private GestureDetector mDoubleTapGesture;
 
-    private int mQSBackgroundColor;
-
     public NotificationPanelView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setWillNotDraw(!DEBUG);
@@ -272,7 +268,6 @@ public class NotificationPanelView extends PanelView implements
                 }
             }
         });
-        setQSBackgroundColor();
     }
 
     @Override
@@ -2094,12 +2089,6 @@ public class NotificationPanelView extends PanelView implements
                     Settings.System.QS_QUICK_PULLDOWN), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.DOUBLE_TAP_SLEEP_GESTURE), false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QS_BACKGROUND_COLOR), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QS_ICON_COLOR), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QS_TEXT_COLOR), false, this);
             update();
         }
 
@@ -2110,51 +2099,12 @@ public class NotificationPanelView extends PanelView implements
         }
 
         @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            ContentResolver resolver = mContext.getContentResolver();
-            if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.QS_BACKGROUND_COLOR))) {
-                mQSBackgroundColor = Settings.System.getInt(
-                        resolver, Settings.System.QS_BACKGROUND_COLOR, 0xff263238);
-                setQSBackgroundColor();
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.QS_ICON_COLOR))
-                || uri.equals(Settings.System.getUriFor(
-                    Settings.System.QS_TEXT_COLOR))) {
-                setQSColors();
-            }
-        }
-
-        @Override
         public void update() {
             ContentResolver resolver = mContext.getContentResolver();
             mOneFingerQuickSettingsIntercept = Settings.System.getIntForUser(resolver,
                     Settings.System.QS_QUICK_PULLDOWN, 0, UserHandle.USER_CURRENT);
             mDoubleTapToSleepEnabled = Settings.System.getIntForUser(resolver,
                     Settings.System.DOUBLE_TAP_SLEEP_GESTURE, 1, UserHandle.USER_CURRENT) == 1;
-			mQSBackgroundColor = Settings.System.getInt(
-                    resolver, Settings.System.QS_BACKGROUND_COLOR, 0xff263238);
-            setQSBackgroundColor();
-            setQSColors();
-        }
-    }
-
-    private void setQSBackgroundColor() {
-        ContentResolver resolver = mContext.getContentResolver();
-        mQSBackgroundColor = Settings.System.getInt(
-                resolver, Settings.System.QS_BACKGROUND_COLOR, 0xff263238);
-        if (mQsContainer != null) {
-            mQsContainer.getBackground().setColorFilter(
-                    mQSBackgroundColor, Mode.MULTIPLY);
-        }
-        if (mQsPanel != null) {
-            mQsPanel.setDetailBackgroundColor(mQSBackgroundColor);
-        }
-    }
-
-    private void setQSColors() {
-        if (mQsPanel != null) {
-            mQsPanel.setColors();
         }
     }
 }
