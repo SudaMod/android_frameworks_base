@@ -2080,12 +2080,6 @@ public final class Settings {
          */
         public static final String CHINESE_DATE_VIEW = "chinese_date_view";
 
-         /**
-         * Color of the expanded status bar header background
-         * @hide
-         */
-        public static final String STATUS_BAR_EXPANDED_HEADER_BG_COLOR = "status_bar_expanded_header_bg_color";
-
         /**
         * Enable navigation bar double tap gesture on to put device to sleep
          * @hide
@@ -2242,24 +2236,6 @@ public final class Settings {
          */
         @Deprecated
         public static final String QS_USE_MAIN_TILES = Secure.QS_USE_MAIN_TILES;
-
-        /**
-         * Color of the quick settings panel background
-         * @hide
-         */
-        public static final String QS_BACKGROUND_COLOR = "qs_background_color";
-
-        /**
-         * Color of the quick settings icons
-         * @hide
-         */
-        public static final String QS_ICON_COLOR = "qs_icons_color";
-
-        /**
-         * Color of the quick settings text
-         * @hide
-         */
-        public static final String QS_TEXT_COLOR = "qs_text_color";  
 
         /**
          * Control whether the process CPU usage meter should be shown.
@@ -3914,12 +3890,6 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_COMPONENT = "statusbar_component";
-
-        /**
-         * Enable built in CAF task manager
-         * @hide
-         */
-        public static final String ENABLE_TASK_MANAGER = "enable_task_manager";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
