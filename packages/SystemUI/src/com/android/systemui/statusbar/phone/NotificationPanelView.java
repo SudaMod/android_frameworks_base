@@ -42,6 +42,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.internal.util.cm.LockscreenShortcutsHelper;
@@ -192,6 +193,10 @@ public class NotificationPanelView extends PanelView implements
     private int mStatusBarHeaderHeight;
     private GestureDetector mDoubleTapGesture;
 
+    // Task manager
+    private boolean mShowTaskManager;
+    private LinearLayout mTaskManagerPanel;
+
     public NotificationPanelView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setWillNotDraw(!DEBUG);
@@ -231,6 +236,7 @@ public class NotificationPanelView extends PanelView implements
                 }
             }
         });
+	mTaskManagerPanel = (LinearLayout) findViewById(R.id.task_manager_panel);
         mClockView = (TextView) findViewById(R.id.clock_view);
         mScrollView = (ObservableScrollView) findViewById(R.id.scroll_view);
         mScrollView.setListener(this);
@@ -1371,6 +1377,17 @@ public class NotificationPanelView extends PanelView implements
         }
     }
 
+    public void setTaskManagerVisibility(boolean mTaskManagerShowing) {
+        if (mShowTaskManager) {
+            cancelAnimation();
+            boolean expandVisually = mQsExpanded || mStackScrollerOverscrolling;
+            mQsPanel.setVisibility(expandVisually && !mTaskManagerShowing
+                    ? View.VISIBLE : View.GONE);
+            mTaskManagerPanel.setVisibility(expandVisually && mTaskManagerShowing
+                    ? View.VISIBLE : View.GONE);
+        }
+    }
+
     @Override
     protected boolean isScrolledToBottom() {
         if (!isInSettings()) {
@@ -2089,6 +2106,8 @@ public class NotificationPanelView extends PanelView implements
                     Settings.System.QS_QUICK_PULLDOWN), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.DOUBLE_TAP_SLEEP_GESTURE), false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ENABLE_TASK_MANAGER), false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -2105,6 +2124,8 @@ public class NotificationPanelView extends PanelView implements
                     Settings.System.QS_QUICK_PULLDOWN, 0, UserHandle.USER_CURRENT);
             mDoubleTapToSleepEnabled = Settings.System.getIntForUser(resolver,
                     Settings.System.DOUBLE_TAP_SLEEP_GESTURE, 1, UserHandle.USER_CURRENT) == 1;
+            mShowTaskManager = Settings.System.getIntForUser(resolver,
+                    Settings.System.ENABLE_TASK_MANAGER, 0, UserHandle.USER_CURRENT) == 1;
         }
     }
 }
