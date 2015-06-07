@@ -72,7 +72,7 @@ import com.android.systemui.statusbar.policy.UserInfoController;
 /**
  * The view to manage the header area in the expanded status bar.
  */
-public class StatusBarHeaderView extends RelativeLayout implements View.OnClickListener,
+public class StatusBarHeaderView extends RelativeLayout implements View.OnClickListener, View.OnLongClickListener,
         NextAlarmController.NextAlarmChangeCallback, WeatherController.Callback {
 
     private boolean mExpanded;
@@ -174,7 +174,8 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         mDateExpanded = (TextView) findViewById(R.id.date_expanded);
         mSettingsButton = findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(this);
-	mTaskManagerButton = findViewById(R.id.task_manager_button);
+        mTaskManagerButton = findViewById(R.id.task_manager_button);
+        mTaskManagerButton.setOnLongClickListener(this);
         mQsDetailHeader = findViewById(R.id.qs_detail_header);
         mQsDetailHeader.setAlpha(0);
         mQsDetailHeaderTitle = (TextView) mQsDetailHeader.findViewById(android.R.id.title);
@@ -216,6 +217,22 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             }
         });
         requestCaptureValues();
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        if (v == mTaskManagerButton) {
+            startTaskManagerLongClickActivity();
+        }
+        return false;
+    }
+
+
+    private void startTaskManagerLongClickActivity() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setClassName("com.android.settings",
+            "com.android.settings.Settings$RunningServicesActivity");
+        mActivityStarter.startActivity(intent, true /* dismissShade */);
     }
 
     @Override
@@ -728,7 +745,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         applyAlpha(mDateCollapsed, values.dateCollapsedAlpha);
         applyAlpha(mDateExpanded, values.dateExpandedAlpha);
         applyAlpha(mBatteryLevel, values.batteryLevelAlpha);
-	applyAlpha(mTaskManagerButton, values.settingsAlpha);
+        applyAlpha(mTaskManagerButton, values.settingsAlpha);
         applyAlpha(mSettingsButton, values.settingsAlpha);
         applyAlpha(mWeatherLine1, values.settingsAlpha);
         applyAlpha(mWeatherLine2, values.settingsAlpha);
