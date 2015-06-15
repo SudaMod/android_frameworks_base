@@ -42,7 +42,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewOutlineProvider;
-import com.android.systemui.recents.views.FixedSizeImageView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -64,10 +63,10 @@ public class TaskViewHeader extends FrameLayout {
 
     // Header views
     ImageView mDismissButton;
+    ImageView mLockAppButton;
     ImageView mApplicationIcon;
     TextView mActivityDescription;
 
-    FixedSizeImageView mLockAppbt;
     Context ct;
 
     // Header drawables
@@ -145,6 +144,7 @@ public class TaskViewHeader extends FrameLayout {
         mApplicationIcon = (ImageView) findViewById(R.id.application_icon);
         mActivityDescription = (TextView) findViewById(R.id.activity_description);
         mDismissButton = (ImageView) findViewById(R.id.dismiss_task);
+        mLockAppButton = (ImageView) findViewById(R.id.set_lock_app);
 
         // Hide the backgrounds if they are ripple drawables
         if (!Constants.DebugFlags.App.EnableTaskFiltering) {
@@ -152,8 +152,6 @@ public class TaskViewHeader extends FrameLayout {
                 mApplicationIcon.setBackground(null);
             }
         }
-
-        mLockAppbt = (FixedSizeImageView) findViewById(R.id.set_lock_app);
 
         mBackgroundColorDrawable = (GradientDrawable) getContext().getDrawable(R.drawable
                 .recents_task_view_header_bg_color);
@@ -216,8 +214,9 @@ public class TaskViewHeader extends FrameLayout {
         }
     }
 
-    private void refreshBackground(boolean iswhite) {
-        mLockAppbt.setImageDrawable(ct.getDrawable((iswhite ? R.drawable.ic_lock : R.drawable.ic_lock_open)));
+    private void refreshBackground(boolean is_color_light, boolean iswhite) {
+        mLockAppButton.setImageDrawable(ct.getDrawable((iswhite ? (is_color_light ? R.drawable.ic_lock_light : R.drawable.ic_lock_dark) 
+            : (is_color_light ? R.drawable.ic_lock_open_light : R.drawable.ic_lock_open_dark))));
     }
 
     /**
@@ -306,8 +305,8 @@ public class TaskViewHeader extends FrameLayout {
             mActivityDescription.setText(t.activityLabel);
         }
         final Task tt = t;
-        refreshBackground(t.isLockedApp);
-        mLockAppbt.setOnClickListener(new View.OnClickListener() {
+        refreshBackground(t.useLightOnPrimaryColor,t.isLockedApp);
+        mLockAppButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final String appString = Settings.System.getString(ct.getContentResolver(),
@@ -321,7 +320,7 @@ public class TaskViewHeader extends FrameLayout {
                     addApp(tt.pkgName,map);
                     tt.isLockedApp = true;
                 }
-                refreshBackground(tt.isLockedApp);
+                refreshBackground(tt.useLightOnPrimaryColor,tt.isLockedApp);
             }
         });
         // Try and apply the system ui tint
@@ -358,6 +357,18 @@ public class TaskViewHeader extends FrameLayout {
                     .withLayer()
                     .start();
         }
+
+        if (mLockAppButton.getVisibility() == View.VISIBLE) {
+            mLockAppButton.animate().cancel();
+            mLockAppButton.animate()
+                    .alpha(0f)
+                    .setStartDelay(0)
+                    .setInterpolator(mConfig.fastOutSlowInInterpolator)
+                    .setDuration(mConfig.taskViewExitToAppDuration)
+                    .withLayer()
+                    .start();
+        }
+
     }
 
     /** Animates this task bar if the user does not interact with the stack after a certain time. */
@@ -373,6 +384,19 @@ public class TaskViewHeader extends FrameLayout {
                     .withLayer()
                     .start();
         }
+
+        if (mLockAppButton.getVisibility() != View.VISIBLE) {
+            mLockAppButton.setVisibility(View.VISIBLE);
+            mLockAppButton.setAlpha(0f);
+            mLockAppButton.animate()
+                    .alpha(1f)
+                    .setStartDelay(0)
+                    .setInterpolator(mConfig.fastOutLinearInInterpolator)
+                    .setDuration(mConfig.taskViewEnterFromAppDuration)
+                    .withLayer()
+                    .start();
+        }
+
     }
 
     /** Mark this task view that the user does has not interacted with the stack after a certain time. */
@@ -382,11 +406,17 @@ public class TaskViewHeader extends FrameLayout {
             mDismissButton.setVisibility(View.VISIBLE);
             mDismissButton.setAlpha(1f);
         }
+        if (mLockAppButton.getVisibility() != View.VISIBLE) {
+            mLockAppButton.animate().cancel();
+            mLockAppButton.setVisibility(View.VISIBLE);
+            mLockAppButton.setAlpha(1f);
+        }
     }
 
     /** Resets the state tracking that the user has not interacted with the stack after a certain time. */
     void resetNoUserInteractionState() {
         mDismissButton.setVisibility(View.INVISIBLE);
+        mLockAppButton.setVisibility(View.INVISIBLE);
     }
 
     @Override
