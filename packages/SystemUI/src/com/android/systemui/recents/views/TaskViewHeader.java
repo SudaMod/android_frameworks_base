@@ -42,7 +42,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewOutlineProvider;
-import android.widget.ImageButton;
+import com.android.systemui.recents.views.FixedSizeImageView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -67,7 +67,7 @@ public class TaskViewHeader extends FrameLayout {
     ImageView mApplicationIcon;
     TextView mActivityDescription;
 
-    ImageButton mLockAppbt;
+    FixedSizeImageView mLockAppbt;
     Context ct;
 
     // Header drawables
@@ -153,7 +153,7 @@ public class TaskViewHeader extends FrameLayout {
             }
         }
 
-        mLockAppbt = (ImageButton) findViewById(R.id.set_lock_app);
+        mLockAppbt = (FixedSizeImageView) findViewById(R.id.set_lock_app);
 
         mBackgroundColorDrawable = (GradientDrawable) getContext().getDrawable(R.drawable
                 .recents_task_view_header_bg_color);
@@ -217,7 +217,7 @@ public class TaskViewHeader extends FrameLayout {
     }
 
     private void refreshBackground(boolean iswhite) {
-        mLockAppbt.setBackground(ct.getDrawable((iswhite ? R.drawable.lock : R.drawable.un_lock)));
+        mLockAppbt.setImageDrawable(ct.getDrawable((iswhite ? R.drawable.ic_lock : R.drawable.ic_lock_open)));
     }
 
     /**
