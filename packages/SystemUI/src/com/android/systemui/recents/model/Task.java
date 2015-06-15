@@ -122,6 +122,7 @@ public class Task {
     public boolean useLightOnPrimaryColor;
     public Bitmap thumbnail;
     public boolean isActive;
+    public boolean isLockedApp;
     public boolean lockToThisTask;
     public boolean lockToTaskEnabled;
     public Bitmap icon;
@@ -147,6 +148,7 @@ public class Task {
         this.useLightOnPrimaryColor = Utilities.computeContrastBetweenColors(this.colorPrimary,
                 Color.WHITE) > 3f;
         this.isActive = isActive;
+        this.isLockedApp = isLockedApp;
         this.lockToThisTask = lockToTaskEnabled && lockToThisTask;
         this.lockToTaskEnabled = lockToTaskEnabled;
         this.icon = icon;
@@ -163,6 +165,7 @@ public class Task {
         this.colorPrimary = o.colorPrimary;
         this.useLightOnPrimaryColor = o.useLightOnPrimaryColor;
         this.isActive = o.isActive;
+        this.isLockedApp = o.isLockedApp;
         this.lockToThisTask = o.lockToThisTask;
         this.lockToTaskEnabled = o.lockToTaskEnabled;
     }

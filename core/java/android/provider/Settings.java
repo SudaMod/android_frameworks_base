@@ -2706,6 +2706,13 @@ public final class Settings {
         public static final String HEADS_UP_NOTIFCATION_DECAY = "heads_up_notification_decay";
 
         /**
+         * LockedAppList
+         *
+         * @hide
+         */
+        public static final String Locked_APP_LIST = "locked_app_list";
+
+        /**
          * Date format string
          *   mm/dd/yyyy
          *   dd/mm/yyyy

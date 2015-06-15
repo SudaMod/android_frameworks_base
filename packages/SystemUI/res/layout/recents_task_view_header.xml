@@ -42,6 +42,13 @@
         android:maxLines="2"
         android:ellipsize="marquee"
         android:fadingEdge="horizontal" />
+    <ImageButton 
+        android:id="@+id/set_lock_app"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/lock"
+        android:layout_gravity="center_vertical|center_horizontal"
+         />
     <com.android.systemui.recents.views.FixedSizeImageView
         android:id="@+id/dismiss_task"
         android:layout_width="48dp"
