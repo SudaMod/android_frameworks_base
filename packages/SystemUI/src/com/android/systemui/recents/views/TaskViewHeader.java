@@ -294,7 +294,8 @@ public class TaskViewHeader extends FrameLayout {
         final String appString = Settings.System.getString(ct.getContentResolver(),
                                 Settings.System.Locked_APP_LIST);
         final Map<String,Package> map = parseAppToMap(appString);
-        t.isLockedApp = isLockedApp(t.activityLabel,map) ;
+        t.pkgName = t.key.baseIntent.getComponent().getPackageName();
+        t.isLockedApp = isLockedApp(t.pkgName,map) ;
         if (t.activityIcon != null) {
             mApplicationIcon.setImageDrawable(t.activityIcon);
         } else if (t.applicationIcon != null) {
@@ -314,10 +315,10 @@ public class TaskViewHeader extends FrameLayout {
                 final Map<String,Package> map = parseAppToMap(appString);
 
                 if (tt.isLockedApp) {
-                    removeApp(tt.activityLabel,map);
+                    removeApp(tt.pkgName,map);
                     tt.isLockedApp = false;
                 } else {
-                    addApp(tt.activityLabel,map);
+                    addApp(tt.pkgName,map);
                     tt.isLockedApp = true;
                 }
                 refreshBackground(tt.isLockedApp);
