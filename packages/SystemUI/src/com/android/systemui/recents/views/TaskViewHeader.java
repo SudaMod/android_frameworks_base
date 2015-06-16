@@ -50,6 +50,8 @@ import com.android.systemui.recents.Constants;
 import com.android.systemui.recents.RecentsConfiguration;
 import com.android.systemui.recents.misc.Utilities;
 import com.android.systemui.recents.model.Task;
+import com.android.systemui.utils.LockAppUtils;
+import com.android.systemui.utils.LockAppUtils.Package;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,6 +70,7 @@ public class TaskViewHeader extends FrameLayout {
     TextView mActivityDescription;
 
     Context ct;
+    LockAppUtils lockAppUtils;
 
     // Header drawables
     boolean mCurrentPrimaryColorIsDark;
@@ -112,6 +115,7 @@ public class TaskViewHeader extends FrameLayout {
         });
 
         this.ct = context;
+        lockAppUtils = new LockAppUtils(context);
         // Load the dismiss resources
         Resources res = context.getResources();
         mLightDismissDrawable = res.getDrawable(R.drawable.recents_dismiss_light);
@@ -164,94 +168,11 @@ public class TaskViewHeader extends FrameLayout {
         setBackground(mBackground);
     }
 
-    private void savePackageList(Map<String,Package> map) {
-        String setting = Settings.System.Locked_APP_LIST;
-
-        List<String> settings = new ArrayList<String>();
-        for (Package app : map.values()) {
-            settings.add(app.toString());
-        }
-        final String value = TextUtils.join("|", settings);
-        Settings.System.putString(ct.getContentResolver(), setting, value);
-    }
-
-    private Map<String,Package> parseAppToMap(String baseString) {
-        Map<String,Package> map = new HashMap<String,Package>();
-
-        if(TextUtils.isEmpty(baseString)) return map;
-
-        final String[] array = TextUtils.split(baseString, "\\|");
-        for (String item : array) {
-            if (TextUtils.isEmpty(item)) {
-                continue;
-            }
-            Package pkg = Package.fromString(item);
-            map.put(pkg.name, pkg);
-        }
-        return map;
-    }
-
-    private boolean isLockedApp(String packageName, Map<String,Package> map) {
-        if (map.get(packageName) != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private void removeApp(String packageName, Map<String,Package> map) {
-        if (map.remove(packageName) != null) {
-            savePackageList(map);
-        }
-    }
-
-    private void addApp(String packageName, Map<String,Package> map) {
-        Package pkg = map.get(packageName);
-        if (pkg == null) {
-            pkg = new Package(packageName);
-            map.put(packageName, pkg);
-            savePackageList(map);
-        }
-    }
 
     private void refreshBackground(boolean is_color_light, boolean iswhite) {
         mLockAppButton.setImageDrawable(ct.getDrawable((iswhite ? (is_color_light ? R.drawable.ic_lock_light : R.drawable.ic_lock_dark) 
             : (is_color_light ? R.drawable.ic_lock_open_light : R.drawable.ic_lock_open_dark))));
     }
-
-    /**
-     * Application class
-     */
-    private static class Package {
-        public String name;
-        /**
-         * Stores all the application values in one call
-         * @param name
-         */
-        public Package(String name) {
-            this.name = name;
-        }
-
-        public String toString() {
-            StringBuilder builder = new StringBuilder();
-            builder.append(name);
-            return builder.toString();
-        }
-
-        public static Package fromString(String value) {
-            if (TextUtils.isEmpty(value)) {
-                return null;
-            }
-
-            try {
-                Package item = new Package(value);
-                return item;
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
-
-    };
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -290,11 +211,12 @@ public class TaskViewHeader extends FrameLayout {
     public void rebindToTask(Task t) {
         // If an activity icon is defined, then we use that as the primary icon to show in the bar,
         // otherwise, we fall back to the application icon
+
         final String appString = Settings.System.getString(ct.getContentResolver(),
                                 Settings.System.Locked_APP_LIST);
-        final Map<String,Package> map = parseAppToMap(appString);
+        final Map<String,Package> map = lockAppUtils.parseAppToMap(appString);
         t.pkgName = t.key.baseIntent.getComponent().getPackageName();
-        t.isLockedApp = isLockedApp(t.pkgName,map) ;
+        t.isLockedApp = lockAppUtils.isLockedApp(t.pkgName,map) ;
         if (t.activityIcon != null) {
             mApplicationIcon.setImageDrawable(t.activityIcon);
         } else if (t.applicationIcon != null) {
@@ -311,13 +233,13 @@ public class TaskViewHeader extends FrameLayout {
             public void onClick(View v) {
                 final String appString = Settings.System.getString(ct.getContentResolver(),
                                 Settings.System.Locked_APP_LIST);
-                final Map<String,Package> map = parseAppToMap(appString);
+                final Map<String,Package> map = lockAppUtils.parseAppToMap(appString);
 
                 if (tt.isLockedApp) {
-                    removeApp(tt.pkgName,map);
+                    lockAppUtils.removeApp(tt.pkgName,map);
                     tt.isLockedApp = false;
                 } else {
-                    addApp(tt.pkgName,map);
+                    lockAppUtils.addApp(tt.pkgName,map);
                     tt.isLockedApp = true;
                 }
                 refreshBackground(tt.useLightOnPrimaryColor,tt.isLockedApp);

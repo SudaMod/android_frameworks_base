@@ -61,11 +61,15 @@ import android.view.accessibility.AccessibilityManager;
 import com.android.systemui.R;
 import com.android.systemui.recents.AlternateRecentsComponent;
 import com.android.systemui.recents.Constants;
+import com.android.systemui.utils.LockAppUtils;
+import com.android.systemui.utils.LockAppUtils.Package;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -96,6 +100,7 @@ public class SystemServicesProxy {
     Paint mBgProtectionPaint;
     Canvas mBgProtectionCanvas;
 
+    Context ct;
     static {
         sBitmapOptions = new BitmapFactory.Options();
         sBitmapOptions.inMutable = true;
@@ -127,6 +132,7 @@ public class SystemServicesProxy {
         mBgProtectionPaint.setColor(0xFFffffff);
         mBgProtectionCanvas = new Canvas();
 
+        ct = context;
         // Resolve the assist intent
         Intent assist = mSm.getAssistIntent(context, false);
         if (assist != null) {
@@ -327,9 +333,14 @@ public class SystemServicesProxy {
             return;
         }
         Iterator<ActivityManager.RecentTaskInfo> iter = tasks.iterator();
+        String appString = Settings.System.getString(ct.getContentResolver(),
+                            Settings.System.Locked_APP_LIST);
+        Map<String,Package> map = LockAppUtils.parseAppToMap(appString);
         while (iter.hasNext()) {
             ActivityManager.RecentTaskInfo t = iter.next();
-            if (t.persistentId > 0) {
+            String pkgName = t.baseIntent.getComponent().getPackageName();
+            boolean isLockedApp = LockAppUtils.isLockedApp(pkgName,map) ;
+            if (t.persistentId > 0 && !isLockedApp) {
                 removeTask(t.persistentId);
             }
         }

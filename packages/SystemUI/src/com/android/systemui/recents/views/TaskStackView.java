@@ -602,7 +602,7 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                     // Remove possible alive Tasks
                     for (int i = 0; i < size; i++) {
                         Task t = tasks.get(i);
-                        if (mStack.getTasks().contains(t)) {
+                        if (mStack.getTasks().contains(t) && !t.isLockedApp) {
                             mStack.removeTask(t);
                         }
                     }
@@ -613,6 +613,7 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                 if (size > 0) {
                     ssp.removeAllUserTask(UserHandle.myUserId());
                 }
+
             }
         });
     }
