@@ -256,10 +256,6 @@ public class TaskViewHeader extends FrameLayout {
         mCurrentPrimaryColorIsDark = t.useLightOnPrimaryColor;
         mActivityDescription.setTextColor(t.useLightOnPrimaryColor ?
                 mConfig.taskBarViewLightTextColor : mConfig.taskBarViewDarkTextColor);
-        mDismissButton.setImageDrawable(t.useLightOnPrimaryColor ?
-                mLightDismissDrawable : mDarkDismissDrawable);
-        mDismissButton.setContentDescription(String.format(mDismissContentDescription,
-                t.activityLabel));
     }
 
     /** Unbinds the bar view from the task */
@@ -269,76 +265,18 @@ public class TaskViewHeader extends FrameLayout {
 
     /** Animates this task bar dismiss button when launching a task. */
     void startLaunchTaskDismissAnimation() {
-        if (mDismissButton.getVisibility() == View.VISIBLE) {
-            mDismissButton.animate().cancel();
-            mDismissButton.animate()
-                    .alpha(0f)
-                    .setStartDelay(0)
-                    .setInterpolator(mConfig.fastOutSlowInInterpolator)
-                    .setDuration(mConfig.taskViewExitToAppDuration)
-                    .withLayer()
-                    .start();
-        }
-
-        if (mLockAppButton.getVisibility() == View.VISIBLE) {
-            mLockAppButton.animate().cancel();
-            mLockAppButton.animate()
-                    .alpha(0f)
-                    .setStartDelay(0)
-                    .setInterpolator(mConfig.fastOutSlowInInterpolator)
-                    .setDuration(mConfig.taskViewExitToAppDuration)
-                    .withLayer()
-                    .start();
-        }
-
     }
 
     /** Animates this task bar if the user does not interact with the stack after a certain time. */
     void startNoUserInteractionAnimation() {
-        if (mDismissButton.getVisibility() != View.VISIBLE) {
-            mDismissButton.setVisibility(View.VISIBLE);
-            mDismissButton.setAlpha(0f);
-            mDismissButton.animate()
-                    .alpha(1f)
-                    .setStartDelay(0)
-                    .setInterpolator(mConfig.fastOutLinearInInterpolator)
-                    .setDuration(mConfig.taskViewEnterFromAppDuration)
-                    .withLayer()
-                    .start();
-        }
-
-        if (mLockAppButton.getVisibility() != View.VISIBLE) {
-            mLockAppButton.setVisibility(View.VISIBLE);
-            mLockAppButton.setAlpha(0f);
-            mLockAppButton.animate()
-                    .alpha(1f)
-                    .setStartDelay(0)
-                    .setInterpolator(mConfig.fastOutLinearInInterpolator)
-                    .setDuration(mConfig.taskViewEnterFromAppDuration)
-                    .withLayer()
-                    .start();
-        }
-
     }
 
     /** Mark this task view that the user does has not interacted with the stack after a certain time. */
     void setNoUserInteractionState() {
-        if (mDismissButton.getVisibility() != View.VISIBLE) {
-            mDismissButton.animate().cancel();
-            mDismissButton.setVisibility(View.VISIBLE);
-            mDismissButton.setAlpha(1f);
-        }
-        if (mLockAppButton.getVisibility() != View.VISIBLE) {
-            mLockAppButton.animate().cancel();
-            mLockAppButton.setVisibility(View.VISIBLE);
-            mLockAppButton.setAlpha(1f);
-        }
     }
 
     /** Resets the state tracking that the user has not interacted with the stack after a certain time. */
     void resetNoUserInteractionState() {
-        mDismissButton.setVisibility(View.INVISIBLE);
-        mLockAppButton.setVisibility(View.INVISIBLE);
     }
 
     @Override

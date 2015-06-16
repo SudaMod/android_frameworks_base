@@ -43,14 +43,13 @@
         android:ellipsize="marquee"
         android:fadingEdge="horizontal" />
     <com.android.systemui.recents.views.FixedSizeImageView 
-        android:layout_gravity="end|center" 
         android:id="@+id/set_lock_app" 
-        android:background="@drawable/recents_button_bg" 
-        android:padding="12.0dip" 
-        android:visibility="invisible"
-        android:layout_width="48.0dip" 
-        android:layout_height="48.0dip" 
-        android:layout_marginEnd="52.0dip" />
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="4dp"
+        android:padding="12dip" 
+        android:layout_gravity="end|center" 
+        android:background="@drawable/recents_button_bg" />
     <com.android.systemui.recents.views.FixedSizeImageView
         android:id="@+id/dismiss_task"
         android:layout_width="48dp"
