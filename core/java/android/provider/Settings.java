@@ -2713,6 +2713,13 @@ public final class Settings {
         public static final String Locked_APP_LIST = "locked_app_list";
 
         /**
+         * Enable traffic notification .
+         *
+         * @hide
+         */
+        public static final String ENABLE_TRAFFIC_NOTIFCATION = "enable_traffic_notification";
+
+        /**
          * Date format string
          *   mm/dd/yyyy
          *   dd/mm/yyyy
