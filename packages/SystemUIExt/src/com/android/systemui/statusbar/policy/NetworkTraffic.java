@@ -18,6 +18,8 @@
 package com.android.systemui.statusbar.policy;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -54,6 +56,8 @@ import com.android.systemui.utils.NetworkTrafficSpan;
  *
  */
 public class NetworkTraffic extends TextView {
+    private String TAG = "NetworkTraffic.TextView";
+    
     public static final int MASK_UP = 0x00000001; // Least valuable bit
     public static final int MASK_DOWN = 0x00000002; // Second least valuable bit
     public static final int MASK_PERIOD = 0xFFFF0000; // Most valuable 16 bits
@@ -65,6 +69,8 @@ public class NetworkTraffic extends TextView {
         decimalFormat.setMaximumIntegerDigits(4);
         decimalFormat.setMaximumFractionDigits(1);
     }
+    
+    Map<String, Object> map = new HashMap<String, Object>();
 
     private int mState = 0;
     private boolean mAttached;
@@ -78,6 +84,7 @@ public class NetworkTraffic extends TextView {
     private int GB = MB * KB;
     private String mUp = " \u25B2";
     private String mDown = " \u25BC";
+    private String KEY = "rx";
 
     private Handler mTrafficHandler = new Handler() {
         @Override
@@ -126,6 +133,14 @@ public class NetworkTraffic extends TextView {
                 output += formatOutput(timeDelta, rxData, symbol);
                 output += mDown;
             }
+            
+            if (map.size() <= 0) {
+                map.put(KEY, rxData);
+            } else {
+                rxData += Long.valueOf(map.get(KEY).toString());
+                map.put(KEY, rxData);
+            }
+            // Log.e(TAG, formatOutput(timeDelta, rxData, symbol));
 
             // Update view if there's anything new to show
             if (!output.contentEquals(getText())) {
