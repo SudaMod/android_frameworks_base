@@ -333,9 +333,7 @@ public class SystemServicesProxy {
             return;
         }
         Iterator<ActivityManager.RecentTaskInfo> iter = tasks.iterator();
-        String appString = Settings.System.getString(ct.getContentResolver(),
-                            Settings.System.Locked_APP_LIST);
-        Map<String,Package> map = LockAppUtils.parseAppToMap(appString);
+        Map<String,Package> map = LockAppUtils.parseAppToMap();
         while (iter.hasNext()) {
             ActivityManager.RecentTaskInfo t = iter.next();
             String pkgName = t.baseIntent.getComponent().getPackageName();

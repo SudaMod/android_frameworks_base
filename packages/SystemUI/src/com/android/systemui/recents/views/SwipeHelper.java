@@ -22,6 +22,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -29,6 +30,13 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import com.android.systemui.recents.RecentsConfiguration;
+import com.android.systemui.recents.model.Task;
+import com.android.systemui.utils.LockAppUtils;
+import com.android.systemui.utils.LockAppUtils.Package;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * This class facilitates swipe to dismiss. It defines an interface to be implemented by the
@@ -365,9 +373,25 @@ public class SwipeHelper {
                 && isValidSwipeDirection(translation)
                 && (childSwipedFastEnough || childSwipedFarEnough);
 
-        if (dismissChild) {
+        if (dismissChild && translation>0) {
             // flingadingy
             dismissChild(mCurrView, childSwipedFastEnough ? velocity : 0f);
+        } else if (dismissChild && translation<0) {
+            TaskView tv = (TaskView) mCurrView;
+            Task task = tv.getTask();
+            Context ct = tv.getContext();
+            LockAppUtils lockAppUtils = new LockAppUtils(ct);
+            Map<String,Package> map = lockAppUtils.parseAppToMap();
+            if (task.isLockedApp){
+                lockAppUtils.removeApp(task.pkgName,map);
+                task.isLockedApp = false;
+            } else {
+                lockAppUtils.addApp(task.pkgName,map);
+                task.isLockedApp = true;
+            }
+            tv.getTaskViewHeader().refreshBackground(task.useLightOnPrimaryColor,task.isLockedApp);
+            mCallback.onDragCancelled(mCurrView);
+            snapChild(mCurrView, velocity);
         } else {
             // snappity
             mCallback.onDragCancelled(mCurrView);

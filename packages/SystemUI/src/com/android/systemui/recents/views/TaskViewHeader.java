@@ -37,7 +37,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.provider.Settings;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -53,9 +52,7 @@ import com.android.systemui.recents.model.Task;
 import com.android.systemui.utils.LockAppUtils;
 import com.android.systemui.utils.LockAppUtils.Package;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /* The task bar view */
@@ -168,8 +165,7 @@ public class TaskViewHeader extends FrameLayout {
         setBackground(mBackground);
     }
 
-
-    private void refreshBackground(boolean is_color_light, boolean iswhite) {
+    public void refreshBackground(boolean is_color_light, boolean iswhite) {
         mLockAppButton.setImageDrawable(ct.getDrawable((iswhite ? (is_color_light ? R.drawable.ic_lock_light : R.drawable.ic_lock_dark) 
             : (is_color_light ? R.drawable.ic_lock_open_light : R.drawable.ic_lock_open_dark))));
     }
@@ -212,9 +208,7 @@ public class TaskViewHeader extends FrameLayout {
         // If an activity icon is defined, then we use that as the primary icon to show in the bar,
         // otherwise, we fall back to the application icon
 
-        final String appString = Settings.System.getString(ct.getContentResolver(),
-                                Settings.System.Locked_APP_LIST);
-        final Map<String,Package> map = lockAppUtils.parseAppToMap(appString);
+        Map<String,Package> map = lockAppUtils.parseAppToMap();
         t.pkgName = t.key.baseIntent.getComponent().getPackageName();
         t.isLockedApp = lockAppUtils.isLockedApp(t.pkgName,map) ;
         if (t.activityIcon != null) {
@@ -231,9 +225,8 @@ public class TaskViewHeader extends FrameLayout {
         mLockAppButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String appString = Settings.System.getString(ct.getContentResolver(),
-                                Settings.System.Locked_APP_LIST);
-                final Map<String,Package> map = lockAppUtils.parseAppToMap(appString);
+
+                Map<String,Package> map = lockAppUtils.parseAppToMap();
 
                 if (tt.isLockedApp) {
                     lockAppUtils.removeApp(tt.pkgName,map);

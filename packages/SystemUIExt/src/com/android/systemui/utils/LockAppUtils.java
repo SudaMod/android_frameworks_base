@@ -28,17 +28,23 @@ import java.util.Map;
 public class LockAppUtils {
 
     static Context ct;
+    static String setting = Settings.System.Locked_APP_LIST;
+
 
     public LockAppUtils(Context ct) {
         this.ct = ct;
     }
 
-    public static Map<String,Package> parseAppToMap(String baseString) {
+    public static Map<String,Package> parseAppToMap() {
+
+        String appString = Settings.System.getString(ct.getContentResolver(),
+                                setting);
+
         Map<String,Package> map = new HashMap<String,Package>();
 
-        if(TextUtils.isEmpty(baseString)) return map;
+        if(TextUtils.isEmpty(appString)) return map;
 
-        final String[] array = TextUtils.split(baseString, "\\|");
+        final String[] array = TextUtils.split(appString, "\\|");
         for (String item : array) {
             if (TextUtils.isEmpty(item)) {
                 continue;
@@ -50,7 +56,6 @@ public class LockAppUtils {
     }
 
     public static void savePackageList(Map<String,Package> map) {
-        String setting = Settings.System.Locked_APP_LIST;
 
         List<String> settings = new ArrayList<String>();
         for (Package app : map.values()) {
