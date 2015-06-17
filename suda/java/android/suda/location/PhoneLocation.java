@@ -23,6 +23,13 @@ import android.text.TextUtils;
 */
 
 public final class PhoneLocation {
+	
+    private static String[] familyArray = {
+    	"760", "761", "762",
+    	"763", "764", "765",
+    	"766", "767", "768",
+    	"769"
+    };
 
     private static String LIBPATH = "suda-phoneloc-jni";
 
@@ -47,20 +54,13 @@ public final class PhoneLocation {
         return null;
     }
 
-    //判断亲情号760 ~ 769
-    public static boolean isFamily(String number) {
-	
-	String[] familyArray = {"760","761","762","763","764",
-				"765","766","767","768","769"};
-  
-	boolean bResult = false;
-	for(String temp:familyArray){
-	  if(temp.equals(number)){
-  	        bResult = true;
-  	        break;
+    public static String getFamily(String number) {
+	for(String temp : familyArray) {
+	    if (temp.equals(number)) {
+  	        return "亲情号码";
  	    }
 	}
-	return bResult;
+	return null;
     }
 
     public static String getCodeFromPhone(String number) {
@@ -68,12 +68,11 @@ public final class PhoneLocation {
     }
 
     public static String getCityFromPhone(String number) {
-        if (TextUtils.isEmpty(number)) return "";
-	String phoneLocation;
-	if(isFamily(number.toString())){
-		phoneLocation = "亲情号码";}else{
-	        phoneLocation = getPosFromPhone(number.replaceAll("(?:-| )", ""), 1);
-	}
-        return (TextUtils.isEmpty(phoneLocation) ? "" : phoneLocation);
+        if (TextUtils.isEmpty(number)) {
+            return null;
+        }
+	String phoneLocation = getPosFromPhone(number.replaceAll("(?:-| )", ""), 1);
+        return (TextUtils.isEmpty(phoneLocation) ? null :
+                      !TextUtils.isEmpty(getFamily(number)) ? getFamily(number) : phoneLocation);
     }
 }
