@@ -74,6 +74,7 @@ public class NetworkTraffic extends TextView {
     private int KEY_LONG = 0;
     private int KEY_STRING = 1;
     private boolean mEnable;
+    private String Byte = "B";
 
     private int mState = 0;
     private boolean mAttached;
@@ -140,10 +141,10 @@ public class NetworkTraffic extends TextView {
                 if (map.size() <= 0) {
                     map.put(KEY_LONG, rxData);
                 } else {
-                    rxData += Long.valueOf(map.get(0).toString());
+                    rxData += Long.valueOf(map.get(KEY_LONG).toString());
                     map.put(KEY_LONG, rxData);
                 }
-                map.put(KEY_STRING, formatOutput(timeDelta, rxData, symbol));
+                map.put(KEY_STRING, formatOutput(timeDelta, rxData, Byte));
             } else if (!mStart && map.size() > 0) {
                 map.clear();
             }
