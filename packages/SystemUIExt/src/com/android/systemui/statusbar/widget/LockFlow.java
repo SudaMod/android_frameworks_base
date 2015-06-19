@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.TextView;
 
 import com.android.systemui.R;
@@ -68,10 +69,10 @@ public class LockFlow extends TextView {
             if (action.equals(Intent.ACTION_SCREEN_OFF)) {
                 NetworkTraffic.mStart = true;
             } else {
-                if (NetworkTraffic.mStart && NetworkTraffic.map.size() > 0) {
-                    setText(mContext.getString(R.string.lock_flow) + NetworkTraffic.map.get(KEY_STRING).toString());
-                    NetworkTraffic.mStart = false;
-                }
+                setVisibility(NetworkTraffic.mEnable ? View.VISIBLE : View.GONE);
+                setText(NetworkTraffic.map.size() > 0 ? mContext.getString(R.string.lock_flow)
+                            + NetworkTraffic.map.get(KEY_STRING).toString() : null);
+                NetworkTraffic.mStart = false;
             }
         }
     };
