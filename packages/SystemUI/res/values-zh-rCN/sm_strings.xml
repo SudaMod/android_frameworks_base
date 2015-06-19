@@ -22,4 +22,5 @@
   <string name="tasklist_killall">"全部关闭"</string>
   <string name="tasklist_memory_usage">"剩余/总内存: [<xliff:g id="NUMBER">%s</xliff:g>] / [<xliff:g id="NAME">%s</xliff:g>]"</string>
   <string name="message_keep_one_launcher">"至少保留一个桌面主屏！"</string>
+  <string name="lock_flow">本次锁屏期间共消耗：</string>
 </resources>
