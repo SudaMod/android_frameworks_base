@@ -40,6 +40,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
@@ -54,6 +55,8 @@ import com.android.systemui.utils.NetworkTrafficSpan;
  *
  */
 public class NetworkTraffic extends TextView {
+    private String TAG = "NetworkTraffic.TextView";
+    
     public static final int MASK_UP = 0x00000001; // Least valuable bit
     public static final int MASK_DOWN = 0x00000002; // Second least valuable bit
     public static final int MASK_PERIOD = 0xFFFF0000; // Most valuable 16 bits
@@ -65,6 +68,13 @@ public class NetworkTraffic extends TextView {
         decimalFormat.setMaximumIntegerDigits(4);
         decimalFormat.setMaximumFractionDigits(1);
     }
+    
+    public static SparseArray<Object> map;
+    public static boolean mStart = false;
+    private int KEY_LONG = 0;
+    private int KEY_STRING = 1;
+    private boolean mEnable;
+    private String Byte = "B";
 
     private int mState = 0;
     private boolean mAttached;
@@ -125,6 +135,18 @@ public class NetworkTraffic extends TextView {
             if (isSet(mState, MASK_DOWN)) {
                 output += formatOutput(timeDelta, rxData, symbol);
                 output += mDown;
+            }
+            
+            if (mStart && mEnable) {
+                if (map.size() <= 0) {
+                    map.put(KEY_LONG, rxData);
+                } else {
+                    rxData += Long.valueOf(map.get(KEY_LONG).toString());
+                    map.put(KEY_LONG, rxData);
+                }
+                map.put(KEY_STRING, formatOutput(timeDelta, rxData, Byte));
+            } else if (!mStart && map.size() > 0) {
+                map.clear();
             }
 
             // Update view if there's anything new to show
@@ -248,6 +270,7 @@ public class NetworkTraffic extends TextView {
             filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
             mContext.registerReceiver(mIntentReceiver, filter, null, getHandler());
         }
+        map = new SparseArray<Object>();
         updateSettings();
     }
 
@@ -274,6 +297,8 @@ public class NetworkTraffic extends TextView {
         ContentResolver resolver = mContext.getContentResolver();
         mState = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_NETWORK_TRAFFIC_STYLE, 3 , UserHandle.USER_CURRENT);
+        mEnable = Settings.System.getIntForUser(resolver,
+                Settings.System.ENABLE_TRAFFIC_NOTIFCATION, 0 , UserHandle.USER_CURRENT) == 1;
         MB = KB * KB;
         GB = MB * KB;
 
