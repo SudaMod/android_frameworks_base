@@ -71,9 +71,9 @@ public class NetworkTraffic extends TextView {
     
     public static SparseArray<Object> map;
     public static boolean mStart = false;
+    public static boolean mEnable;
     private int KEY_LONG = 0;
     private int KEY_STRING = 1;
-    private boolean mEnable;
     private String Byte = "B";
 
     private int mState = 0;
