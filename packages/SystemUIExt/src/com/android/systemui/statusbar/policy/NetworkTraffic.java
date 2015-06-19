@@ -220,8 +220,10 @@ public class NetworkTraffic extends TextView {
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            Uri uri = Settings.System.getUriFor(Settings.System.STATUS_BAR_NETWORK_TRAFFIC_STYLE);
-            resolver.registerContentObserver(uri, false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.STATUS_BAR_NETWORK_TRAFFIC_STYLE)
+                                   , false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.ENABLE_TRAFFIC_NOTIFCATION)
+                                   , false, this, UserHandle.USER_ALL);
         }
 
         /*
