@@ -18,8 +18,6 @@
 package com.android.systemui.statusbar.policy;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -42,6 +40,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
@@ -70,7 +69,11 @@ public class NetworkTraffic extends TextView {
         decimalFormat.setMaximumFractionDigits(1);
     }
     
-    Map<String, Object> map = new HashMap<String, Object>();
+    public static SparseArray<Object> map;
+    public static boolean mStart = false;
+    private int KEY_LONG = 0;
+    private int KEY_STRING = 1;
+    private boolean mEnable;
 
     private int mState = 0;
     private boolean mAttached;
@@ -84,7 +87,6 @@ public class NetworkTraffic extends TextView {
     private int GB = MB * KB;
     private String mUp = " \u25B2";
     private String mDown = " \u25BC";
-    private String KEY = "rx";
 
     private Handler mTrafficHandler = new Handler() {
         @Override
@@ -134,13 +136,17 @@ public class NetworkTraffic extends TextView {
                 output += mDown;
             }
             
-            if (map.size() <= 0) {
-                map.put(KEY, rxData);
-            } else {
-                rxData += Long.valueOf(map.get(KEY).toString());
-                map.put(KEY, rxData);
+            if (mStart && mEnable) {
+                if (map.size() <= 0) {
+                    map.put(KEY_LONG, rxData);
+                } else {
+                    rxData += Long.valueOf(map.get(0).toString());
+                    map.put(KEY_LONG, rxData);
+                }
+                map.put(KEY_STRING, formatOutput(timeDelta, rxData, symbol));
+            } else if (!mStart && map.size() > 0) {
+                map.clear();
             }
-            // Log.e(TAG, formatOutput(timeDelta, rxData, symbol));
 
             // Update view if there's anything new to show
             if (!output.contentEquals(getText())) {
@@ -263,6 +269,7 @@ public class NetworkTraffic extends TextView {
             filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
             mContext.registerReceiver(mIntentReceiver, filter, null, getHandler());
         }
+        map = new SparseArray<Object>();
         updateSettings();
     }
 
@@ -289,6 +296,8 @@ public class NetworkTraffic extends TextView {
         ContentResolver resolver = mContext.getContentResolver();
         mState = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_NETWORK_TRAFFIC_STYLE, 3 , UserHandle.USER_CURRENT);
+        mEnable = Settings.System.getIntForUser(resolver,
+                Settings.System.ENABLE_TRAFFIC_NOTIFCATION, 0 , UserHandle.USER_CURRENT) == 1;
         MB = KB * KB;
         GB = MB * KB;
 
