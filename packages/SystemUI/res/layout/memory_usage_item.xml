@@ -33,15 +33,14 @@
     android:orientation="vertical"
     android:background="@color/memory_usage_item_background" >
 
-    <Button
-        android:id="@+id/kill_all_button"
-        android:layout_width="match_parent"
-        android:layout_height="40dip"
-        android:text="@string/tasklist_killall"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_gravity="right"
-        android:focusable="true"/>
-
+        <Button
+            android:id="@+id/kill_all_button"
+            android:layout_width="match_parent"
+            android:layout_height="40dip"
+            android:text="@string/tasklist_killall"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_gravity="right"
+            android:focusable="true"/>
     <TextView
         android:id="@+id/memory_usage_text"
         android:layout_width="match_parent"
