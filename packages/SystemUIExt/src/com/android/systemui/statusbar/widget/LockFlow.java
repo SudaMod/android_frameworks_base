@@ -33,6 +33,8 @@ public class LockFlow extends TextView {
 
     private int KEY_STRING = 1;
 
+    private String NULL_STRING = "0B";
+
     public LockFlow(Context context) {
         this(context, null);
         mContext = context;
@@ -67,12 +69,23 @@ public class LockFlow extends TextView {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_SCREEN_OFF)) {
+                if (NetworkTraffic.map.size() > 0) NetworkTraffic.map.clear();
                 NetworkTraffic.mStart = true;
-            } else {
-                setVisibility(NetworkTraffic.mEnable ? View.VISIBLE : View.GONE);
-                setText(NetworkTraffic.map.size() > 0 ? mContext.getString(R.string.lock_flow)
-                            + NetworkTraffic.map.get(KEY_STRING).toString() : null);
+            } else if (action.equals(Intent.ACTION_SCREEN_ON)) {
                 NetworkTraffic.mStart = false;
+                if (NetworkTraffic.map.size() > 0) {
+                    if (NetworkTraffic.map.get(KEY_STRING).toString().equals(NULL_STRING)) {
+                        NetworkTraffic.map.clear();
+                    }
+                }
+                if (NetworkTraffic.mEnable && NetworkTraffic.map.size() > 0) {
+                    setVisibility(View.VISIBLE);
+                    setText(mContext.getString(R.string.lock_has_data,
+                               NetworkTraffic.map.get(KEY_STRING).toString()));
+                } else {
+                    setVisibility(View.GONE);
+                }
+                if (NetworkTraffic.map.size() > 0) NetworkTraffic.map.clear();
             }
         }
     };
