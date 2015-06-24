@@ -136,17 +136,11 @@ public class NetworkTraffic extends TextView {
                 output += formatOutput(timeDelta, rxData, symbol);
                 output += mDown;
             }
-            
+
             if (mStart && mEnable) {
-                if (map.size() <= 0) {
-                    map.put(KEY_LONG, rxData);
-                } else {
-                    rxData += Long.valueOf(map.get(KEY_LONG).toString());
-                    map.put(KEY_LONG, rxData);
-                }
+                if (map.size() > 0) rxData += Long.valueOf(map.get(KEY_LONG).toString());
+                map.put(KEY_LONG, rxData);
                 map.put(KEY_STRING, formatOutput(timeDelta, rxData, Byte));
-            } else if (!mStart && map.size() > 0) {
-                map.clear();
             }
 
             // Update view if there's anything new to show
