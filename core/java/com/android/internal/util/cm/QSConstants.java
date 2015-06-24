@@ -56,10 +56,10 @@ public class QSConstants {
     public static final String DYNAMIC_TILE_NEXT_ALARM = "next_alarm";
     public static final String DYNAMIC_TILE_IME_SELECTOR = "ime_selector";
     public static final String DYNAMIC_TILE_SU = "su";
-    static final String DYNAMIC_TILE_ADB = "adb";
+    public static final String DYNAMIC_TILE_ADB = "adb";
 
-    static final ArrayList<String> STATIC_TILES_AVAILABLE = new ArrayList<String>();
-    static final ArrayList<String> DYNAMIC_TILES_AVAILABLE = new ArrayList<String>();
+    protected static final ArrayList<String> STATIC_TILES_AVAILABLE = new ArrayList<String>();
+    protected static final ArrayList<String> DYNAMIC_TILES_AVAILABLE = new ArrayList<String>();
     protected static final ArrayList<String> TILES_AVAILABLE = new ArrayList<String>();
 
     static {
@@ -94,5 +94,14 @@ public class QSConstants {
         STATIC_TILES_AVAILABLE.add(TILE_HEADS_UP);
         STATIC_TILES_AVAILABLE.add(TILE_AMBIENT_DISPLAY);
         STATIC_TILES_AVAILABLE.add(TILE_SYNC);
+
+
+        DYNAMIC_TILES_AVAILABLE.add(DYNAMIC_TILE_NEXT_ALARM);
+        DYNAMIC_TILES_AVAILABLE.add(DYNAMIC_TILE_IME_SELECTOR);
+        DYNAMIC_TILES_AVAILABLE.add(DYNAMIC_TILE_SU);
+        DYNAMIC_TILES_AVAILABLE.add(DYNAMIC_TILE_ADB);
+
+        TILES_AVAILABLE.addAll(STATIC_TILES_AVAILABLE);
+        TILES_AVAILABLE.addAll(DYNAMIC_TILES_AVAILABLE);
     }
 }
