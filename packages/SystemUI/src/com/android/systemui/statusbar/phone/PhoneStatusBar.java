@@ -1004,8 +1004,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     (HeadsUpNotificationView) View.inflate(context, R.layout.heads_up, null);
             mHeadsUpNotificationView.setVisibility(View.GONE);
             mHeadsUpNotificationView.setBar(this);
-            mHeadsUpNotificationView.setVisibility(View.GONE);
-            mHeadsUpNotificationView.setBar(this);
             mHeadsUpNotificationDecay = Settings.System.getIntForUser(
                     mContext.getContentResolver(),
                     Settings.System.HEADS_UP_NOTIFCATION_DECAY,
