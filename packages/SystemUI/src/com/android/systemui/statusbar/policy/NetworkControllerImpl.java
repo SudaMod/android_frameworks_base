@@ -1292,9 +1292,6 @@ public class NetworkControllerImpl extends BroadcastReceiver
             String action = intent.getAction();
             if (action.equals(TelephonyIntents.ACTION_DEFAULT_DATA_SUBSCRIPTION_CHANGED)) {
                 updateDataSim();
-            } else if (action.equals(Intent.ACTION_CUSTOM_CARRIER_LABEL_CHANGED)) {
-                updateNetworkName(mShowSpn, mSpn, mShowPlmn, mPlmn);
-                notifyListenersIfNecessary();
             }
         }
 
