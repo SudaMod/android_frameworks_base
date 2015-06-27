@@ -32,11 +32,6 @@ import android.view.animation.LinearInterpolator;
 import com.android.systemui.recents.RecentsConfiguration;
 import com.android.systemui.recents.model.Task;
 import com.android.systemui.utils.LockAppUtils;
-import com.android.systemui.utils.LockAppUtils.Package;
-
-import java.util.HashMap;
-import java.util.Map;
-
 
 /**
  * This class facilitates swipe to dismiss. It defines an interface to be implemented by the
@@ -381,12 +376,12 @@ public class SwipeHelper {
             Task task = tv.getTask();
             Context ct = tv.getContext();
             LockAppUtils lockAppUtils = new LockAppUtils(ct);
-            Map<String,Package> map = lockAppUtils.parseAppToMap();
+            lockAppUtils.refreshLockAppMap();
             if (task.isLockedApp){
-                lockAppUtils.removeApp(task.pkgName,map);
+                lockAppUtils.removeApp(task.pkgName);
                 task.isLockedApp = false;
             } else {
-                lockAppUtils.addApp(task.pkgName,map);
+                lockAppUtils.addApp(task.pkgName);
                 task.isLockedApp = true;
             }
             tv.getTaskViewHeader().refreshBackground(task.useLightOnPrimaryColor,task.isLockedApp);

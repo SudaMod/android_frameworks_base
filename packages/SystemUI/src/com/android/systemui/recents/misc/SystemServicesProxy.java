@@ -62,14 +62,11 @@ import com.android.systemui.R;
 import com.android.systemui.recents.AlternateRecentsComponent;
 import com.android.systemui.recents.Constants;
 import com.android.systemui.utils.LockAppUtils;
-import com.android.systemui.utils.LockAppUtils.Package;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -333,11 +330,11 @@ public class SystemServicesProxy {
             return;
         }
         Iterator<ActivityManager.RecentTaskInfo> iter = tasks.iterator();
-        Map<String,Package> map = LockAppUtils.parseAppToMap();
+        LockAppUtils.refreshLockAppMap();
         while (iter.hasNext()) {
             ActivityManager.RecentTaskInfo t = iter.next();
             String pkgName = t.baseIntent.getComponent().getPackageName();
-            boolean isLockedApp = LockAppUtils.isLockedApp(pkgName,map) ;
+            boolean isLockedApp = LockAppUtils.isLockedApp(pkgName) ;
             if (t.persistentId > 0 && !isLockedApp) {
                 removeTask(t.persistentId);
             }

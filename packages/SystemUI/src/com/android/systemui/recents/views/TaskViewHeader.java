@@ -50,10 +50,6 @@ import com.android.systemui.recents.RecentsConfiguration;
 import com.android.systemui.recents.misc.Utilities;
 import com.android.systemui.recents.model.Task;
 import com.android.systemui.utils.LockAppUtils;
-import com.android.systemui.utils.LockAppUtils.Package;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /* The task bar view */
 public class TaskViewHeader extends FrameLayout {
@@ -208,9 +204,9 @@ public class TaskViewHeader extends FrameLayout {
         // If an activity icon is defined, then we use that as the primary icon to show in the bar,
         // otherwise, we fall back to the application icon
 
-        Map<String,Package> map = lockAppUtils.parseAppToMap();
+        lockAppUtils.refreshLockAppMap();
         t.pkgName = t.key.baseIntent.getComponent().getPackageName();
-        t.isLockedApp = lockAppUtils.isLockedApp(t.pkgName,map) ;
+        t.isLockedApp = lockAppUtils.isLockedApp(t.pkgName) ;
         if (t.activityIcon != null) {
             mApplicationIcon.setImageDrawable(t.activityIcon);
         } else if (t.applicationIcon != null) {
@@ -226,13 +222,13 @@ public class TaskViewHeader extends FrameLayout {
             @Override
             public void onClick(View v) {
 
-                Map<String,Package> map = lockAppUtils.parseAppToMap();
+                lockAppUtils.refreshLockAppMap();
 
                 if (tt.isLockedApp) {
-                    lockAppUtils.removeApp(tt.pkgName,map);
+                    lockAppUtils.removeApp(tt.pkgName);
                     tt.isLockedApp = false;
                 } else {
-                    lockAppUtils.addApp(tt.pkgName,map);
+                    lockAppUtils.addApp(tt.pkgName);
                     tt.isLockedApp = true;
                 }
                 refreshBackground(tt.useLightOnPrimaryColor,tt.isLockedApp);

@@ -29,20 +29,20 @@ public class LockAppUtils {
 
     static Context ct;
     static String setting = Settings.System.Locked_APP_LIST;
-
+    public static Map<String,Package> lockAppmap = new HashMap<String,Package>();
 
     public LockAppUtils(Context ct) {
         this.ct = ct;
     }
 
-    public static Map<String,Package> parseAppToMap() {
+    public static void refreshLockAppMap() {
 
         String appString = Settings.System.getString(ct.getContentResolver(),
                                 setting);
 
-        Map<String,Package> map = new HashMap<String,Package>();
+        lockAppmap.clear();
 
-        if(TextUtils.isEmpty(appString)) return map;
+        if(TextUtils.isEmpty(appString)) return;
 
         final String[] array = TextUtils.split(appString, "\\|");
         for (String item : array) {
@@ -50,38 +50,37 @@ public class LockAppUtils {
                 continue;
             }
             Package pkg = Package.fromString(item);
-            map.put(pkg.name, pkg);
+            lockAppmap.put(pkg.name, pkg);
         }
-        return map;
     }
 
-    public static void savePackageList(Map<String,Package> map) {
+    public static void savePackageList() {
 
         List<String> settings = new ArrayList<String>();
-        for (Package app : map.values()) {
+        for (Package app : lockAppmap.values()) {
             settings.add(app.toString());
         }
         final String value = TextUtils.join("|", settings);
         Settings.System.putString(ct.getContentResolver(), setting, value);
     }
 
-    public static void removeApp(String packageName, Map<String,Package> map) {
-        if (map.remove(packageName) != null) {
-            savePackageList(map);
+    public static void removeApp(String packageName) {
+        if (lockAppmap.remove(packageName) != null) {
+            savePackageList();
         }
     }
 
-    public static void addApp(String packageName, Map<String,Package> map) {
-        Package pkg = map.get(packageName);
+    public static void addApp(String packageName) {
+        Package pkg = lockAppmap.get(packageName);
         if (pkg == null) {
             pkg = new Package(packageName);
-            map.put(packageName, pkg);
-            savePackageList(map);
+            lockAppmap.put(packageName, pkg);
+            savePackageList();
         }
     }
 
-    public static boolean isLockedApp(String packageName, Map<String,Package> map) {
-        if (map.get(packageName) != null) {
+    public static boolean isLockedApp(String packageName) {
+        if (lockAppmap.get(packageName) != null) {
             return true;
         } else {
             return false;
