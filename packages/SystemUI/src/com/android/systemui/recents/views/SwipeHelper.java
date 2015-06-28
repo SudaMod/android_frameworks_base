@@ -374,14 +374,12 @@ public class SwipeHelper {
         } else if (dismissChild && translation<0) {
             TaskView tv = (TaskView) mCurrView;
             Task task = tv.getTask();
-            Context ct = tv.getContext();
-            LockAppUtils lockAppUtils = new LockAppUtils(ct);
-            lockAppUtils.refreshLockAppMap();
+            LockAppUtils.refreshLockAppMap();
             if (task.isLockedApp){
-                lockAppUtils.removeApp(task.pkgName);
+                LockAppUtils.removeApp(task.pkgName);
                 task.isLockedApp = false;
             } else {
-                lockAppUtils.addApp(task.pkgName);
+                LockAppUtils.addApp(task.pkgName);
                 task.isLockedApp = true;
             }
             tv.getTaskViewHeader().refreshBackground(task.useLightOnPrimaryColor,task.isLockedApp);
