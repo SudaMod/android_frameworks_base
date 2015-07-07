@@ -653,6 +653,8 @@ public class AudioService extends IAudioService.Stub {
         updateStreamVolumeAlias(false /*updateVolumes*/);
         readPersistedSettings();
         mSettingsObserver = new SettingsObserver();
+        //Update volumes steps before creatingStreamStates!
+        initVolumeSteps();
         createStreamStates();
 
         readAndSetLowRamDevice();
@@ -752,6 +754,60 @@ public class AudioService extends IAudioService.Stub {
                 SAFE_VOLUME_CONFIGURE_TIMEOUT_MS);
 
         StreamOverride.init(mContext);
+    }
+
+    private void initVolumeSteps(){
+        //Defaults for reference
+        //5,  // STREAM_VOICE_CALL
+        //7,  // STREAM_SYSTEM
+        //7,  // STREAM_RING
+        //15, // STREAM_MUSIC
+        //7,  // STREAM_ALARM
+        //7,  // STREAM_NOTIFICATION
+        //15, // STREAM_BLUETOOTH_SCO
+        //7,  // STREAM_SYSTEM_ENFORCED
+        //15, // STREAM_DTMF
+        //15  // STREAM_TTS
+
+        MAX_STREAM_VOLUME[AudioSystem.STREAM_VOICE_CALL] =
+            Settings.System.getInt(mContentResolver, "volume_steps_voice_call",
+                MAX_STREAM_VOLUME[AudioSystem.STREAM_VOICE_CALL]);
+
+        MAX_STREAM_VOLUME[AudioSystem.STREAM_SYSTEM] =
+            Settings.System.getInt(mContentResolver, "volume_steps_system",
+                MAX_STREAM_VOLUME[AudioSystem.STREAM_SYSTEM]);
+
+        MAX_STREAM_VOLUME[AudioSystem.STREAM_RING] =
+            Settings.System.getInt(mContentResolver, "volume_steps_ring",
+                MAX_STREAM_VOLUME[AudioSystem.STREAM_RING]);
+
+        MAX_STREAM_VOLUME[AudioSystem.STREAM_MUSIC] =
+            Settings.System.getInt(mContentResolver, "volume_steps_music",
+                MAX_STREAM_VOLUME[AudioSystem.STREAM_MUSIC]);
+
+        MAX_STREAM_VOLUME[AudioSystem.STREAM_ALARM] =
+            Settings.System.getInt(mContentResolver, "volume_steps_alarm",
+                MAX_STREAM_VOLUME[AudioSystem.STREAM_ALARM]);
+
+        MAX_STREAM_VOLUME[AudioSystem.STREAM_NOTIFICATION] =
+            Settings.System.getInt(mContentResolver, "volume_steps_notification",
+                MAX_STREAM_VOLUME[AudioSystem.STREAM_NOTIFICATION]);
+
+        MAX_STREAM_VOLUME[AudioSystem.STREAM_BLUETOOTH_SCO] =
+            Settings.System.getInt(mContentResolver, "volume_steps_bluetooth_sco",
+                MAX_STREAM_VOLUME[AudioSystem.STREAM_BLUETOOTH_SCO]);
+
+        MAX_STREAM_VOLUME[AudioSystem.STREAM_SYSTEM_ENFORCED] =
+            Settings.System.getInt(mContentResolver, "volume_steps_system_enforced",
+                MAX_STREAM_VOLUME[AudioSystem.STREAM_SYSTEM_ENFORCED]);
+
+        MAX_STREAM_VOLUME[AudioSystem.STREAM_DTMF] =
+            Settings.System.getInt(mContentResolver, "volume_steps_dtmf",
+                MAX_STREAM_VOLUME[AudioSystem.STREAM_DTMF]);
+
+        MAX_STREAM_VOLUME[AudioSystem.STREAM_TTS] =
+            Settings.System.getInt(mContentResolver, "volume_steps_tts",
+                MAX_STREAM_VOLUME[AudioSystem.STREAM_TTS]);
     }
 
     private void createAudioSystemThread() {
@@ -1851,6 +1907,10 @@ public class AudioService extends IAudioService.Stub {
         return MAX_STREAM_VOLUME[streamType];
     }
 
+    protected static void setMaxStreamVolume(int streamType, int maxVol) {
+        MAX_STREAM_VOLUME[streamType] = maxVol;
+    }
+
     public static int getDefaultStreamVolume(int streamType) {
         return DEFAULT_STREAM_VOLUME[streamType];
     }
@@ -1929,6 +1989,13 @@ public class AudioService extends IAudioService.Stub {
 
     public int getMasterMaxVolume() {
         return MAX_MASTER_VOLUME;
+    }
+
+    /** @see AudioManager#setStreamMaxVolume(int,int) */
+    public void setStreamMaxVolume(int streamType, int maxVol) {
+        ensureValidStreamType(streamType);
+        mStreamStates[streamType].setMaxIndex(maxVol);
+        setMaxStreamVolume(streamType,maxVol);
     }
 
     /** Get last audible volume before stream was muted. */
@@ -3830,6 +3897,13 @@ public class AudioService extends IAudioService.Stub {
 
         public int getMaxIndex() {
             return mIndexMax;
+        }
+
+        public void setMaxIndex(int maxVol) {
+             mIndexMax = maxVol;
+             AudioSystem.initStreamVolume(mStreamType, 0, mIndexMax);
+             mIndexMax = maxVol;
+             mIndexMax *= 10;
         }
 
         public void setAllIndexes(VolumeStreamState srcStream) {
