@@ -31,5 +31,6 @@
      　  你已 <xliff:g id="number">%d</xliff:g>次输入错误.
         \n\n请 <xliff:g id="number">%d</xliff:g> 秒后重试.
     </string>
+    <string name="weather_info_not_available">没有天气信息</string>
 
 </resources>

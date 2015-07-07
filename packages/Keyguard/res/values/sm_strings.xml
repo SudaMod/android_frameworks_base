@@ -40,5 +40,5 @@
         You have incorrectly drawn your unlock gesture <xliff:g id="number">%d</xliff:g> times.
         \n\nTry again in <xliff:g id="number">%d</xliff:g> seconds.
     </string>
-
+    <string name="weather_info_not_available">Weather informations not available</string>
 </resources>
