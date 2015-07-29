@@ -370,7 +370,15 @@ public class SwipeHelper {
 
         if (dismissChild && translation>0) {
             // flingadingy
-            dismissChild(mCurrView, childSwipedFastEnough ? velocity : 0f);
+            TaskView tv = (TaskView) mCurrView;
+            Task task = tv.getTask();
+            LockAppUtils.refreshLockAppMap();
+            if (task.isLockedApp){
+                mCallback.onDragCancelled(mCurrView);
+                snapChild(mCurrView, velocity);
+            } else {
+                dismissChild(mCurrView, childSwipedFastEnough ? velocity : 0f);
+            } 
         } else if (dismissChild && translation<0) {
             TaskView tv = (TaskView) mCurrView;
             Task task = tv.getTask();
