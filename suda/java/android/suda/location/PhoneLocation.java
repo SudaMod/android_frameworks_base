@@ -51,7 +51,7 @@ public final class PhoneLocation {
             ss = s.split(",");
             if (ss.length == 2) return ss[i];
         }
-        return null;
+        return "";
     }
 
     public static String getFamily(String number) {
