@@ -23,12 +23,12 @@ import android.text.TextUtils;
 */
 
 public final class PhoneLocation {
-	
+
     private static String[] familyArray = {
-    	"760", "761", "762",
-    	"763", "764", "765",
-    	"766", "767", "768",
-    	"769"
+        "760", "761", "762",
+        "763", "764", "765",
+        "766", "767", "768",
+        "769"
     };
 
     private static String LIBPATH = "suda-phoneloc-jni";
@@ -55,12 +55,12 @@ public final class PhoneLocation {
     }
 
     public static String getFamily(String number) {
-	for(String temp : familyArray) {
-	    if (temp.equals(number)) {
-  	        return "亲情号码";
- 	    }
-	}
-	return null;
+        for(String temp : familyArray) {
+            if (temp.equals(number)) {
+                return "亲情号码";
+            }
+        }
+        return null;
     }
 
     public static String getCodeFromPhone(String number) {
@@ -69,10 +69,9 @@ public final class PhoneLocation {
 
     public static String getCityFromPhone(String number) {
         if (TextUtils.isEmpty(number)) {
-            return null;
+            return "";
         }
-	String phoneLocation = getPosFromPhone(number.replaceAll("(?:-| )", ""), 1);
-        return (TextUtils.isEmpty(phoneLocation) ? null :
-                      !TextUtils.isEmpty(getFamily(number)) ? getFamily(number) : phoneLocation);
+        String phoneLocation = getPosFromPhone(number.replaceAll("(?:-| )", ""), 1);
+        return !TextUtils.isEmpty(getFamily(number)) ? getFamily(number) : phoneLocation;
     }
 }
