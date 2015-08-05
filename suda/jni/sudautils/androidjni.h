@@ -36,4 +36,5 @@ static JNINativeMethod gMethods[] = {
     },
     /* <<----Functions for sync end--------------------------------- */
 };
+
 #endif
