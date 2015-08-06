@@ -54,7 +54,7 @@ public class SudaUtils {
     //六月
     private static int[] JUNH = {20, 21, 22};
     //九月
-    private static int[] SEPH = {26, 27};
+    private static int[] SEPH = {3, 4, 5, 26, 27};
     //十月
     private static int[] OCTH = {1, 2, 3, 4, 5, 6, 7};
 
