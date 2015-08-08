@@ -957,6 +957,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private ImmersiveModeConfirmation mImmersiveModeConfirmation;
 
     private SystemGesturesPointerEventListener mSystemGestures;
+    private SudaModGesturesListener mSudaGestures;
 
     private EdgeGestureManager.EdgeGestureActivationListener mEdgeGestureActivationListener
             = new EdgeGestureManager.EdgeGestureActivationListener() {
@@ -1697,6 +1698,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         filter = new IntentFilter(Intent.ACTION_USER_SWITCHED);
         context.registerReceiver(mMultiuserReceiver, filter);
 
+        mSudaGestures = new SudaModGesturesListener(context, new SudaModGesturesListener.Callbacks() {
+                    @Override
+                    public void onSwipeThreeFinger() {
+                        mHandler.post(mScreenshotRunnable);
+                    }
+                });
+
         // monitor for system gestures
         mSystemGestures = new SystemGesturesPointerEventListener(context,
                 new SystemGesturesPointerEventListener.Callbacks() {
@@ -1733,6 +1741,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 });
         mImmersiveModeConfirmation = new ImmersiveModeConfirmation(mContext);
         mWindowManagerFuncs.registerPointerEventListener(mSystemGestures);
+        mWindowManagerFuncs.registerPointerEventListener(mSudaGestures);
+
 
         mVibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
 
