@@ -23,8 +23,8 @@ import android.view.MotionEvent;
 import android.view.WindowManagerPolicy.PointerEventListener;
 
 public class SudaModGesturesListener implements PointerEventListener {
-    private static final String TAG = "OPGestures";
-    private static final boolean DEBUG = true;
+    private static final String TAG = "SudaModGestures";
+    private static final boolean DEBUG = false;
     private static final int NUM_POINTER_SCREENSHOT = 3;
     private static final long SWIPE_TIMEOUT_MS = 500;
     private static final int MAX_TRACKED_POINTERS = 32;

@@ -3835,6 +3835,12 @@ public final class Settings {
          */
         public static final String LONG_PRESS_KILL_DELAY = "long_press_kill_delay";
 
+        /**  Three Finger Gesture
+         *
+         * @hide
+         */
+        public static final String THREE_FINGER_GESTURE = "three_finger_gesture";
+
         /**
          * Locale for secondary overlay on dialer for t9 search input
          * @hide

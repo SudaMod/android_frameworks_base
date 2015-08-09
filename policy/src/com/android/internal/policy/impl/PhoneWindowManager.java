@@ -686,6 +686,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mHavePendingMediaKeyRepeatWithWakeLock;
 
     private int mCurrentUserId;
+    private boolean haveEnableGesture = false;
 
     // Maps global key codes to the components that will handle them.
     private GlobalKeyManager mGlobalKeyManager;
@@ -901,6 +902,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.LONG_PRESS_KILL_DELAY), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.THREE_FINGER_GESTURE), false, this,
                     UserHandle.USER_ALL);
             updateSettings();
         }
@@ -1578,6 +1582,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mWindowManagerInternal = LocalServices.getService(WindowManagerInternal.class);
         mDreamManagerInternal = LocalServices.getService(DreamManagerInternal.class);
 
+        mSudaGestures = new SudaModGesturesListener(context, new SudaModGesturesListener.Callbacks() {
+                    @Override
+                    public void onSwipeThreeFinger() {
+                        mHandler.post(mScreenshotRunnable);
+                    }
+                });
+
         mHandler = new PolicyHandler();
         mWakeGestureListener = new MyWakeGestureListener(mContext, mHandler);
         mOrientationListener = new MyOrientationListener(mContext, mHandler);
@@ -1698,13 +1709,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         filter = new IntentFilter(Intent.ACTION_USER_SWITCHED);
         context.registerReceiver(mMultiuserReceiver, filter);
 
-        mSudaGestures = new SudaModGesturesListener(context, new SudaModGesturesListener.Callbacks() {
-                    @Override
-                    public void onSwipeThreeFinger() {
-                        mHandler.post(mScreenshotRunnable);
-                    }
-                });
-
         // monitor for system gestures
         mSystemGestures = new SystemGesturesPointerEventListener(context,
                 new SystemGesturesPointerEventListener.Callbacks() {
@@ -1741,8 +1745,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 });
         mImmersiveModeConfirmation = new ImmersiveModeConfirmation(mContext);
         mWindowManagerFuncs.registerPointerEventListener(mSystemGestures);
-        mWindowManagerFuncs.registerPointerEventListener(mSudaGestures);
-
 
         mVibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -1802,6 +1804,17 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         + deviceKeyHandlerClass + " from class "
                         + deviceKeyHandlerLib, e);
             }
+        }
+    }
+
+    private void enableSwipeThreeFingerGesture(boolean enable){
+        if (enable) {
+            if (haveEnableGesture) return;
+            haveEnableGesture = true;
+            mWindowManagerFuncs.registerPointerEventListener(mSudaGestures);
+        } else {
+            haveEnableGesture = false;
+            mWindowManagerFuncs.unregisterPointerEventListener(mSudaGestures);
         }
     }
 
@@ -2120,6 +2133,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.NAVBAR_LEFT_IN_LANDSCAPE, 0, UserHandle.USER_CURRENT) == 1;
 
             updateKeyAssignments();
+
+            //Three Finger Gesture
+            boolean threeFingerGesture = Settings.System.getIntForUser(resolver,
+                    Settings.System.THREE_FINGER_GESTURE, 1, UserHandle.USER_CURRENT) == 1;
+            enableSwipeThreeFingerGesture(threeFingerGesture);
 
             // Configure rotation lock.
             int userRotation = Settings.System.getIntForUser(resolver,
