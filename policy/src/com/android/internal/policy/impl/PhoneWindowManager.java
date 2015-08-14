@@ -1813,6 +1813,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             haveEnableGesture = true;
             mWindowManagerFuncs.registerPointerEventListener(mSudaGestures);
         } else {
+            if (!haveEnableGesture) return;
             haveEnableGesture = false;
             mWindowManagerFuncs.unregisterPointerEventListener(mSudaGestures);
         }
