@@ -3440,6 +3440,12 @@ public final class Settings {
          * the setting value. See an example above.
          */
 
+        /**
+         * Enable double tap gesture anywhere on the lock screen put device to sleep
+         * @hide
+         */
+        public static final String DOUBLE_TAP_SLEEP_ANYWHERE = "double_tap_sleep_anywhere";
+
          /**
          * Whether wifi settings will connect to access point automatically
          * 0 = automatically
