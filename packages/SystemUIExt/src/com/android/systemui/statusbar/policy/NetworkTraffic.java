@@ -39,6 +39,7 @@ import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.TypedValue;
@@ -55,8 +56,6 @@ import com.android.systemui.utils.NetworkTrafficSpan;
  *
  */
 public class NetworkTraffic extends TextView {
-    private String TAG = "NetworkTraffic.TextView";
-    
     public static final int MASK_UP = 0x00000001; // Least valuable bit
     public static final int MASK_DOWN = 0x00000002; // Second least valuable bit
     public static final int MASK_PERIOD = 0xFFFF0000; // Most valuable 16 bits
@@ -88,6 +87,7 @@ public class NetworkTraffic extends TextView {
     private int GB = MB * KB;
     private String mUp = " \u25B2";
     private String mDown = " \u25BC";
+    private boolean shouldHide;
 
     private Handler mTrafficHandler = new Handler() {
         @Override
@@ -120,6 +120,7 @@ public class NetworkTraffic extends TextView {
             if (isSet(mState, MASK_UP)) {
                 output = formatOutput(timeDelta, txData, symbol);
                 output += mUp;
+                shouldHide = txData == 0;
             }
 
             // Ensure text size is where it needs to be
@@ -127,6 +128,7 @@ public class NetworkTraffic extends TextView {
             if (isSet(mState, MASK_UP + MASK_DOWN)) {
                 output += "\n";
                 textSize = txtSizeMulti;
+                shouldHide = rxData == 0 && txData == 0;
             } else {
                 textSize = txtSizeSingle;
             }
@@ -135,6 +137,7 @@ public class NetworkTraffic extends TextView {
             if (isSet(mState, MASK_DOWN)) {
                 output += formatOutput(timeDelta, rxData, symbol);
                 output += mDown;
+                shouldHide = rxData == 0;
             }
 
             if (mStart && mEnable) {
@@ -144,7 +147,7 @@ public class NetworkTraffic extends TextView {
             }
 
             // Update view if there's anything new to show
-            if (!output.contentEquals(getText())) {
+            if (!output.contentEquals(getText()) && !shouldHide) {
                 if (textSize == txtSizeMulti) {
                     int upIndex = output.indexOf(mUp);
                     int downIndex = output.indexOf(mDown);
@@ -179,7 +182,7 @@ public class NetworkTraffic extends TextView {
                     setText(spannable);
                 }
             }
-
+            setVisibility(shouldHide || mState == 0 ? View.GONE : View.VISIBLE);
             // Post delayed message to refresh in ~1000ms
             totalRxBytes = newTotalRxBytes;
             totalTxBytes = newTotalTxBytes;
@@ -305,13 +308,12 @@ public class NetworkTraffic extends TextView {
                     lastUpdateTime = SystemClock.elapsedRealtime();
                     mTrafficHandler.sendEmptyMessage(1);
                 }
-                setVisibility(View.VISIBLE);
                 return;
             }
         } else {
+            setVisibility(View.GONE);
             clearHandlerCallbacks();
         }
-        setVisibility(View.GONE);
     }
 
     private static boolean isSet(int intState, int intMask) {
