@@ -44,6 +44,7 @@ public class QSConstants {
     public static final String TILE_LOCKSCREEN = "lockscreen";
     public static final String TILE_LTE = "lte";
     public static final String TILE_VISUALIZER = "visualizer";
+    public static final String TILE_VOLUME = "volume_panel";
     public static final String TILE_SCREEN_TIMEOUT = "screen_timeout";
     public static final String TILE_NIGHTMODE = "nightmode";
     public static final String TILE_SCREENSHOT = "screenshot";
@@ -86,6 +87,7 @@ public class QSConstants {
         STATIC_TILES_AVAILABLE.add(TILE_LOCKSCREEN);
         STATIC_TILES_AVAILABLE.add(TILE_LTE);
         STATIC_TILES_AVAILABLE.add(TILE_VISUALIZER);
+        STATIC_TILES_AVAILABLE.add(TILE_VOLUME);
         STATIC_TILES_AVAILABLE.add(TILE_SCREEN_TIMEOUT);
         STATIC_TILES_AVAILABLE.add(TILE_SCREENSHOT);
         STATIC_TILES_AVAILABLE.add(TILE_NIGHTMODE);
