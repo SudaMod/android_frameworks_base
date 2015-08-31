@@ -43,7 +43,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
-import android.widget.Button;
+import android.widget.ImageButton;
 import com.android.systemui.recents.Constants;
 import com.android.systemui.recents.RecentsConfiguration;
 import com.android.systemui.recents.misc.SystemServicesProxy;
@@ -86,11 +86,11 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     ArrayList<TaskStack> mStacks;
     View mSearchBar;
     RecentsViewCallbacks mCb;
-    Button mClearRecents;
+    ImageButton mClearRecents;
     View mFloatingButton;
 
     private ActivityManager mAm;
-    private int mTotalMem;
+    //private int mTotalMem;
     private MemoryInfo memInfo;
     private ShakeSensorManager mShakeSensorManager;
 
@@ -111,14 +111,14 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         mConfig = RecentsConfiguration.getInstance();
         mInflater = LayoutInflater.from(context);
         mAm = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        mTotalMem = getTotalMemory();
+        //mTotalMem = getTotalMemory();
         mShakeSensorManager = new ShakeSensorManager(mContext, this);
     }
 
     @Override
     public synchronized void onShake() {
         dismissAllTasksAnimated();
-        startRefreshRecentsButtonAnimation();
+        //startRefreshRecentsButtonAnimation();
     }
 
     public void enableShake(boolean enableShakeClean) {
@@ -319,6 +319,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         }
     }
 
+/*
     public void startRefreshRecentsButtonAnimation() {
         if (mFloatingButton != null) {
             ValueAnimator valueAnimator = ValueAnimator.ofInt(0, getCurrentMemoryPercent());
@@ -333,6 +334,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
             valueAnimator.start();
         }
     }
+*/
 
     /** Adds the search bar */
     public void setSearchBar(View searchBar) {
@@ -383,7 +385,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
 
         }
 
-        updateMemoryStatus();
+        //updateMemoryStatus();
 
         boolean showClearAllRecents = Settings.System.getInt(resolver,
                 Settings.System.SHOW_CLEAR_ALL_RECENTS, 1) == 1;
@@ -440,6 +442,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         setMeasuredDimension(width, height);
     }
 
+/*
     private void updateMemoryStatus() {
         int percent = getCurrentMemoryPercent();
         if (percent < 80) {
@@ -460,6 +463,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         int use = mTotalMem - available;
         return (int)((use * 100) / mTotalMem);
     }
+*/
 
     private int getTotalMemory() {
         int result = 0;
@@ -520,7 +524,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     protected void onAttachedToWindow () {
         super.onAttachedToWindow();
         mFloatingButton = ((View)getParent()).findViewById(R.id.floating_action_button);
-        mClearRecents = (Button)((View)getParent()).findViewById(R.id.clear_recents);
+        mClearRecents = (ImageButton)((View)getParent()).findViewById(R.id.clear_recents);
         mClearRecents.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (mFloatingButton.getAlpha() != 1f) {
@@ -531,7 +535,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                 //startHideClearRecentsButtonAnimation();
 
                 dismissAllTasksAnimated();
-                startRefreshRecentsButtonAnimation();
+                //startRefreshRecentsButtonAnimation();
 
                 EventLog.writeEvent(EventLogTags.SYSUI_RECENTS_EVENT, 4 /* closed all tasks */);
             }
@@ -780,7 +784,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         // Remove the old task from activity manager
         loader.getSystemServicesProxy().removeTask(t.key.id);
 
-        updateMemoryStatus();
+        //updateMemoryStatus();
     }
 
     @Override
