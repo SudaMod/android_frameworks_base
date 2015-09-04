@@ -2553,7 +2553,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             loadIntegerSetting(stmt, Settings.System.NOTIFICATION_LIGHT_BRIGHTNESS_LEVEL,
                     R.integer.def_notification_brightness_level);
 
-            loadHeadsUpSetting(stmt);
+             loadBooleanSetting(stmt, Settings.System.SYSTEM_PROFILES_ENABLED,
+                    R.bool.def_system_profiles_enabled);
+
+             loadHeadsUpSetting(stmt);
 
         } finally {
             if (stmt != null) stmt.close();
