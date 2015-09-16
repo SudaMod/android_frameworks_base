@@ -560,54 +560,53 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
     }
 
     public void dismissAllTasks() {
-        post(new Runnable() {
+        ArrayList<Task> tasks_tmp = new ArrayList<Task>();
+        tasks_tmp.addAll(mStack.getTasks());
+        if (!dismissAll() && tasks_tmp.size() > 1) {
+            // Ignore the visible foreground task
+            Task foregroundTask = tasks_tmp.get(tasks_tmp.size() - 1);
+            tasks_tmp.remove(foregroundTask);
+        }
+
+        //将未锁定Task放到新的List
+        ArrayList<Task> tasks = new ArrayList<Task>();
+
+        for (int i = 0; i < tasks_tmp.size(); i++) {
+            Task t = tasks_tmp.get(i);
+            if (!t.isLockedApp) {
+                tasks.add(t);
+            }
+        }
+
+        // Remove visible TaskViews
+        if (tasks.size() > 0) {
+            long dismissDelay = 0;
+            int childCount = getChildCount();
+            if (!dismissAll() && childCount > 1) childCount--;
+            int delay = mConfig.taskViewRemoveAnimDuration / tasks.size();
+            for (int i = 0; i < childCount; i++) {
+                TaskView tv = (TaskView) getChildAt(i);
+                if(!tv.getTask().isLockedApp) {
+                    tasks.remove(tv.getTask());
+                     tv.dismissTask(dismissDelay);
+                     dismissDelay += delay;
+                }
+            }
+        }
+
+        // Remove any other Tasks
+        final int size = tasks.size();
+        for (Task t : tasks) {
+            if (mStack.getTasks().contains(t) && !t.isLockedApp) {
+                mStack.removeTask(t);
+            }
+        }
+
+        // removeAllUserTask() can take upwards of two seconds to execute so post
+        // a delayed runnable to run this code once we are done animating
+        postDelayed(new Runnable() {
             @Override
             public void run() {
-                ArrayList<Task> tasks_tmp = new ArrayList<Task>();
-                tasks_tmp.addAll(mStack.getTasks());
-                if (!dismissAll() && tasks_tmp.size() > 1) {
-                    // Ignore the visible foreground task
-                    Task foregroundTask = tasks_tmp.get(tasks_tmp.size() - 1);
-                    tasks_tmp.remove(foregroundTask);
-                }
-
-                //将未锁定Task放到新的List
-                ArrayList<Task> tasks = new ArrayList<Task>();
-
-                for (int i = 0; i < tasks_tmp.size(); i++) {
-                    Task t = tasks_tmp.get(i);
-                    if (!t.isLockedApp) {
-                        tasks.add(t);
-                    }
-                }
-
-                // Remove visible TaskViews
-                if (tasks.size() > 0) {
-                    long dismissDelay = 0;
-                    int childCount = getChildCount();
-                    if (!dismissAll() && childCount > 1) childCount--;
-                    int delay = mConfig.taskViewRemoveAnimDuration / tasks.size();
-                    for (int i = 0; i < childCount; i++) {
-                        TaskView tv = (TaskView) getChildAt(i);
-                        if(!tv.getTask().isLockedApp) {
-                            tasks.remove(tv.getTask());
-                            tv.dismissTask(dismissDelay);
-                            dismissDelay += delay;
-                        }
-                    }
-                }
-
-                int size = tasks.size();
-                if (size > 0) {
-                    // Remove possible alive Tasks
-                    for (int i = 0; i < size; i++) {
-                        Task t = tasks.get(i);
-                        if (mStack.getTasks().contains(t) && !t.isLockedApp) {
-                            mStack.removeTask(t);
-                        }
-                    }
-                }
-
                 // And remove all the excluded or all the other tasks
                 SystemServicesProxy ssp = RecentsTaskLoader.getInstance().getSystemServicesProxy();
                 if (size > 0) {
@@ -615,7 +614,7 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                 }
 
             }
-        });
+        }, mConfig.taskViewRemoveAnimDuration);
     }
 
     @Override

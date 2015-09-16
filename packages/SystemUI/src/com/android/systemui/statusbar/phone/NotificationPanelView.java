@@ -2123,7 +2123,7 @@ public class NotificationPanelView extends PanelView implements
     private KeyguardUpdateMonitorCallback mInfoCallback = new KeyguardUpdateMonitorCallback() {
         @Override
         public void onFingerprintAttemptFailed() {
-            if (!mStatusBar.isBouncerShowing()) {
+            if (!mStatusBar.isBouncerShowing() && mStatusBar.isScreenOnFromKeyguard()) {
                 NotificationPanelView.super.startHintAnimation(true /* fingerprintHint */);
             }
         }
