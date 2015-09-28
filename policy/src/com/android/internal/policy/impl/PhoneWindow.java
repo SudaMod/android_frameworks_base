@@ -5016,6 +5016,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
     @Override
     public void setStatusBarColor(int color) {
+        setNavigationBarColor(color);
         mStatusBarColor = color;
         mForcedStatusBarColor = true;
         if (mDecor != null) {

@@ -3680,9 +3680,10 @@ public class Activity extends ContextThemeWrapper
         // Get the primary color and update the TaskDescription for this activity
         if (theme != null) {
             TypedArray a = theme.obtainStyledAttributes(com.android.internal.R.styleable.Theme);
-            int colorPrimary = a.getColor(com.android.internal.R.styleable.Theme_colorPrimary, 0);
+            int colorPrimary = a.getColor(com.android.internal.R.styleable.Theme_colorPrimaryDark, 0);
             a.recycle();
             if (colorPrimary != 0) {
+                getWindow().setNavigationBarColor(colorPrimary);
                 ActivityManager.TaskDescription v = new ActivityManager.TaskDescription(null, null,
                         colorPrimary);
                 setTaskDescription(v);
