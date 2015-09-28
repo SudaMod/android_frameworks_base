@@ -25,6 +25,9 @@ import android.text.TextUtils;
 public final class PhoneLocation {
 
     private static String[] familyArray = {
+        "751", "752", "753", 
+        "754", "755", "756",
+        "757", "758", "759",
         "760", "761", "762",
         "763", "764", "765",
         "766", "767", "768",
