@@ -237,6 +237,8 @@ LOCAL_SHARED_LIBRARIES := \
     libicuuc \
     libicui18n \
     libmedia \
+    libsudautils \
+    libsuda-phoneloc-jni \
     libjpeg \
     libusbhost \
     libharfbuzz_ng \
