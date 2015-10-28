@@ -66,6 +66,7 @@ import static android.content.pm.PackageManager.MOVE_FAILED_OPERATION_PENDING;
 import static android.content.pm.PackageManager.MOVE_FAILED_SYSTEM_PACKAGE;
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static android.content.pm.PackageManager.INSTALL_FAILED_UNINSTALLED_PREBUNDLE;
 import static android.content.pm.PackageParser.isApkFile;
 import static android.os.Process.PACKAGE_INFO_GID;
 import static android.os.Process.SYSTEM_UID;
@@ -94,6 +95,7 @@ import android.app.AppGlobals;
 import android.app.ComposedIconInfo;
 import android.app.IActivityManager;
 import android.app.IconPackHelper;
+import android.app.PackageInstallObserver;
 import android.app.admin.IDevicePolicyManager;
 import android.app.backup.IBackupManager;
 import android.app.usage.UsageStats;
@@ -441,8 +443,6 @@ public class PackageManagerService extends IPackageManager.Stub {
     }
 
     final ServiceThread mHandlerThread;
-    private static final String IDMAP_PREFIX = "/data/resource-cache/";
-    private static final String IDMAP_SUFFIX = "@idmap";
 
     //Where overlays are be found in a theme APK
     private static final String APK_PATH_TO_OVERLAY = "assets/overlays/";
@@ -451,7 +451,6 @@ public class PackageManagerService extends IPackageManager.Stub {
     private static final String APK_PATH_TO_ICONS = "assets/icons/";
 
     private static final String COMMON_OVERLAY = ThemeUtils.COMMON_RES_TARGET;
-    private static final String APK_PATH_TO_COMMON_OVERLAY = APK_PATH_TO_OVERLAY + COMMON_OVERLAY;
 
     private static final long PACKAGE_HASH_EXPIRATION = 3*60*1000; // 3 minutes
     private static final long COMMON_RESOURCE_EXPIRATION = 3*60*1000; // 3 minutes
@@ -1928,6 +1927,8 @@ public class PackageManagerService extends IPackageManager.Stub {
 
         getDefaultDisplayMetrics(context, mMetrics);
 
+        removeLegacyResourceCache();
+
         SystemConfig systemConfig = SystemConfig.getInstance();
         mGlobalGids = systemConfig.getGlobalGids();
         mSystemPermissions = systemConfig.getSystemPermissions();
@@ -2131,6 +2132,8 @@ public class PackageManagerService extends IPackageManager.Stub {
                 }
             }
 
+            mBootThemeConfig = ThemeUtils.getBootThemeDirty();
+
             // Collect vendor overlay packages.
             // (Do this before scanning any apps.)
             // For security and version matching reason, only consider
@@ -2170,6 +2173,10 @@ public class PackageManagerService extends IPackageManager.Stub {
             final File oemAppDir = new File(Environment.getOemDirectory(), "app");
             scanDirLI(oemAppDir, PackageParser.PARSE_IS_SYSTEM
                     | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+
+            // Collect all prebundled packages.
+            scanDirLI(Environment.getPrebundledDirectory(),
+                    PackageParser.PARSE_IS_PREBUNDLED_DIR, scanFlags, 0);
 
             if (DEBUG_UPGRADE) Log.v(TAG, "Running installd update commands");
             mInstaller.moveFiles();
@@ -2358,6 +2365,12 @@ public class PackageManagerService extends IPackageManager.Stub {
             }
             updatePermissionsLPw(null, null, updateFlags);
             ver.sdkVersion = mSdkVersion;
+
+            // Remove any stale app permissions (declared permission that now are undeclared
+            // by the same app, removed from its Manifest in newer versions)
+            if (!onlyCore) {
+                mSettings.removeStalePermissions();
+            }
 
             // If this is the first boot or an update from pre-M, and it is a normal
             // boot, then we need to initialize the default preferred apps across
@@ -5696,6 +5709,10 @@ public class PackageManagerService extends IPackageManager.Stub {
                     opkg.baseCodePath + ": overlay not trusted");
             return false;
         }
+
+        // Some apps like to take on the package name of an existing app so we'll use the
+        // "real" package name, if it is non-null, when performing the idmap
+        final String pkgName = pkg.mRealPackage != null ? pkg.mRealPackage : pkg.packageName;
         ArrayMap<String, PackageParser.Package> overlaySet = mOverlays.get(pkg.packageName);
         if (overlaySet == null) {
             Slog.e(TAG, "was about to create idmap for " + pkg.baseCodePath + " and " +
@@ -5703,7 +5720,9 @@ public class PackageManagerService extends IPackageManager.Stub {
             return false;
         }
         final int sharedGid = UserHandle.getSharedAppGid(pkg.applicationInfo.uid);
-        if (mInstaller.idmap(pkg.baseCodePath, opkg.baseCodePath, sharedGid,
+        final String cachePath =
+                ThemeUtils.getTargetCacheDir(pkgName, opkg.packageName);
+        if (mInstaller.idmap(pkg.baseCodePath, opkg.baseCodePath, cachePath, sharedGid,
                 getPackageHashCode(pkg), getPackageHashCode(opkg)) != 0) {
             Slog.e(TAG, "Failed to generate idmap for " + pkg.baseCodePath +
                     " and " + opkg.baseCodePath);
@@ -5724,6 +5743,13 @@ public class PackageManagerService extends IPackageManager.Stub {
                     + " flags=0x" + Integer.toHexString(parseFlags));
         }
 
+        boolean isPrebundled = (parseFlags & PackageParser.PARSE_IS_PREBUNDLED_DIR) != 0;
+        if (isPrebundled) {
+            synchronized (mPackages) {
+                mSettings.readPrebundledPackagesLPr();
+            }
+        }
+
         for (File file : files) {
             final boolean isPackage = (isApkFile(file) || file.isDirectory())
                     && !PackageInstallerService.isStageName(file.getName());
@@ -5734,6 +5760,17 @@ public class PackageManagerService extends IPackageManager.Stub {
             try {
                 scanPackageLI(file, parseFlags | PackageParser.PARSE_MUST_BE_APK,
                         scanFlags, currentTime, null);
+                if (isPrebundled) {
+                    final PackageParser.Package pkg;
+                    try {
+                        pkg = new PackageParser().parsePackage(file, parseFlags);
+                    } catch (PackageParserException e) {
+                        throw PackageManagerException.from(e);
+                    }
+                    synchronized (mPackages) {
+                        mSettings.markPrebundledPackageInstalledLPr(pkg.packageName);
+                    }
+                }
             } catch (PackageManagerException e) {
                 Slog.w(TAG, "Failed to parse " + file + ": " + e.getMessage());
 
@@ -5747,6 +5784,12 @@ public class PackageManagerService extends IPackageManager.Stub {
                         file.delete();
                     }
                 }
+            }
+        }
+
+        if (isPrebundled) {
+            synchronized (mPackages) {
+                mSettings.writePrebundledPackagesLPr();
             }
         }
     }
@@ -5841,6 +5884,29 @@ public class PackageManagerService extends IPackageManager.Stub {
             pkg = pp.parsePackage(scanFile, parseFlags);
         } catch (PackageParserException e) {
             throw PackageManagerException.from(e);
+        }
+
+        if ((parseFlags & PackageParser.PARSE_IS_PREBUNDLED_DIR) != 0) {
+            synchronized (mPackages) {
+                PackageSetting existingSettings = mSettings.peekPackageLPr(pkg.packageName);
+                if (mSettings.wasPrebundledPackageInstalledLPr(pkg.packageName) &&
+                        existingSettings == null) {
+                    // The prebundled app was installed at some point in time, but now it is
+                    // gone.  Assume that the user uninstalled it intentionally: do not reinstall.
+                    throw new PackageManagerException(INSTALL_FAILED_UNINSTALLED_PREBUNDLE,
+                            "skip reinstall for " + pkg.packageName);
+                } else if (existingSettings != null
+                        && existingSettings.versionCode >= pkg.mVersionCode
+                        && !existingSettings.codePathString.contains(
+                                Environment.getPrebundledDirectory().getPath())) {
+                    // This app is installed in a location that is not the prebundled location
+                    // and has a higher (or same) version as the prebundled one.  Skip
+                    // installing the prebundled version.
+                    Slog.d(TAG, pkg.packageName + " already installed at " +
+                            existingSettings.codePathString);
+                    return null; // return null so we still mark package as installed
+                }
+            }
         }
 
         PackageSetting ps = null;
@@ -7098,7 +7164,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         final String cpuAbiOverride = deriveAbiOverride(pkg.cpuAbiOverride, pkgSetting);
 
         if ((scanFlags & SCAN_NEW_INSTALL) == 0) {
-            derivePackageAbi(pkg, scanFile, cpuAbiOverride, true /* extract libs */);
+            derivePackageAbi(pkg, scanFile, cpuAbiOverride, true /* extract libs */, parseFlags);
 
             // Some system apps still use directory structure for native libraries
             // in which case we might end up not detecting abi solely based on apk
@@ -7106,7 +7172,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             if (isSystemApp(pkg) && !pkg.isUpdatedSystemApp() &&
                     pkg.applicationInfo.primaryCpuAbi == null) {
                 setBundledAppAbisAndRoots(pkg, pkgSetting);
-                setNativeLibraryPaths(pkg);
+                setNativeLibraryPaths(pkg, parseFlags);
             }
 
         } else {
@@ -7122,7 +7188,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             // ABIs we've determined above. For non-moves, the path will be updated based on the
             // ABIs we determined during compilation, but the path will depend on the final
             // package path (after the rename away from the stage path).
-            setNativeLibraryPaths(pkg);
+            setNativeLibraryPaths(pkg, parseFlags);
         }
 
         if (DEBUG_INSTALL) Slog.i(TAG, "Linking native library dir for " + path);
@@ -7768,7 +7834,8 @@ public class PackageManagerService extends IPackageManager.Stub {
      * If {@code extractLibs} is true, native libraries are extracted from the app if required.
      */
     public void derivePackageAbi(PackageParser.Package pkg, File scanFile,
-                                 String cpuAbiOverride, boolean extractLibs)
+                                 String cpuAbiOverride, boolean extractLibs,
+                                 int parseFlags)
             throws PackageManagerException {
         // TODO: We can probably be smarter about this stuff. For installed apps,
         // we can calculate this information at install time once and for all. For
@@ -7777,7 +7844,7 @@ public class PackageManagerService extends IPackageManager.Stub {
 
         // Give ourselves some initial paths; we'll come back for another
         // pass once we've determined ABI below.
-        setNativeLibraryPaths(pkg);
+        setNativeLibraryPaths(pkg, parseFlags);
 
         // We would never need to extract libs for forward-locked and external packages,
         // since the container service will do it for us. We shouldn't attempt to
@@ -7897,7 +7964,7 @@ public class PackageManagerService extends IPackageManager.Stub {
 
         // Now that we've calculated the ABIs and determined if it's an internal app,
         // we will go ahead and populate the nativeLibraryPath.
-        setNativeLibraryPaths(pkg);
+        setNativeLibraryPaths(pkg, parseFlags);
     }
 
     /**
@@ -8044,14 +8111,12 @@ public class PackageManagerService extends IPackageManager.Stub {
 
         if (hasCommonResources(pkg)
                 && shouldCompileCommonResources(pkg)) {
-            ThemeUtils.createResourcesDirIfNotExists(COMMON_OVERLAY,
-                    pkg.applicationInfo.publicSourceDir);
+            ThemeUtils.createResourcesDirIfNotExists(COMMON_OVERLAY, pkg.packageName);
             compileResources(COMMON_OVERLAY, pkg);
             mAvailableCommonResources.put(pkg.packageName, System.currentTimeMillis());
         }
 
-        ThemeUtils.createResourcesDirIfNotExists(target,
-                pkg.applicationInfo.publicSourceDir);
+        ThemeUtils.createResourcesDirIfNotExists(target, pkg.packageName);
         compileResources(target, pkg);
     }
 
@@ -8131,7 +8196,7 @@ public class PackageManagerService extends IPackageManager.Stub {
     private void compileResourcesWithAapt(String target, PackageParser.Package pkg)
             throws Exception {
         String internalPath = APK_PATH_TO_OVERLAY + target;
-        String resPath = ThemeUtils.getResDir(target, pkg);
+        String resPath = ThemeUtils.getTargetCacheDir(target, pkg);
         final int sharedGid = UserHandle.getSharedAppGid(pkg.applicationInfo.uid);
         int pkgId;
         if ("android".equals(target)) {
@@ -8145,7 +8210,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         boolean hasCommonResources = (hasCommonResources(pkg) && !COMMON_OVERLAY.equals(target));
         if (mInstaller.aapt(pkg.baseCodePath, internalPath, resPath, sharedGid, pkgId,
                 pkg.applicationInfo.targetSdkVersion,
-                hasCommonResources ? ThemeUtils.getResDir(COMMON_OVERLAY, pkg)
+                hasCommonResources ? ThemeUtils.getTargetCacheDir(COMMON_OVERLAY, pkg)
                         + File.separator + "resources.apk" : "") != 0) {
             throw new AaptException("Failed to run aapt");
         }
@@ -8173,21 +8238,10 @@ public class PackageManagerService extends IPackageManager.Stub {
                     mOverlays.remove(target);
                 }
             }
-
-            PackageParser.Package targetPkg = mPackages.get(target);
-            if (targetPkg != null) {
-                String idmapPath = getIdmapPath(targetPkg, opkg);
-                new File(idmapPath).delete();
-            }
-
-            // recursively delete the cached resource directory
-            String resPath = ThemeUtils.getResDir(target, opkg);
-            recursiveDelete(new File(resPath));
         }
 
-        // Cleanup icons
-        String iconResources = ThemeUtils.getIconPackDir(opkg.packageName);
-        recursiveDelete(new File(iconResources));
+        // Now simply delete the root overlay cache directory and all its contents
+        recursiveDelete(new File(ThemeUtils.getOverlayResourceCacheDir(opkg.packageName)));
     }
 
     private void uninstallThemeForApp(PackageParser.Package appPkg) {
@@ -8195,8 +8249,8 @@ public class PackageManagerService extends IPackageManager.Stub {
         if (map == null) return;
 
         for(PackageParser.Package opkg : map.values()) {
-           String idmapPath = getIdmapPath(appPkg, opkg);
-           new File(idmapPath).delete();
+           String cachePath = ThemeUtils.getTargetCacheDir(appPkg.packageName, opkg.packageName);
+           recursiveDelete(new File(cachePath));
         }
     }
 
@@ -8234,20 +8288,6 @@ public class PackageManagerService extends IPackageManager.Stub {
         resFile.delete();
     }
 
-    private String getIdmapPath(PackageParser.Package targetPkg, PackageParser.Package overlayPkg) {
-        String targetPathFlat = targetPkg.baseCodePath.replaceAll("/", "@");
-        if (targetPathFlat.startsWith("@")) targetPathFlat = targetPathFlat.substring(1);
-
-        String overlayPkgFlat = overlayPkg.baseCodePath.replaceAll("/", "@");
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(ThemeUtils.IDMAP_PREFIX);
-        sb.append(targetPathFlat);
-        sb.append(overlayPkgFlat);
-        sb.append(ThemeUtils.IDMAP_SUFFIX);
-        return sb.toString();
-    }
-
     /**
      * Checks for existance of resources.arsc in target apk, then
      * Compares the 32 bit hash of the target and overlay to those stored
@@ -8278,7 +8318,8 @@ public class PackageManagerService extends IPackageManager.Stub {
         int targetHash = getPackageHashCode(targetPkg);
         int overlayHash = getPackageHashCode(overlayPkg);
 
-        File idmap = new File(getIdmapPath(targetPkg, overlayPkg));
+        File idmap =
+                new File(ThemeUtils.getIdmapPath(targetPkg.packageName, overlayPkg.packageName));
         if (!idmap.exists())
             return true;
 
@@ -8436,7 +8477,7 @@ public class PackageManagerService extends IPackageManager.Stub {
      * Derive and set the location of native libraries for the given package,
      * which varies depending on where and how the package was installed.
      */
-    private void setNativeLibraryPaths(PackageParser.Package pkg) {
+    private void setNativeLibraryPaths(PackageParser.Package pkg, int parseFlags) {
         final ApplicationInfo info = pkg.applicationInfo;
         final String codePath = pkg.codePath;
         final File codeFile = new File(codePath);
@@ -8482,10 +8523,17 @@ public class PackageManagerService extends IPackageManager.Stub {
             info.nativeLibraryRootRequiresIsa = false;
             info.nativeLibraryDir = info.nativeLibraryRootDir;
         } else {
-            // Cluster install
-            info.nativeLibraryRootDir = new File(codeFile, LIB_DIR_NAME).getAbsolutePath();
+            if ((parseFlags & PackageParser.PARSE_IS_PREBUNDLED_DIR) != 0) {
+                // mAppLib32InstallDir is the directory /data/app-lib which is used to store native
+                // libs for apps from the system paritition.  It isn't really specific to 32bit in
+                // any way except for the variable name, the system will use the primary/secondary
+                // ABI computed below.
+                info.nativeLibraryRootDir =
+                        new File(mAppLib32InstallDir, pkg.packageName).getAbsolutePath();
+            } else {
+                info.nativeLibraryRootDir = new File(codeFile, LIB_DIR_NAME).getAbsolutePath();
+            }
             info.nativeLibraryRootRequiresIsa = true;
-
             info.nativeLibraryDir = new File(info.nativeLibraryRootDir,
                     getPrimaryInstructionSet(info)).getAbsolutePath();
 
@@ -12979,7 +13027,7 @@ public class PackageManagerService extends IPackageManager.Stub {
 
             try {
                 derivePackageAbi(pkg, new File(pkg.codePath), args.abiOverride,
-                        true /* extract libs */);
+                        true /* extract libs */, parseFlags);
             } catch (PackageManagerException pme) {
                 Slog.e(TAG, "Error deriving application ABI", pme);
                 res.setError(INSTALL_FAILED_INTERNAL_ERROR, "Error deriving application ABI");
@@ -17477,5 +17525,24 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         return 0;
+    }
+
+    /**
+     * The new resource cache structure does not flatten the paths for idmaps, so this method
+     * checks for files that end with @idmap and assumes this indicates the older format and
+     * removes all files and directories from the resource cache so that it can be rebuilt
+     * using the new format.
+     */
+    private static void removeLegacyResourceCache() {
+        File cacheDir = new File(ThemeUtils.RESOURCE_CACHE_DIR);
+        if (cacheDir.exists()) {
+            for (File f : cacheDir.listFiles()) {
+                if (f.getName().endsWith(ThemeUtils.IDMAP_SUFFIX)) {
+                    Log.i(TAG, "Removing old resource cache");
+                    FileUtils.deleteContents(new File(ThemeUtils.RESOURCE_CACHE_DIR));
+                    return;
+                }
+            }
+        }
     }
 }

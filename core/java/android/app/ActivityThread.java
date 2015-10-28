@@ -1829,8 +1829,7 @@ public final class ActivityThread {
             }
 
             LoadedApk packageInfo = ref != null ? ref.get() : null;
-            if (packageInfo == null || (packageInfo.mResources != null
-                    && !packageInfo.mResources.getAssets().isUpToDate())) {
+            if (packageInfo == null) {
                 if (localLOGV) Slog.v(TAG, (includeCode ? "Loading code package "
                         : "Loading resource-only package ") + aInfo.packageName
                         + " (in " + (mBoundApplication != null
@@ -1855,6 +1854,10 @@ public final class ActivityThread {
                     mResourcePackages.put(aInfo.packageName,
                             new WeakReference<LoadedApk>(packageInfo));
                 }
+            }
+            if (packageInfo.mResources != null
+                    && !packageInfo.mResources.getAssets().isUpToDate()) {
+                packageInfo.mResources = null;
             }
             return packageInfo;
         }
@@ -2425,13 +2428,6 @@ public final class ActivityThread {
 
         } catch (Exception e) {
             if (!mInstrumentation.onException(activity, e)) {
-                if (e instanceof InflateException) {
-                    Log.e(TAG, "Failed to inflate", e);
-                    sendAppLaunchFailureBroadcast(r);
-                } else if (e instanceof Resources.NotFoundException) {
-                    Log.e(TAG, "Failed to find resource", e);
-                    sendAppLaunchFailureBroadcast(r);
-                }
                 throw new RuntimeException(
                     "Unable to start activity " + component
                     + ": " + e.toString(), e);
@@ -2446,7 +2442,7 @@ public final class ActivityThread {
         if (r.packageInfo != null && !TextUtils.isEmpty(r.packageInfo.getPackageName())) {
             pkg = r.packageInfo.getPackageName();
         }
-        Intent intent = new Intent(Intent.ACTION_APP_LAUNCH_FAILURE,
+        Intent intent = new Intent(Intent.ACTION_APP_FAILURE,
                 (pkg != null)? Uri.fromParts("package", pkg, null) : null);
         getSystemContext().sendBroadcast(intent);
     }
@@ -4282,8 +4278,8 @@ public final class ActivityThread {
         if (configDiff != 0) {
             // Ask text layout engine to free its caches if there is a locale change
             boolean hasLocaleConfigChange = ((configDiff & ActivityInfo.CONFIG_LOCALE) != 0);
-            boolean hasThemeConfigChange = ((configDiff & ActivityInfo.CONFIG_THEME_RESOURCE) != 0);
-            if (hasLocaleConfigChange || hasThemeConfigChange) {
+            boolean hasFontConfigChange = ((configDiff & ActivityInfo.CONFIG_THEME_FONT) != 0);
+            if (hasLocaleConfigChange || hasFontConfigChange) {
                 Canvas.freeTextLayoutCaches();
                 Typeface.recreateDefaults();
                 if (DEBUG_CONFIGURATION) Slog.v(TAG, "Cleared TextLayout Caches");
@@ -4454,7 +4450,7 @@ public final class ActivityThread {
                     + DisplayMetrics.DENSITY_DEVICE + " to "
                     + mCurDefaultDisplayDpi);
             DisplayMetrics.DENSITY_DEVICE = mCurDefaultDisplayDpi;
-            Bitmap.setDefaultDensity(DisplayMetrics.DENSITY_DEFAULT);
+            Bitmap.setDefaultDensity(DisplayMetrics.DENSITY_DEVICE);
         }
     }
 
@@ -4554,7 +4550,7 @@ public final class ActivityThread {
         }
 
 
-        final boolean is24Hr = "24".equals(mCoreSettings.getString(Settings.System.TIME_12_24));
+        final boolean is24Hr = android.text.format.DateFormat.is24HourFormat(appContext);
         DateFormat.set24HourTimePref(is24Hr);
 
         View.mDebugViewAttributes =

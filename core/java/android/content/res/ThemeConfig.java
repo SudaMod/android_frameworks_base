@@ -31,6 +31,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -59,6 +60,9 @@ public class ThemeConfig implements Cloneable, Parcelable, Comparable<ThemeConfi
 
     // Maps pkgname to theme (ex com.angry.birds -> red theme)
     protected final Map<String, AppTheme> mThemes = new HashMap<String, AppTheme>();
+
+    // Theme change timestamp
+    private long mThemeChangeTimestamp;
 
     public ThemeConfig(Map<String, AppTheme> appThemes) {
         mThemes.putAll(appThemes);
@@ -102,6 +106,10 @@ public class ThemeConfig implements Cloneable, Parcelable, Comparable<ThemeConfi
         return theme.mFontPkgName;
     }
 
+    public Map<String, AppTheme> getAppThemes() {
+        return Collections.unmodifiableMap(mThemes);
+    }
+
     private AppTheme getThemeFor(String pkgName) {
         AppTheme theme = mThemes.get(pkgName);
         if (theme == null) theme = getDefaultTheme();
@@ -127,7 +135,8 @@ public class ThemeConfig implements Cloneable, Parcelable, Comparable<ThemeConfi
             Map<String, AppTheme> newThemes = (o.mThemes == null) ?
                     new HashMap<String, AppTheme>() : o.mThemes;
 
-            return (currThemes.equals(newThemes));
+            return (currThemes.equals(newThemes) &&
+                    mThemeChangeTimestamp == o.mThemeChangeTimestamp);
         }
         return false;
     }
@@ -140,6 +149,14 @@ public class ThemeConfig implements Cloneable, Parcelable, Comparable<ThemeConfi
             result.append(mThemes);
         }
         return result.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 17;
+        hash = 31 * hash + mThemes.hashCode();
+        hash = 31 * hash + (int) mThemeChangeTimestamp;
+        return hash;
     }
 
     public String toJson() {
@@ -200,13 +217,16 @@ public class ThemeConfig implements Cloneable, Parcelable, Comparable<ThemeConfi
     public void writeToParcel(Parcel dest, int flags) {
         String json = JsonSerializer.toJson(this);
         dest.writeString(json);
+        dest.writeLong(mThemeChangeTimestamp);
     }
 
     public static final Parcelable.Creator<ThemeConfig> CREATOR =
             new Parcelable.Creator<ThemeConfig>() {
         public ThemeConfig createFromParcel(Parcel source) {
             String json = source.readString();
-            return JsonSerializer.fromJson(json);
+            ThemeConfig themeConfig = JsonSerializer.fromJson(json);
+            themeConfig.mThemeChangeTimestamp = source.readLong();
+            return themeConfig;
         }
 
         public ThemeConfig[] newArray(int size) {
@@ -260,7 +280,7 @@ public class ThemeConfig implements Cloneable, Parcelable, Comparable<ThemeConfi
             int hash = 17;
             hash = 31 * hash + (mOverlayPkgName == null ? 0 : mOverlayPkgName.hashCode());
             hash = 31 * hash + (mIconPkgName == null ? 0 : mIconPkgName.hashCode());
-            hash = 31 * hash + (mFontPkgName == null ? 0 : mIconPkgName.hashCode());
+            hash = 31 * hash + (mFontPkgName == null ? 0 : mFontPkgName.hashCode());
             return hash;
         }
 
@@ -324,6 +344,7 @@ public class ThemeConfig implements Cloneable, Parcelable, Comparable<ThemeConfi
         private HashMap<String, String> mOverlays = new HashMap<String, String>();
         private HashMap<String, String> mIcons = new HashMap<String, String>();
         private HashMap<String, String> mFonts = new HashMap<String, String>();
+        private long mThemeChangeTimestamp;
 
         public Builder() {}
 
@@ -335,6 +356,7 @@ public class ThemeConfig implements Cloneable, Parcelable, Comparable<ThemeConfi
                 mIcons.put(key, appTheme.getIconPackPkgName());
                 mOverlays.put(key, appTheme.getOverlayPkgName());
             }
+            mThemeChangeTimestamp = theme.mThemeChangeTimestamp;
         }
 
         /**
@@ -395,6 +417,11 @@ public class ThemeConfig implements Cloneable, Parcelable, Comparable<ThemeConfi
             return this;
         }
 
+        public Builder setThemeChangeTimestamp(long timestamp) {
+            mThemeChangeTimestamp = timestamp;
+            return this;
+        }
+
         public ThemeConfig build() {
             HashSet<String> appPkgSet = new HashSet<String>();
             appPkgSet.addAll(mOverlays.keySet());
@@ -407,10 +434,19 @@ public class ThemeConfig implements Cloneable, Parcelable, Comparable<ThemeConfi
                 String overlay = mOverlays.get(appPkgName);
                 String font = mFonts.get(appPkgName);
 
-                AppTheme appTheme = new AppTheme(overlay, icon, font);
-                appThemes.put(appPkgName, appTheme);
+                // Remove app theme if all items are null
+                if (overlay == null && icon == null && font == null) {
+                    if (appThemes.containsKey(appPkgName)) {
+                        appThemes.remove(appPkgName);
+                    }
+                } else {
+                    AppTheme appTheme = new AppTheme(overlay, icon, font);
+                    appThemes.put(appPkgName, appTheme);
+                }
             }
-            return new ThemeConfig(appThemes);
+            ThemeConfig themeConfig = new ThemeConfig(appThemes);
+            themeConfig.mThemeChangeTimestamp = mThemeChangeTimestamp;
+            return themeConfig;
         }
     }
 
