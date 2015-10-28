@@ -1702,16 +1702,19 @@ public final class ActivityThread {
             String[] libDirs, int displayId, Configuration overrideConfiguration,
             LoadedApk pkgInfo, Context context, String pkgName) {
         return mResourcesManager.getTopLevelResources(resDir, splitResDirs, overlayDirs, libDirs,
-                displayId, pkgName, overrideConfiguration, pkgInfo.getCompatibilityInfo(), context);
+                displayId, pkgName, overrideConfiguration, pkgInfo.getCompatibilityInfo(), context,
+                pkgInfo.getApplicationInfo().isThemeable);
     }
 
     /**
      * Creates the top level resources for the given package.
      */
-    Resources getTopLevelThemedResources(String resDir, int displayId, LoadedApk pkgInfo,
+    Resources getTopLevelThemedResources(String resDir, int displayId,
+                                         Configuration overrideConfiguration, LoadedApk pkgInfo,
                                          String pkgName, String themePkgName) {
         return mResourcesManager.getTopLevelThemedResources(resDir, displayId, pkgName,
-                themePkgName, pkgInfo.getCompatibilityInfo());
+                themePkgName, pkgInfo.getCompatibilityInfo(),
+                pkgInfo.getApplicationInfo().isThemeable);
     }
 
     final Handler getHandler() {
@@ -4281,7 +4284,9 @@ public final class ActivityThread {
             boolean hasFontConfigChange = ((configDiff & ActivityInfo.CONFIG_THEME_FONT) != 0);
             if (hasLocaleConfigChange || hasFontConfigChange) {
                 Canvas.freeTextLayoutCaches();
-                Typeface.recreateDefaults();
+                if (hasFontConfigChange) {
+                    Typeface.recreateDefaults();
+                }
                 if (DEBUG_CONFIGURATION) Slog.v(TAG, "Cleared TextLayout Caches");
             }
         }

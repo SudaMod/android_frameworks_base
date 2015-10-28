@@ -99,11 +99,18 @@ public class ThemeUtils {
     public static final String SYSTEM_NOTIFICATIONS_PATH = SYSTEM_MEDIA_PATH + File.separator
             + "notifications";
 
+    // path to asset lockscreen and wallpapers directory
+    public static final String LOCKSCREEN_WALLPAPER_PATH = "lockscreen";
+    public static final String WALLPAPER_PATH = "wallpapers";
+
     private static final String MEDIA_CONTENT_URI = "content://media/internal/audio/media";
 
+    // Constants for theme change broadcast
     public static final String ACTION_THEME_CHANGED = "org.cyanogenmod.intent.action.THEME_CHANGED";
-
     public static final String CATEGORY_THEME_COMPONENT_PREFIX = "org.cyanogenmod.intent.category.";
+    public static final String EXTRA_COMPONENTS = "components";
+    public static final String EXTRA_REQUEST_TYPE = "request_type";
+    public static final String EXTRA_UPDATE_TIME = "update_time";
 
     public static final int SYSTEM_TARGET_API = 0;
 
@@ -114,10 +121,18 @@ public class ThemeUtils {
             "/data/data/com.android.providers.settings/databases/settings.db";
     private static final String SETTINGS_SECURE_TABLE = "secure";
 
+    /**
+     * IDMAP hash version code used to alter the resulting hash and force recreating
+     * of the idmap.  This value should be changed whenever there is a need to force
+     * an update to all idmaps.
+     */
+    private static final byte IDMAP_HASH_VERSION = 3;
+
     // Actions in manifests which identify legacy icon packs
     public static final String[] sSupportedActions = new String[] {
             "org.adw.launcher.THEMES",
-            "com.gau.go.launcherex.theme"
+            "com.gau.go.launcherex.theme",
+            "com.novalauncher.THEME"
     };
 
     // Categories in manifests which identify legacy icon packs
@@ -509,7 +524,7 @@ public class ThemeUtils {
         try {
             Context uiContext = context.createPackageContext("com.android.systemui",
                     Context.CONTEXT_RESTRICTED);
-            return new ThemedUiContext(uiContext, context.getPackageName());
+            return new ThemedUiContext(uiContext, context.getApplicationContext());
         } catch (PackageManager.NameNotFoundException e) {
         }
 
@@ -524,17 +539,29 @@ public class ThemeUtils {
     }
 
     public static String getLockscreenWallpaperPath(AssetManager assetManager) throws IOException {
-        String[] assets = assetManager.list("lockscreen");
+        String[] assets = assetManager.list(LOCKSCREEN_WALLPAPER_PATH);
         String asset = getFirstNonEmptyAsset(assets);
         if (asset == null) return null;
-        return "lockscreen/" + asset;
+        return LOCKSCREEN_WALLPAPER_PATH + File.separator + asset;
     }
 
     public static String getWallpaperPath(AssetManager assetManager) throws IOException {
-        String[] assets = assetManager.list("wallpapers");
+        String[] assets = assetManager.list(WALLPAPER_PATH);
         String asset = getFirstNonEmptyAsset(assets);
         if (asset == null) return null;
-        return "wallpapers/" + asset;
+        return WALLPAPER_PATH + File.separator + asset;
+    }
+
+    public static List<String> getWallpaperPathList(AssetManager assetManager)
+            throws IOException {
+        List<String> wallpaperList = new ArrayList<String>();
+        String[] assets = assetManager.list(WALLPAPER_PATH);
+        for (String asset : assets) {
+            if (!TextUtils.isEmpty(asset)) {
+                wallpaperList.add(WALLPAPER_PATH + File.separator + asset);
+            }
+        }
+        return wallpaperList;
     }
 
     // Returns the first non-empty asset name. Empty assets can occur if the APK is built
@@ -544,7 +571,7 @@ public class ThemeUtils {
         if (assets == null) return null;
         String filename = null;
         for(String asset : assets) {
-            if (!asset.isEmpty()) {
+            if (!TextUtils.isEmpty(asset)) {
                 filename = asset;
                 break;
             }
@@ -571,16 +598,21 @@ public class ThemeUtils {
     }
 
     private static class ThemedUiContext extends ContextWrapper {
-        private String mPackageName;
+        private Context mAppContext;
 
-        public ThemedUiContext(Context context, String packageName) {
+        public ThemedUiContext(Context context, Context appContext) {
             super(context);
-            mPackageName = packageName;
+            mAppContext = appContext;
+        }
+
+        @Override
+        public Context getApplicationContext() {
+            return mAppContext;
         }
 
         @Override
         public String getPackageName() {
-            return mPackageName;
+            return mAppContext.getPackageName();
         }
     }
 
@@ -614,14 +646,17 @@ public class ThemeUtils {
         Cursor c = context.getContentResolver().query(ThemesContract.ThemesColumns.CONTENT_URI,
                 null, selection, selectionArgs, null);
 
-        if (c != null && c.moveToFirst()) {
-            List<String> allComponents = getAllComponents();
-            for(String component : allComponents) {
-                int index = c.getColumnIndex(component);
-                if (c.getInt(index) == 1) {
-                    supportedComponents.add(component);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                List<String> allComponents = getAllComponents();
+                for (String component : allComponents) {
+                    int index = c.getColumnIndex(component);
+                    if (c.getInt(index) == 1) {
+                        supportedComponents.add(component);
+                    }
                 }
             }
+            c.close();
         }
         return supportedComponents;
     }
@@ -729,5 +764,16 @@ public class ThemeUtils {
         return !(DEFAULT_PKG.equals(component)
                 || ThemeConfig.SYSTEMUI_STATUS_BAR_PKG.equals(component)
                 || ThemeConfig.SYSTEMUI_NAVBAR_PKG.equals(component));
+    }
+
+    /**
+     * Get a 32 bit hashcode for the given package.
+     * @param pkg
+     * @return
+     */
+    public static int getPackageHashCode(PackageParser.Package pkg) {
+        int hash = pkg.manifestDigest != null ? pkg.manifestDigest.hashCode() : 0;
+        hash = 31 * hash + IDMAP_HASH_VERSION;
+        return hash;
     }
 }

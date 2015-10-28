@@ -350,7 +350,7 @@ public class Typeface {
      *
      * This should only be called once, from the static class initializer block.
      */
-    private static void init() {
+    private static void init(boolean forceSystemFonts) {
         // Load font config and initialize Minikin state
         File systemFontConfigLocation = getSystemFontConfigLocation();
         File themeFontConfigLocation = getThemeFontConfigLocation();
@@ -360,7 +360,7 @@ public class Typeface {
         File configFile = null;
         File fontDir;
 
-        if (themeConfigFile.exists()) {
+        if (!forceSystemFonts && themeConfigFile.exists()) {
             configFile = themeConfigFile;
             fontDir = getThemeFontDirLocation();
         } else {
@@ -369,7 +369,8 @@ public class Typeface {
         }
 
         try {
-            FontListParser.Config fontConfig = FontListParser.parse(configFile, fontDir);
+            FontListParser.Config fontConfig = FontListParser.parse(configFile,
+                    fontDir.getAbsolutePath());
             FontListParser.Config systemFontConfig = null;
 
             // If the fonts are coming from a theme, we will need to make sure that we include
@@ -377,7 +378,7 @@ public class Typeface {
             // NOTE: All the system font families without names ALWAYS get added.
             if (configFile == themeConfigFile) {
                 systemFontConfig = FontListParser.parse(systemConfigFile,
-                        getSystemFontDirLocation());
+                        getSystemFontDirLocation().getAbsolutePath());
                 addMissingFontFamilies(systemFontConfig, fontConfig);
                 addMissingFontAliases(systemFontConfig, fontConfig);
                 addFallbackFontsForFamilyName(systemFontConfig, fontConfig, SANS_SERIF_FAMILY_NAME);
@@ -428,12 +429,17 @@ public class Typeface {
             Log.w(TAG, "Didn't create default family (most likely, non-Minikin build)", e);
             // TODO: normal in non-Minikin case, remove or make error when Minikin-only
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "Error opening " + configFile);
+            Log.e(TAG, "Error opening " + configFile, e);
         } catch (IOException e) {
-            Log.e(TAG, "Error reading " + configFile);
+            Log.e(TAG, "Error reading " + configFile, e);
         } catch (XmlPullParserException e) {
-            Log.e(TAG, "XML parse exception for " + configFile);
+            Log.e(TAG, "XML parse exception for " + configFile, e);
         }
+    }
+
+    /** @hide  */
+    public static void recreateDefaults() {
+        recreateDefaults(false);
     }
 
     /**
@@ -441,10 +447,10 @@ public class Typeface {
      * Skia will then reparse font config
      * @hide
      */
-    public static void recreateDefaults() {
+    public static void recreateDefaults(boolean forceSystemFonts) {
         sTypefaceCache.clear();
         sSystemFontMap.clear();
-        init();
+        init(forceSystemFonts);
 
         DEFAULT_INTERNAL = create((String) null, 0);
         DEFAULT_BOLD_INTERNAL = create((String) null, Typeface.BOLD);
@@ -462,7 +468,7 @@ public class Typeface {
     }
 
     static {
-        init();
+        init(false);
         // Set up defaults and typefaces exposed in public API
         DEFAULT_INTERNAL         = create((String) null, 0);
         DEFAULT_BOLD_INTERNAL    = create((String) null, Typeface.BOLD);

@@ -1140,6 +1140,7 @@ public class PackageParser {
                 final ZipEntry je = jarFile.findEntry(ANDROID_MANIFEST_FILENAME);
                 if (je != null) {
                     pkg.manifestDigest = ManifestDigest.fromInputStream(jarFile.getInputStream(je));
+                    pkg.manifestHashCode = ThemeUtils.getPackageHashCode(pkg);
                 }
             } finally {
                 jarFile.close();
@@ -2581,8 +2582,9 @@ public class PackageParser {
         final ApplicationInfo ai = owner.applicationInfo;
         final String pkgName = owner.applicationInfo.packageName;
 
-        // assume that this package is themeable unless explicitly set to false.
-        ai.isThemeable = true;
+        String[] nonThemeablePackages =
+                res.getStringArray(com.android.internal.R.array.non_themeable_packages);
+        ai.isThemeable = isPackageThemeable(pkgName, nonThemeablePackages);
 
         TypedArray sa = res.obtainAttributes(attrs,
                 com.android.internal.R.styleable.AndroidManifestApplication);
@@ -4442,6 +4444,22 @@ public class PackageParser {
         return true;
     }
 
+    /**1
+     * Returns whether the specified package is themeable
+     * @param packageName Name of package to check
+     * @param nonThemeablePackages Array of packages that are declared as non-themeable
+     * @return True if the package is themeable, false otherwise
+     */
+    private static boolean isPackageThemeable(String packageName, String[] nonThemeablePackages) {
+        for (String pkg : nonThemeablePackages) {
+            if (packageName.startsWith(pkg)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Representation of a full package parsed from APK files on disk. A package
      * consists of a single base APK, and zero or more split APKs.
@@ -4594,6 +4612,7 @@ public class PackageParser {
         public boolean mTrustedOverlay;
 
         public boolean hasIconPack;
+        public int manifestHashCode;
 
         /**
          * Data used to feed the KeySetManagerService
