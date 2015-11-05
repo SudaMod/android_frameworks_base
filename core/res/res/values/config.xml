@@ -513,6 +513,9 @@
     <!-- Operating volatage for wifi radio. 0 by default-->
     <integer translatable="false" name="config_wifi_operating_voltage_mv">0</integer>
 
+    <!-- Wifi framework supports ECBM mode  -->
+    <bool translatable="false" name="config_wifi_ecbm_mode_change">true</bool>
+
     <!-- Flag indicating whether the we should enable the automatic brightness in Settings.
          Software implementation will be used if config_hardware_auto_brightness_available is not set -->
     <bool name="config_automatic_brightness_available">false</bool>
@@ -2459,22 +2462,6 @@
 
     <!-- Packages in this list should be a union of all packages defined in values-mccxxx (mcc) -->
     <string-array name="config_restrict_to_region_locked_devices" translatable="false">
-    </string-array>
-
-    <!-- Defines the system property to set for performance profile xe: sys.cpu.modes. Leave it
-         blank if the device do not support performance profiles -->
-    <string name="config_perf_profile_prop" translatable="false"></string>
-
-    <!-- When config_perf_profile_prop is defined, this value MUST be the index of
-         one of the listes values in frameworks/base/core/res/res/values/cm_arrays.xml
-         for "perf_profile_values" array. Leave it blank if the device do not support
-         performance profiles  -->
-    <string name="config_perf_profile_default_entry" translatable="false"></string>
-
-    <!-- Automatic power profile management per app.
-         Each item should list the fully-qualified activity
-         name and the power profile id, separated by a comma. -->
-    <string-array name="config_auto_perf_activities" translatable="false">
     </string-array>
 
 </resources>
