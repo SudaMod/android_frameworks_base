@@ -1316,11 +1316,12 @@ public final class PowerManager {
     }
     
     public boolean Powerstate() {
-        return Settings.System.getInt(
-                mContext.getContentResolver(), Settings.System.POWER_SAVE_SETTINGS, 1) == 1 &&
-              Settings.System.getInt(
-                mContext.getContentResolver(), Settings.System.POWER_SAVE_SETTINGS_TRIGGER_LEVEL, 1) == 1 &&
-              Settings.Secure.getInt(
-                mContext.getContentResolver(), Settings.Secure.DOZE_ENABLED, 0) == 0;
+        return false;
+        // return Settings.System.getInt(
+        //         mContext.getContentResolver(), Settings.System.POWER_SAVE_SETTINGS, 1) == 1 &&
+        //       Settings.System.getInt(
+        //         mContext.getContentResolver(), Settings.System.POWER_SAVE_SETTINGS_TRIGGER_LEVEL, 1) == 1 &&
+        //       Settings.Secure.getInt(
+        //         mContext.getContentResolver(), Settings.Secure.DOZE_ENABLED, 0) == 0;
     }
 }
