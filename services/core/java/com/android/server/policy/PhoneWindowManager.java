@@ -5293,22 +5293,24 @@ public class PhoneWindowManager implements WindowManagerPolicy {
      */
     private boolean setKeyguardOccludedLw(boolean isOccluded) {
         boolean wasOccluded = mKeyguardOccluded;
-        boolean showing = mKeyguardDelegate.isShowing();
-        if (wasOccluded && !isOccluded && showing) {
+        if (wasOccluded && !isOccluded) {
             mKeyguardOccluded = false;
             mKeyguardDelegate.setOccluded(false);
-            mStatusBar.getAttrs().privateFlags |= PRIVATE_FLAG_KEYGUARD;
-            mStatusBar.getAttrs().flags |= FLAG_SHOW_WALLPAPER;
-            return true;
-        } else if (!wasOccluded && isOccluded && showing) {
+            if (mKeyguardDelegate.isShowing()) {
+                mStatusBar.getAttrs().privateFlags |= PRIVATE_FLAG_KEYGUARD;
+                mStatusBar.getAttrs().flags |= FLAG_SHOW_WALLPAPER;
+                return true;
+            }
+        } else if (!wasOccluded && isOccluded) {
             mKeyguardOccluded = true;
             mKeyguardDelegate.setOccluded(true);
-            mStatusBar.getAttrs().privateFlags &= ~PRIVATE_FLAG_KEYGUARD;
-            mStatusBar.getAttrs().flags &= ~FLAG_SHOW_WALLPAPER;
-            return true;
-        } else {
-            return false;
+            if (mKeyguardDelegate.isShowing()) {
+                mStatusBar.getAttrs().privateFlags &= ~PRIVATE_FLAG_KEYGUARD;
+                mStatusBar.getAttrs().flags &= ~FLAG_SHOW_WALLPAPER;
+                return true;
+            }
         }
+        return false;
     }
 
     private boolean isStatusBarKeyguard() {
@@ -5790,7 +5792,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
 
             case KeyEvent.KEYCODE_POWER: {
-                if ((mTopFullscreenOpaqueWindowState.getAttrs().privateFlags
+                if (mTopFullscreenOpaqueWindowState != null &&
+                        (mTopFullscreenOpaqueWindowState.getAttrs().privateFlags
                         & WindowManager.LayoutParams.PRIVATE_FLAG_PREVENT_POWER_KEY) != 0
                         && mScreenOnFully) {
                     return result;
