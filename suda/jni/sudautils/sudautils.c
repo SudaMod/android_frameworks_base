@@ -23,14 +23,13 @@
 #include <stdio.h>
 
 JNIEXPORT jboolean JNICALL isSupportLanguage (JNIEnv* env, jclass thiz, jboolean excludeTW) {
-    char language[PROPERTY_VALUE_MAX];
-    char country[PROPERTY_VALUE_MAX];
-    property_get("persist.sys.language", language, "");
-    property_get("persist.sys.country", country, "");
+    char locale[PROPERTY_VALUE_MAX];
+
+    property_get("persist.sys.locale", locale, "");
 
     if (excludeTW) {
-        return (strstr(language, "zh") && !strstr(country, "TW")) ? JNI_TRUE : JNI_FALSE;
+        return (strstr(locale, "zh") && !strstr(locale, "TW")) ? JNI_TRUE : JNI_FALSE;
     } else {
-        return strstr(language, "zh") ? JNI_TRUE : JNI_FALSE;
+        return strstr(locale, "zh") ? JNI_TRUE : JNI_FALSE;
     }
 }
