@@ -57,13 +57,10 @@ public class PlatLogoActivity extends Activity {
     int mKeyCount;
     PathInterpolator mInterpolator = new PathInterpolator(0f, 0f, 0.5f, 1f);
 
-    private boolean mIsSM;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mIsSM = getIntent().hasExtra("is_sm");
         mLayout = new FrameLayout(this);
         setContentView(mLayout);
     }
@@ -205,9 +202,7 @@ public class PlatLogoActivity extends Activity {
     }
 
     public void showMarshmallow(View im) {
-        final Drawable fg = getDrawable(mIsSM
-                ? com.android.internal.R.drawable.sm_platlogo
-                : com.android.internal.R.drawable.platlogo);
+        final Drawable fg = getDrawable(com.android.internal.R.drawable.platlogo);
 
         fg.setBounds(0, 0, im.getWidth(), im.getHeight());
         fg.setAlpha(0);

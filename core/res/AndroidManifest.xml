@@ -2831,6 +2831,11 @@
                 android:configChanges="orientation|keyboardHidden"
                 android:process=":ui">
         </activity>
+        <activity android:name="com.android.internal.app.SMPlatLogoActivity"
+                android:theme="@style/Theme.Wallpaper.NoTitleBar.Fullscreen"
+                android:configChanges="orientation|keyboardHidden"
+                android:process=":ui">
+        </activity>
         <activity android:name="com.android.internal.app.DisableCarModeActivity"
                 android:theme="@style/Theme.NoDisplay"
                 android:excludeFromRecents="true"
