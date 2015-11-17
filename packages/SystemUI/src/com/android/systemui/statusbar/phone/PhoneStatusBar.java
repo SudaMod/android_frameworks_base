@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2015 The SudaMod Project 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,6 +171,7 @@ import com.android.systemui.statusbar.policy.KeyguardUserSwitcher;
 import com.android.systemui.statusbar.policy.LocationControllerImpl;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NetworkControllerImpl;
+import com.android.systemui.statusbar.policy.NetworkTraffic;
 import com.android.systemui.statusbar.policy.NextAlarmController;
 import com.android.systemui.statusbar.policy.PreviewInflater;
 import com.android.systemui.statusbar.policy.RotationLockControllerImpl;
@@ -362,6 +364,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private Bitmap mKeyguardWallpaper;
 
     int mKeyguardMaxNotificationCount;
+
+    // Status bar Network traffic;
+    private NetworkTraffic mNetworkTraffic;
 
     boolean mExpandedVisible;
 
@@ -950,6 +955,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         // figure out which pixel-format to use for the status bar.
         mPixelFormat = PixelFormat.OPAQUE;
+
+
+        mNetworkTraffic = (NetworkTraffic)mStatusBarView.findViewById(R.id.network_traffic);
 
         mStackScroller = (NotificationStackScrollLayout) mStatusBarWindowContent.findViewById(
                 R.id.notification_stack_scroller);
@@ -3420,6 +3428,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         animateCollapsePanels();
         updatePublicMode();
+        mNetworkTraffic.updateSettings();
         updateNotifications();
         resetUserSetupObserver();
         setControllerUsers();
