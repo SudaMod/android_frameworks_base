@@ -6441,10 +6441,17 @@ public class PackageManagerService extends IPackageManager.Stub {
             Log.i(TAG, "Optimizing app " + curr + " of " + total + ": " + pkg.packageName);
         }
 
-        final String bootMsg = mContext.getResources().getString(R.string.android_upgrading_apk,
-                                curr, total) + "\n(" + pkg.packageName + ')';
-
+        ApplicationInfo ai;
         try {
+            try {
+                ai = mContext.getPackageManager().getApplicationInfo(pkg.packageName, 0);
+            } catch (Exception e) {
+                ai = null;
+            }
+            final String bootMsg = mContext.getResources().getString(R.string.android_upgrading_apk,
+                                curr, total) + "\n(" + ((String) (ai != null ? mContext.getPackageManager().getApplicationLabel(ai) :
+            pkg.packageName)) + ')';
+
             ActivityManagerNative.getDefault().showBootMessage(bootMsg, true);
         } catch (RemoteException e) {
         }
