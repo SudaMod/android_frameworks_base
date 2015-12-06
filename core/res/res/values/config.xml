@@ -1288,9 +1288,9 @@
     </string-array>
 
     <!-- Component name of the combo network location provider. -->
-    <string name="config_comboNetworkLocationProvider" translatable="false">com.qualcomm.location</string>
+    <string name="config_comboNetworkLocationProvider" translatable="false">@null</string>
     <!-- Component name of the service providing geofence API support. -->
-    <string name="config_geofenceProvider" translatable="false">com.qualcomm.location</string>
+    <string name="config_geofenceProvider" translatable="false">@null</string>
 
     <!-- Boolean indicating if current platform supports bluetooth SCO for off call
     use cases -->
@@ -2307,6 +2307,7 @@
           when evaluating RSRP for LTE antenna bar display
            0. Strict threshold
            1. Lenient threshold
+           2. Custom threshold
     -->
     <integer name="config_LTE_RSRP_threshold_type">1</integer>
 
@@ -2543,4 +2544,15 @@
     <string name="config_rat_2g" translatable="false">2G</string>
     <string name="config_rat_3g" translatable="false">3G</string>
     <string name="config_rat_4g" translatable="false">4G</string>
+
+    <!-- When config_LTE_RSRP_threshold_type is set to "custom" -->
+    <integer-array name="config_LTE_RSRP_custom_levels">
+        <item>-140</item>
+        <item>-128</item>
+        <item>-118</item>
+        <item>-108</item>
+        <item>-98</item>
+        <item>-44</item>
+    </integer-array>
+
 </resources>

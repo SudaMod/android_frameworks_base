@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
+ * Copyright (C) 2015 The CyanogenMod Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +92,16 @@ public class CastTile extends QSTile<QSTile.BooleanState> {
     }
 
     @Override
+    protected void handleSecondaryClick() {
+        handleClick();
+    }
+
+    @Override
+    protected void handleLongClick() {
+        mHost.startActivityDismissingKeyguard(CAST_SETTINGS);
+    }
+
+    @Override
     protected void handleUpdateState(BooleanState state, Object arg) {
         state.visible = !mKeyguard.isSecure() || !mKeyguard.isShowing()
                 || mKeyguard.canSkipBouncer();
@@ -127,6 +138,11 @@ public class CastTile extends QSTile<QSTile.BooleanState> {
             return mContext.getString(R.string.accessibility_casting_turned_off);
         }
         return null;
+    }
+
+    @Override
+    public boolean hasDualTargetsDetails() {
+        return true;
     }
 
     private String getDeviceName(CastDevice device) {
