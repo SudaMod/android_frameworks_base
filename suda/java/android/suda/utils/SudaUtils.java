@@ -101,7 +101,7 @@ public class SudaUtils {
 
     public static boolean isChineseHoliday(int y, int m, int d) {
         boolean bResult = false;
-        if( y == 2015 ){
+        if( y == 2016 ){
             switch(m) {
                 case 1:
                   for(int tmp:JANH){
