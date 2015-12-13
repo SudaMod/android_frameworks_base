@@ -371,10 +371,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // Status bar Network traffic;
     private NetworkTraffic mNetworkTraffic;
 
-    // carrier label
-    private TextView mCarrierLabel;
-    private boolean mShowCarrierInPanel = false;
-
     boolean mExpandedVisible;
 
     private int mNavigationBarWindowState = WINDOW_STATE_SHOWING;
