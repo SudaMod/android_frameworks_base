@@ -181,6 +181,7 @@ import com.android.systemui.statusbar.policy.SecurityControllerImpl;
 import com.android.systemui.statusbar.policy.SuControllerImpl;
 import com.android.systemui.statusbar.policy.UserInfoController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
+import com.android.systemui.statusbar.policy.WeatherControllerImpl;
 import com.android.systemui.statusbar.policy.ZenModeController;
 import com.android.systemui.statusbar.stack.NotificationStackScrollLayout;
 import com.android.systemui.statusbar.stack.NotificationStackScrollLayout.OnChildLocationsChangedListener;
@@ -218,7 +219,7 @@ import cyanogenmod.providers.CMSettings;
 
 public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         DragDownHelper.DragDownCallback, ActivityStarter, OnUnlockMethodChangedListener,
-        HeadsUpManager.OnHeadsUpChangedListener, WeatherController.Callback {
+        HeadsUpManager.OnHeadsUpChangedListener {
     static final String TAG = "PhoneStatusBar";
     public static final boolean DEBUG = BaseStatusBar.DEBUG;
     public static final boolean SPEW = false;
@@ -312,6 +313,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     KeyguardMonitor mKeyguardMonitor;
     BrightnessMirrorController mBrightnessMirrorController;
     AccessibilityController mAccessibilityController;
+    WeatherControllerImpl mWeatherController;
     SuControllerImpl mSuController;
     FingerprintUnlockController mFingerprintUnlockController;
 
@@ -371,15 +373,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private NetworkTraffic mNetworkTraffic;
 
     boolean mExpandedVisible;
-
-    // Weather temperature
-    private TextView mWeatherTempView;
-    private int mWeatherTempState;
-    private int mWeatherTempStyle;
-    private int mWeatherTempColor;
-    private int mWeatherTempSize;
-    private int mWeatherTempFontStyle = FONT_NORMAL;
-    private WeatherController mWeatherController;
 
     private int mNavigationBarWindowState = WINDOW_STATE_SHOWING;
 
@@ -1119,7 +1112,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mUserSwitcherController = new UserSwitcherController(mContext, mKeyguardMonitor,
                     mHandler);
         }
-
         mWeatherController = new WeatherControllerImpl(mContext);
 
         mKeyguardUserSwitcher = new KeyguardUserSwitcher(mContext,
@@ -1252,18 +1244,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         ThreadedRenderer.overrideProperty("ambientRatio", String.valueOf(1.5f));
 
         return mStatusBarView;
-    }
-
-    @Override
-    public void onWeatherChanged(WeatherController.WeatherInfo info) {
-        SettingsObserver observer = new SettingsObserver(mHandler);
-        if (info.temp == null || info.condition == null) {
-            mWeatherTempView.setText(null);
-           // observer.update();
-        } else {
-            mWeatherTempView.setText(info.temp);
-           // observer.update();
-        }
     }
 
     private void clearAllNotifications() {
