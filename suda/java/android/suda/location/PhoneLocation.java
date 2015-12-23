@@ -67,7 +67,7 @@ public final class PhoneLocation {
     }
 
     public static String getCodeFromPhone(String number) {
-        return getPosFromPhone(number, 0);
+        return getPosFromPhone(number.replaceAll("(?:-| )", ""), 0);
     }
 
     public static String getCityFromPhone(String number) {
