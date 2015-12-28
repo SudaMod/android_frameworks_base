@@ -47,18 +47,9 @@
             android:layout_marginBottom="@dimen/bottom_text_spacing_digital" />
 
         <include layout="@layout/keyguard_status_area" />
-        <include layout="@layout/keyguard_weather_view" />
+	<include layout="@layout/keyguard_weather_view" />
 
         <com.android.systemui.statusbar.widget.ChineseDateView android:id="@+id/date_chinese"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:singleLine="true"
-        />
-
-        <com.android.systemui.statusbar.widget.LockFlow android:id="@+id/lock_flow"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_width="wrap_content"

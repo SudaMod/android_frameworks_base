@@ -17,5 +17,4 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="quick_settings_nightmode">夜间模式</string>
   <string name="quick_settings_screenshot">屏幕截图</string>
-  <string name="lock_has_data">"本次待机期间，共使用了<xliff:g id="DATA">%s</xliff:g>的流量."</string>
 </resources>

@@ -295,7 +295,7 @@ public class NetworkTraffic extends TextView {
         mState = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_NETWORK_TRAFFIC_STYLE, 3 , UserHandle.USER_CURRENT);
         mEnable = Settings.System.getIntForUser(resolver,
-                Settings.System.ENABLE_TRAFFIC_NOTIFCATION, 1 , UserHandle.USER_CURRENT) == 1;
+                Settings.System.ENABLE_TRAFFIC_NOTIFCATION, 0 , UserHandle.USER_CURRENT) == 1;
         MB = KB * KB;
         GB = MB * KB;
 
