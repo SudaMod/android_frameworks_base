@@ -121,16 +121,11 @@ public class KeyguardStatusView extends GridLayout {
         mDateView.setShowCurrentUserTime(true);
         mClockView.setShowCurrentUserTime(true);
         mOwnerInfo = (TextView) findViewById(R.id.owner_info);
-<<<<<<< HEAD
+        mChineseDate = (TextView) findViewById(R.id.date_chinese);
 
         boolean shouldMarquee = KeyguardUpdateMonitor.getInstance(mContext).isDeviceInteractive();
         setEnableMarquee(shouldMarquee);
-=======
-        mChineseDate = (TextView) findViewById(R.id.date_chinese);
-        mLockPatternUtils = new LockPatternUtils(getContext());
-        final boolean screenOn = KeyguardUpdateMonitor.getInstance(mContext).isScreenOn();
-        setEnableMarquee(screenOn);
->>>>>>> d5d2a8e... base:Settings:chinese_date_view(1/2)
+
         refresh();
         updateOwnerInfo();
 
