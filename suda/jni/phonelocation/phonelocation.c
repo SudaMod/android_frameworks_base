@@ -33,6 +33,9 @@
 #define MAX_PHONE_LEN 20
 #define MAX_PHONE_CN_LEN 40
 
+int getLocationInfoEx(int num, char *location, char *locationCode);
+void getLocationInfo(char *dataFile, int num, char *location, char *cityCode);
+
 static const char *KNOWN_PREFIX[] = {"0086", "106", "12520", "17951",
                                      "17909", "12593", "17950", "17910",
                                      "17911", "193", "17900", "17901"};
