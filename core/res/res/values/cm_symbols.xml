@@ -115,6 +115,9 @@
     <!-- PlatLogo -->
     <java-symbol type="drawable" name="platlogo_cm" />
 
+    <!-- Automatic brightness enhancements -->
+    <java-symbol type="integer" name="config_autoBrightnessBrighteningLightFastDebounce"/>
+
     <!-- LiveDisplay -->
     <java-symbol type="string" name="live_display_title" />
     <java-symbol type="string" name="live_display_hint" />
@@ -136,4 +139,7 @@
     <java-symbol type="string" name="tethered_notification_no_device_message" />
     <java-symbol type="string" name="tethered_notification_one_device_message" />
     <java-symbol type="string" name="tethered_notification_multi_device_message" />
+
+    <!-- Wifi idle time default -->
+    <java-symbol type="integer" name="def_wifi_idle_ms" />
 </resources>
