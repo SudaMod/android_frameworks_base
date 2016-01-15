@@ -81,6 +81,7 @@ import cyanogenmod.externalviews.KeyguardExternalView;
 import cyanogenmod.providers.CMSettings;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.cyanogenmod.internal.util.CmLockPatternUtils;
 
@@ -285,7 +286,6 @@ public class NotificationPanelView extends PanelView implements
         mQsPanel = (QSPanel) findViewById(R.id.quick_settings_panel);
         mClockView = (TextView) findViewById(R.id.clock_view);
         mScrollView = (ObservableScrollView) findViewById(R.id.scroll_view);
-        mScrollView.setListener(this);
         mScrollView.setFocusable(false);
         mReserveNotificationSpace = findViewById(R.id.reserve_notification_space);
         mNotificationContainerParent = (NotificationsQuickSettingsContainer)
@@ -332,6 +332,8 @@ public class NotificationPanelView extends PanelView implements
         mSettingsObserver.observe();
         mContext.registerReceiver(mExternalKeyguardViewChangedReceiver,
                 new IntentFilter(CmLockPatternUtils.ACTION_THIRD_PARTY_KEYGUARD_COMPONENT_CHANGED));
+
+        mScrollView.setListener(this);
     }
 
     @Override
@@ -2697,9 +2699,7 @@ public class NotificationPanelView extends PanelView implements
     private void updateExternalKeyguardView() {
         ComponentName cn = mLockPatternUtils.getThirdPartyKeyguardComponent();
         // If mThirdPartyKeyguardViewComponent differs from cn, go ahead and update
-        if ((cn == null && mThirdPartyKeyguardViewComponent != null) ||
-                (cn != null && mThirdPartyKeyguardViewComponent == null) ||
-                !mThirdPartyKeyguardViewComponent.equals(cn)) {
+        if (!Objects.equals(mThirdPartyKeyguardViewComponent, cn)) {
             mThirdPartyKeyguardViewComponent = cn;
             if (mKeyguardExternalView != null) {
                 if (indexOfChild(mKeyguardExternalView) >= 0) {
