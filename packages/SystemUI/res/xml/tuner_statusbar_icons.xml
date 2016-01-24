@@ -57,4 +57,8 @@
             android:key="airplane"
             android:title="@string/status_bar_airplane"/>
 
+    <com.android.systemui.tuner.SystemSettingSwitchPreference
+            android:key="show_su_indicator"
+            android:title="@string/su_indicator"
+            android:defaultValue="true" />
 </PreferenceScreen>
