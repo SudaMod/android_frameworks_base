@@ -1238,9 +1238,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                                 Log.e(TAG, "Unable to unregister custom tile listener", e);
                             }
 
-                            // clear out old tile states and views
-                            mQSPanel.setTiles(new ArrayList<QSTile<?>>());
-
                             mQSTileHost.resetTiles();
 
                             // reregister service
@@ -3750,7 +3747,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         mQSPanel.getHost().setCustomTileListenerService(null);
-        mQSPanel.setTiles(new ArrayList<QSTile<?>>());
         mQSPanel.setListening(false);
 
         makeStatusBarView();
