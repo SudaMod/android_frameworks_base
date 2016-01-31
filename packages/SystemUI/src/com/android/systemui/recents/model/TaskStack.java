@@ -265,7 +265,7 @@ public class TaskStack {
                 removeTaskImpl(t);
             } else {
                 taskList.remove(t);
-			}
+            }
         }
         if (mCb != null) {
             // Notify that all tasks have been removed

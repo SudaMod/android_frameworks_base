@@ -369,7 +369,7 @@ public class SwipeHelper {
 
         RecentTaskHelper mRecentTaskHelper = RecentTaskHelper.getHelper(null);
 
-        if (dismissChild && translation>0) {
+        if (dismissChild && translation > 0) {
             // flingadingy
             TaskView tv = (TaskView) mCurrView;
             Task task = tv.getTask();
@@ -379,7 +379,7 @@ public class SwipeHelper {
             } else {
                 dismissChild(mCurrView, childSwipedFastEnough ? velocity : 0f);
             } 
-        } else if (dismissChild && translation<0) {
+        } else if (dismissChild && translation < 0) {
             TaskView tv = (TaskView) mCurrView;
             Task task = tv.getTask();
             if (task.isLockedTask){
