@@ -131,6 +131,10 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
         return mTask;
     }
 
+    TaskViewHeader getTaskViewHeader() {
+        return mHeaderView;
+    }
+
     /** Returns the view bounds. */
     AnimateableViewBounds getViewBounds() {
         return mViewBounds;

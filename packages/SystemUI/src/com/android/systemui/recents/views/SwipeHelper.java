@@ -29,6 +29,8 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import com.android.systemui.recents.RecentsConfiguration;
+import com.android.systemui.recents.model.Task;
+import com.sudamod.sdk.recenttask.RecentTaskHelper;
 
 /**
  * This class facilitates swipe to dismiss. It defines an interface to be implemented by the
@@ -365,9 +367,31 @@ public class SwipeHelper {
                 && isValidSwipeDirection(translation)
                 && (childSwipedFastEnough || childSwipedFarEnough);
 
-        if (dismissChild) {
+        RecentTaskHelper mRecentTaskHelper = RecentTaskHelper.getHelper(null);
+
+        if (dismissChild && translation>0) {
             // flingadingy
-            dismissChild(mCurrView, childSwipedFastEnough ? velocity : 0f);
+            TaskView tv = (TaskView) mCurrView;
+            Task task = tv.getTask();
+            if (task.isLockedTask){
+                mCallback.onDragCancelled(mCurrView);
+                snapChild(mCurrView, velocity);
+            } else {
+                dismissChild(mCurrView, childSwipedFastEnough ? velocity : 0f);
+            } 
+        } else if (dismissChild && translation<0) {
+            TaskView tv = (TaskView) mCurrView;
+            Task task = tv.getTask();
+            if (task.isLockedTask){
+                mRecentTaskHelper.removeLockTask(task.pkgName);
+                task.isLockedTask = false;
+            } else {
+                mRecentTaskHelper.addNewLockTask(task.pkgName);
+                task.isLockedTask = true;
+            }
+            tv.getTaskViewHeader().refreshBackground(task.useLightOnPrimaryColor,task.isLockedTask);
+            mCallback.onDragCancelled(mCurrView);
+            snapChild(mCurrView, velocity);
         } else {
             // snappity
             mCallback.onDragCancelled(mCurrView);

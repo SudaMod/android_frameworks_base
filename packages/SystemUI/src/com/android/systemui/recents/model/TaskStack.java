@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import com.sudamod.sdk.recenttask.RecentTaskHelper;
+
 
 /**
  * An interface for a task filter to query whether a particular task should show in a stack.
@@ -253,11 +255,17 @@ public class TaskStack {
 
     /** Removes all tasks */
     public void removeAllTasks() {
+        RecentTaskHelper mRecentTaskHelper = RecentTaskHelper.getHelper(null);
         ArrayList<Task> taskList = new ArrayList<Task>(mTaskList.getTasks());
         int taskCount = taskList.size();
         for (int i = taskCount - 1; i >= 0; i--) {
             Task t = taskList.get(i);
-            removeTaskImpl(t);
+            t.pkgName = t.key.baseIntent.getComponent().getPackageName();
+            if(!mRecentTaskHelper.isLockedTask(t.pkgName)) {
+                removeTaskImpl(t);
+            } else {
+                taskList.remove(t);
+			}
         }
         if (mCb != null) {
             // Notify that all tasks have been removed

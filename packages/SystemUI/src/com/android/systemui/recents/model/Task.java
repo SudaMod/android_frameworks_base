@@ -126,10 +126,12 @@ public class Task {
     public Drawable activityIcon;
     public String contentDescription;
     public String activityLabel;
+    public String pkgName;
     public int colorPrimary;
     public boolean useLightOnPrimaryColor;
     public Bitmap thumbnail;
     public boolean isActive;
+    public boolean isLockedTask;
     public boolean lockToThisTask;
     public boolean lockToTaskEnabled;
     public Bitmap icon;
@@ -175,6 +177,8 @@ public class Task {
         this.isActive = o.isActive;
         this.lockToThisTask = o.lockToThisTask;
         this.lockToTaskEnabled = o.lockToTaskEnabled;
+        this.isLockedTask = o.isLockedTask;
+        this.pkgName = o.pkgName;
     }
 
     /** Set the callbacks */
