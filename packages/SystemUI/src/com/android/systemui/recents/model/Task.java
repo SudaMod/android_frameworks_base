@@ -144,13 +144,11 @@ public class Task {
         this.taskAffiliation = taskAffiliation;
         this.taskAffiliationColor = taskAffiliationColor;
         this.activityLabel = activityTitle;
-        this.pkgName = pkgName;
         this.activityIcon = activityIcon;
         this.colorPrimary = hasAffiliationGroupColor ? taskAffiliationColor : colorPrimary;
         this.useLightOnPrimaryColor = Utilities.computeContrastBetweenColors(this.colorPrimary,
                 Color.WHITE) > 3f;
         this.isActive = isActive;
-        this.isLockedApp = isLockedApp;
         this.lockToThisTask = lockToTaskEnabled && lockToThisTask;
         this.lockToTaskEnabled = lockToTaskEnabled;
         this.icon = icon;
@@ -163,7 +161,7 @@ public class Task {
         this.taskAffiliation = o.taskAffiliation;
         this.taskAffiliationColor = o.taskAffiliationColor;
         this.activityLabel = o.activityLabel;
-        this.isLockedApp = isLockedApp;
+        this.pkgName = o.pkgName;
         this.activityIcon = o.activityIcon;
         this.colorPrimary = o.colorPrimary;
         this.useLightOnPrimaryColor = o.useLightOnPrimaryColor;
