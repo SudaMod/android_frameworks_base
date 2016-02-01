@@ -260,7 +260,6 @@ public class TaskStack {
         int taskCount = taskList.size();
         for (int i = taskCount - 1; i >= 0; i--) {
             Task t = taskList.get(i);
-            t.pkgName = t.key.baseIntent.getComponent().getPackageName();
             if(!mRecentTaskHelper.isLockedTask(t.pkgName)) {
                 removeTaskImpl(t);
             } else {
