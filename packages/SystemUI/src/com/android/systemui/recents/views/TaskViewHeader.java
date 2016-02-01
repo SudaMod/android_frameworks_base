@@ -202,7 +202,6 @@ public class TaskViewHeader extends FrameLayout {
         // If an activity icon is defined, then we use that as the primary icon to show in the bar,
         // otherwise, we fall back to the application icon
         mRecentTaskHelper = RecentTaskHelper.getHelper(mContext);
-        t.pkgName = t.key.baseIntent.getComponent().getPackageName();
         t.isLockedTask = mRecentTaskHelper.isLockedTask(t.pkgName) ;
         if (t.activityIcon != null) {
             mApplicationIcon.setImageDrawable(t.activityIcon);
