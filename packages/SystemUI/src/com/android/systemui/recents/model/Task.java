@@ -162,6 +162,8 @@ public class Task {
         this.lockToTaskEnabled = lockToTaskEnabled;
         this.icon = icon;
         this.iconFilename = iconFilename;
+        this.isLockedTask = false;
+        this.pkgName = this.key.baseIntent.getComponent().getPackageName();
     }
 
     /** Copies the other task. */
