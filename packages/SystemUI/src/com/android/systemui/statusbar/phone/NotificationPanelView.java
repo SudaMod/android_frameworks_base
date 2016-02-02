@@ -233,6 +233,7 @@ public class NotificationPanelView extends PanelView implements
     private ComponentName mThirdPartyKeyguardViewComponent;
     private KeyguardExternalView mKeyguardExternalView;
     private CmLockPatternUtils mLockPatternUtils;
+    private boolean mLiveLockScreenEnabled;
 
     private Runnable mHeadsUpExistenceChangedRunnable = new Runnable() {
         @Override
@@ -2599,6 +2600,8 @@ public class NotificationPanelView extends PanelView implements
                     CMSettings.System.DOUBLE_TAP_SLEEP_GESTURE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.DOUBLE_TAP_SLEEP_ANYWHERE), false, this);
+            resolver.registerContentObserver(CMSettings.Secure.getUriFor(
+                    CMSettings.Secure.LIVE_LOCK_SCREEN_ENABLED), false, this);
             update();
         }
 
@@ -2623,8 +2626,16 @@ public class NotificationPanelView extends PanelView implements
                     resolver, CMSettings.System.STATUS_BAR_QUICK_QS_PULLDOWN, 1);
             mDoubleTapToSleepEnabled = CMSettings.System.getInt(
                     resolver, CMSettings.System.DOUBLE_TAP_SLEEP_GESTURE, 1) == 1;
+ 
             mDoubleTapToSleepAnywhere = Settings.System.getInt(
                     resolver, Settings.System.DOUBLE_TAP_SLEEP_ANYWHERE, 0) == 1;
+
+            boolean liveLockScreenEnabled = CMSettings.Secure.getInt(
+                    resolver, CMSettings.Secure.LIVE_LOCK_SCREEN_ENABLED, 0) == 1;
+            if (liveLockScreenEnabled != mLiveLockScreenEnabled) {
+                mLiveLockScreenEnabled = liveLockScreenEnabled;
+                updateExternalKeyguardView();
+            }
         }
     }
 
@@ -2718,7 +2729,8 @@ public class NotificationPanelView extends PanelView implements
     }
 
     private void updateExternalKeyguardView() {
-        ComponentName cn = mLockPatternUtils.getThirdPartyKeyguardComponent();
+        ComponentName cn = mLiveLockScreenEnabled ?
+                mLockPatternUtils.getThirdPartyKeyguardComponent() : null;
         // If mThirdPartyKeyguardViewComponent differs from cn, go ahead and update
         if (!Objects.equals(mThirdPartyKeyguardViewComponent, cn)) {
             mThirdPartyKeyguardViewComponent = cn;
