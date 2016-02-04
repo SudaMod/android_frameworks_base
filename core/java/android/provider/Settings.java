@@ -2415,7 +2415,7 @@ public final class Settings {
 
 
         /**
-         * Chinese date view
+         * CLOCK_USE_SECOND
          * @hide
          */
         public static final String CLOCK_USE_SECOND = "clock_use_second";
