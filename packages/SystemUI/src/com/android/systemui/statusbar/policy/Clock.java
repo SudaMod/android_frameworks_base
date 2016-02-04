@@ -71,6 +71,7 @@ public class Clock extends TextView implements DemoMode {
     private final Handler handler = new Handler();
     TimerTask second;
     Timer timer;
+    boolean timeSecond = false;
 
     class SettingsObserver extends UserContentObserver {
         SettingsObserver(Handler handler) {
@@ -229,7 +230,7 @@ public class Clock extends TextView implements DemoMode {
         }
         String result = is24 ? sdf.format(mCalendar.getTime()) : DateFormat.format(format, mCalendar.getTime()).toString();
 
-        if (Settings.System.getInt(getContext().getContentResolver(), Settings.System.CLOCK_USE_SECOND, 0) == 1) {
+        if (timeSecond) {
             String temp = result;
             result = String.format("%s:%02d", temp, new GregorianCalendar().get(Calendar.SECOND));
         }
@@ -260,8 +261,11 @@ public class Clock extends TextView implements DemoMode {
 
     private boolean mDemoMode;
     void updateSettings() {
+        timeSecond = Settings.System.getInt(getContext().getContentResolver(), Settings.System.CLOCK_USE_SECOND, 0) == 1;
         timer = null;
         second = null;
+        if(!timeSecond)
+            return;
         timer = new Timer();
         second = new TimerTask()
 
