@@ -35,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.util.NotificationColorUtil;
 import com.android.systemui.BatteryLevelTextView;
@@ -47,6 +48,7 @@ import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.policy.Clock;
 import com.android.systemui.tuner.TunerService;
 import com.android.systemui.tuner.TunerService.Tunable;
+import com.android.systemui.statusbar.policy.NetworkTraffic;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -80,6 +82,8 @@ public class StatusBarIconController implements Tunable {
     private BatteryMeterView mBatteryMeterView;
     private ClockController mClockController;
     private View mCenterClockLayout;
+    private NetworkTraffic mNetworkTraffic;
+
 
     private int mIconSize;
     private int mIconHPadding;
@@ -135,6 +139,8 @@ public class StatusBarIconController implements Tunable {
         mClockController = new ClockController(statusBar, mNotificationIcons, mHandler);
         mCenterClockLayout = statusBar.findViewById(R.id.center_clock_layout);
         updateResources();
+
+        mNetworkTraffic = (NetworkTraffic) statusBar.findViewById(R.id.network_traffic);
 
         TunerService.get(mContext).addTunable(this, ICON_BLACKLIST);
     }
@@ -405,6 +411,7 @@ public class StatusBarIconController implements Tunable {
         mSignalCluster.setIconTint(mIconTint, mDarkIntensity);
         mMoreIcon.setImageTintList(ColorStateList.valueOf(mIconTint));
         mBatteryLevelTextView.setTextColor(mIconTint);
+        mNetworkTraffic.setTextColor(mIconTint);
         mBatteryMeterView.setDarkIntensity(mDarkIntensity);
         mClockController.setTextColor(mIconTint);
         applyNotificationIconsTint();
