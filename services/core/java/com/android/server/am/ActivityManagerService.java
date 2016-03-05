@@ -2513,7 +2513,6 @@ public final class ActivityManagerService extends ActivityManagerNative
         mSystemThread = ActivityThread.currentActivityThread();
 
         Slog.i(TAG, "Memory class: " + ActivityManager.staticGetMemoryClass());
-        PreventRunningUtils.init(this);
 
         mHandlerThread = new ServiceThread(TAG,
                 android.os.Process.THREAD_PRIORITY_FOREGROUND, false /*allowIo*/);
@@ -3308,9 +3307,6 @@ public final class ActivityManagerService extends ActivityManagerNative
             boolean knownToBeDead, int intentFlags, String hostingType, ComponentName hostingName,
             boolean allowWhileBooting, boolean isolated, int isolatedUid, boolean keepIfLarge,
             String abiOverride, String entryPoint, String[] entryPointArgs, Runnable crashHandler) {
-        if (!PreventRunningUtils.hookStartProcessLocked(info, knownToBeDead, intentFlags, hostingType, hostingName)) {
-            return null;
-        }
         long startTime = SystemClock.elapsedRealtime();
         ProcessRecord app;
         if (!isolated) {
@@ -4059,10 +4055,9 @@ public final class ActivityManagerService extends ActivityManagerNative
     public final int startActivity(IApplicationThread caller, String callingPackage,
             Intent intent, String resolvedType, IBinder resultTo, String resultWho, int requestCode,
             int startFlags, ProfilerInfo profilerInfo, Bundle options) {
-        return PreventRunningUtils.onStartActivity(
-            startActivityAsUser(caller, callingPackage, intent, resolvedType, resultTo,
+        return startActivityAsUser(caller, callingPackage, intent, resolvedType, resultTo,
             resultWho, requestCode, startFlags, profilerInfo, options,
-            UserHandle.getCallingUserId()), caller, intent);
+            UserHandle.getCallingUserId());
     }
 
     @Override
@@ -4937,7 +4932,6 @@ public final class ActivityManagerService extends ActivityManagerNative
                 }
                 Slog.i(TAG, "Process " + app.processName + " (pid " + pid
                         + ") has died");
-                PreventRunningUtils.onAppDied(app);
                 mAllowLowerMemLevel = true;
             } else {
                 // Note that we always want to do oom adj to update our state with the
@@ -5826,7 +5820,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                 // that match it.  We need to qualify this by the processes
                 // that are running under the specified app and user ID.
                 } else {
-                    final boolean isDep = PreventRunningUtils.isDep(app.pkgDeps)
+                    final boolean isDep = app.pkgDeps != null
                             && app.pkgDeps.contains(packageName);
                     if (!isDep && UserHandle.getAppId(app.uid) != appId) {
                         continue;
@@ -9005,8 +8999,6 @@ public final class ActivityManagerService extends ActivityManagerNative
                 pr.waitingToKill = "remove task";
             }
         }
-
-        PreventRunningUtils.onCleanUpRemovedTask(component);
     }
 
     private void removeTasksByPackageNameLocked(String packageName, int userId) {
@@ -9140,8 +9132,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                         mStackSupervisor.showLockTaskToast();
                         return false;
                     }
-                    return PreventRunningUtils.onMoveActivityTaskToBack(
-                        ActivityRecord.getStackLocked(token).moveTaskToBackLocked(taskId), token);
+                    return ActivityRecord.getStackLocked(token).moveTaskToBackLocked(taskId);
                 }
             } finally {
                 Binder.restoreCallingIdentity(origId);
@@ -16085,10 +16076,8 @@ public final class ActivityManagerService extends ActivityManagerNative
             final int callingPid = Binder.getCallingPid();
             final int callingUid = Binder.getCallingUid();
             final long origId = Binder.clearCallingIdentity();
-            PreventRunningUtils.setSenderInStartService(caller);
-            ComponentName res = PreventRunningUtils.clearSenderInStartService(
-                mServices.startServiceLocked(caller, service,
-                    resolvedType, callingPid, callingUid, callingPackage, userId));
+            ComponentName res = mServices.startServiceLocked(caller, service,
+                    resolvedType, callingPid, callingUid, callingPackage, userId);
             Binder.restoreCallingIdentity(origId);
             return res;
         }
@@ -16319,10 +16308,8 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
 
         synchronized(this) {
-            PreventRunningUtils.setSenderInBindService(caller);
-            return PreventRunningUtils.clearSenderInBindService(
-                mServices.bindServiceLocked(caller, token, service,
-                    resolvedType, connection, flags, callingPackage, userId));
+            return mServices.bindServiceLocked(caller, token, service,
+                    resolvedType, connection, flags, callingPackage, userId);
         }
     }
 
@@ -17347,13 +17334,11 @@ public final class ActivityManagerService extends ActivityManagerNative
             final int callingPid = Binder.getCallingPid();
             final int callingUid = Binder.getCallingUid();
             final long origId = Binder.clearCallingIdentity();
-            PreventRunningUtils.setSenderInBroadcastIntent(caller);
-            int res = PreventRunningUtils.onBroadcastIntent(
-                broadcastIntentLocked(callerApp,
+            int res = broadcastIntentLocked(callerApp,
                     callerApp != null ? callerApp.info.packageName : null,
                     intent, resolvedType, resultTo, resultCode, resultData, resultExtras,
                     requiredPermissions, appOp, null, serialized, sticky,
-                    callingPid, callingUid, userId), intent);
+                    callingPid, callingUid, userId);
             Binder.restoreCallingIdentity(origId);
             return res;
         }
