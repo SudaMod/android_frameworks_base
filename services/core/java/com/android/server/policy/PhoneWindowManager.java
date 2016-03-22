@@ -1547,7 +1547,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case KEY_ACTION_REBOOT:
                 showGlobalActions();
                 break; 
-               break;
             default:
                 break;
          }
