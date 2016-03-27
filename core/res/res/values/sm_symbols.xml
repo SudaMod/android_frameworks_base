@@ -25,5 +25,5 @@
   <java-symbol type="string" name="xw" />
   <java-symbol type="string" name="bw" />
   <java-symbol type="string" name="sy" />
-
+  <java-symbol type="string" name="edit" />
 </resources>
