@@ -21,8 +21,8 @@
   <string name="global_action_choose_profile">Profil</string>
   <string name="profile_none">Ništa</string>
   <string name="global_action_screenshot">Snimak zaslona</string>
-  <string name="permlab_receiveProtectedSms">Primanje zaštićenih SMS poruka</string>
-  <string name="permdesc_receiveProtectedSms">Dopušta aplikaciji primanje dolaznih zaštićenih SMS poruka.</string>
+  <string name="permlab_receiveProtectedSms">primaj zaštićeni SMS</string>
+  <string name="permdesc_receiveProtectedSms">Dopušta aplikaciji da prima dolazeći zaštićeni SMS.</string>
   <string name="permlab_modifyProtectedSmsList">Izmjena popisa zaštićenih SMS poruka</string>
   <string name="permdesc_modifyProtectedSmsList">Dozvoljava aplikaciji izmjenu popisa adresa zaštićenih SMS poruka.</string>
   <string name="permgrouplab_security">Sigurnost</string>
@@ -123,7 +123,7 @@
   <string name="lockscreen_airplane_mode_on">Način rada u zrakoplovu</string>
   <string name="usb_charging_notification_title">Spojen u načinu za punjenje</string>
   <string name="tethered_notification_no_device_message">Uređaj nije spojen</string>
-  <string name="tethered_notification_one_device_message"><xliff:g id="count">%1$s</xliff:g> povezan uređaj</string>
+  <string name="tethered_notification_one_device_message"><xliff:g id="count">%1$s</xliff:g> povezani uređaj</string>
   <string name="tethered_notification_multi_device_message"><xliff:g id="count">%1$s</xliff:g> povezanih uređaja</string>
   <string name="progress_nomediapresent" product="default">Ne postoji uklonjivi medij\u2026</string>
   <string name="storage_uicc">UICC pohrana</string>

@@ -32,8 +32,8 @@
   <string name="accessibility_quick_settings_network_adb_changed_on">ADB através da rede foi ligada.</string>
   <string name="accessibility_quick_settings_ambient_display_off">Visualização de ambiente desligada.</string>
   <string name="accessibility_quick_settings_ambient_display_on">Visualização de ambiente ligada.</string>
-  <string name="accessibility_quick_settings_ambient_display_changed_off">Visualização de ambiente desligou.</string>
-  <string name="accessibility_quick_settings_ambient_display_changed_on">Visualização de ambiente ligou.</string>
+  <string name="accessibility_quick_settings_ambient_display_changed_off">A visualização de ambiente foi desligada.</string>
+  <string name="accessibility_quick_settings_ambient_display_changed_on">A visualização de ambiente foi ligada.</string>
   <string name="accessibility_quick_settings_color_inversion_off">Inversão de cor desligada.</string>
   <string name="accessibility_quick_settings_color_inversion_on">Inversão de cor ligada.</string>
   <string name="accessibility_quick_settings_compass_off">Bússola desligada.</string>
@@ -50,17 +50,17 @@
   <string name="accessibility_quick_settings_live_display_auto">LiveDisplay: modo automático.</string>
   <string name="accessibility_quick_settings_live_display_day">LiveDisplay: modo dia.</string>
   <string name="accessibility_quick_settings_live_display_night">LiveDisplay: modo noite.</string>
-  <string name="accessibility_quick_settings_live_display_outdoor">LiveDisplay: modo ao ar livre.</string>
+  <string name="accessibility_quick_settings_live_display_outdoor">LiveDisplay: modo exterior.</string>
   <string name="accessibility_quick_settings_live_display_changed_off">LiveDisplay foi desligado.</string>
   <string name="accessibility_quick_settings_live_display_changed_auto">LiveDisplay alterado para modo automático.</string>
   <string name="accessibility_quick_settings_live_display_changed_day">LiveDisplay alterado para modo dia.</string>
   <string name="accessibility_quick_settings_live_display_changed_night">LiveDisplay alterado para modo noite.</string>
-  <string name="accessibility_quick_settings_live_display_changed_outdoor">LiveDisplay alterado para modo ao ar livre.</string>
+  <string name="accessibility_quick_settings_live_display_changed_outdoor">LiveDisplay alterado para modo exterior.</string>
   <string name="accessibility_quick_settings_location_battery_saving">Localização: poupança de bateria.</string>
-  <string name="accessibility_quick_settings_location_gps_only">Localização: apenas no dispositivo.</string>
+  <string name="accessibility_quick_settings_location_gps_only">Localização: apenas dispositivo.</string>
   <string name="accessibility_quick_settings_location_high_accuracy">Localização: alta precisão.</string>
   <string name="accessibility_quick_settings_location_changed_battery_saving">Modo de localização alterado para poupança de bateria.</string>
-  <string name="accessibility_quick_settings_location_changed_gps_only">Modo de localização alterado para apenas no dispositivo.</string>
+  <string name="accessibility_quick_settings_location_changed_gps_only">Modo de localização alterado para apenas dispositivo.</string>
   <string name="accessibility_quick_settings_location_changed_high_accuracy">Modo de localização alterado para alta precisão.</string>
   <string name="accessibility_quick_settings_lock_screen_off">Ecrã de bloqueio desligado.</string>
   <string name="accessibility_quick_settings_lock_screen_on">Ecrã de bloqueio ligado.</string>
@@ -148,7 +148,7 @@
   <string name="navigation_ring_title">Atalhos de início rápido</string>
   <string name="navring_target_reset_message">Eliminar todos os atalhos criados pelo utilizador na barra de navegação e restaurar para os valores de origem?</string>
   <string name="navring_target_reset">Atalhos da barra de navegação restaurados aos seus valores de origem</string>
-  <string name="navring_action_open_ime_switcher">Mudar IME</string>
+  <string name="navring_action_open_ime_switcher">Abrir seletor de método de entrada</string>
   <string name="navring_action_kill_app">Terminar aplicação</string>
   <string name="navring_action_none">Nenhum</string>
   <string name="navring_action_take_screenshot">Tirar captura de ecrã</string>
@@ -167,9 +167,10 @@
   <string name="quick_settings_remove">Remover mosaico</string>
   <string name="quick_settings_dynamic_tile_detail_title">Mosaicos dinâmicos</string>
   <string name="dynamic_qs_tile_next_alarm_label">Próximo alarme</string>
-  <string name="dynamic_qs_tile_ime_selector_label">Seletor de IME</string>
+  <string name="dynamic_qs_tile_ime_selector_label">Seletor de método de entrada</string>
   <string name="dynamic_qs_tile_su_label">Acesso root</string>
   <string name="fingerprint_try_again_hint">Por favor verifique novamente</string>
+  <string name="fingerprint_try_again_hint_too_many">Demasiadas tentativas para recolher a impressão digital. Tente novamente mais tarde.</string>
   <string name="accessibility_dock_battery_level">Bateria da dock <xliff:g id="number">%d</xliff:g> por cento.</string>
   <string name="quick_settings_custom_qs_detail_empty_text">Nenhum item encontrado</string>
   <string name="play_queue_extention">Mostrar a fila de reprodução</string>
