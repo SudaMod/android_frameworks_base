@@ -93,9 +93,15 @@ public class PasswordTextView extends View {
     private Interpolator mFastOutSlowInInterpolator;
     private boolean mShowPassword;
     private UserActivityListener mUserActivityListener;
+    private QuickUnlockListener mQuickUnlockListener;
+
 
     public interface UserActivityListener {
         void onUserActivity();
+    }
+
+    public interface QuickUnlockListener {
+        void onValidateQuickUnlock(String param);
     }
 
     public PasswordTextView(Context context) {
@@ -209,10 +215,17 @@ public class PasswordTextView extends View {
         }
         userActivity();
         sendAccessibilityEventTypeViewTextChanged(textbefore, textbefore.length(), 0, 1);
+        if (this.mQuickUnlockListener != null) {
+            this.mQuickUnlockListener.onValidateQuickUnlock(this.mText);
+        }
     }
 
     public void setUserActivityListener(UserActivityListener userActivitiListener) {
         mUserActivityListener = userActivitiListener;
+    }
+
+    public void setQuickUnlockListener(QuickUnlockListener quickUnlockListener) {
+        mQuickUnlockListener = quickUnlockListener;
     }
 
     private void userActivity() {

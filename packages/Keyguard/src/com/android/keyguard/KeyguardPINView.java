@@ -27,6 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
+import com.android.internal.widget.LockPatternChecker;
+import com.android.internal.widget.LockPatternChecker.OnCheckCallback;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,6 +78,23 @@ public class KeyguardPINView extends KeyguardPinBasedInputView {
         mSecurityMessageDisplay.setMessage(R.string.kg_pin_instructions, false);
     }
 
+    private void validateQuickUnlock(String param) {
+        if ((param != null) && (param.length() > 3)) {
+            LockPatternChecker.checkPassword(this.mLockPatternUtils, param, KeyguardUpdateMonitor.getCurrentUser(), new LockPatternChecker.OnCheckCallback() {
+            public void onChecked(boolean success, int timeoutMs) {
+                mPasswordEntry.setEnabled(false);
+                setPasswordEntryInputEnabled(true);
+                mPendingLockCheck = null;
+                if (success) {
+                    mDismissing = true;
+                    mCallback.reportUnlockAttempt(true, 0);
+                    mCallback.dismiss(true);
+                }
+              }
+          });
+        }
+    }
+
     @Override
     protected int getPasswordTextViewId() {
         return R.id.pinEntry;
@@ -113,7 +132,7 @@ public class KeyguardPINView extends KeyguardPinBasedInputView {
                 new View[]{
                         null, mEcaView, null
                 }};
-
+        findViewById(R.id.key_enter).setVisibility(View.INVISIBLE);
         boolean scramblePin = (CMSettings.System.getInt(getContext().getContentResolver(),
                 CMSettings.System.LOCKSCREEN_PIN_SCRAMBLE_LAYOUT, 0) == 1);
 
@@ -140,6 +159,12 @@ public class KeyguardPINView extends KeyguardPinBasedInputView {
                 view.setDigit(sNumbers.get(i));
             }
         }
+
+        mPasswordEntry.setQuickUnlockListener(new PasswordTextView.QuickUnlockListener() {
+            public void onValidateQuickUnlock(String param) {
+                validateQuickUnlock(param);
+            }
+        });
     }
 
     @Override
