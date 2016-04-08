@@ -59,13 +59,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import com.android.systemui.doze.ShakeSensorManager;
 
 
 /* The visual representation of a task stack view */
 public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCallbacks,
         TaskView.TaskViewCallbacks, TaskStackViewScroller.TaskStackViewScrollerCallbacks,
-        ViewPool.ViewPoolConsumer<TaskView, Task>, RecentsPackageMonitor.PackageCallbacks, ShakeSensorManager.ShakeListener {
+        ViewPool.ViewPoolConsumer<TaskView, Task>, RecentsPackageMonitor.PackageCallbacks {
 
     /** The TaskView callbacks */
     interface TaskStackViewCallbacks {
@@ -94,7 +93,6 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
     Rect mTaskStackBounds = new Rect();
     DismissView mDismissAllButton;
     boolean mDismissAllButtonAnimating;
-    static ShakeSensorManager mShakeSensorManager;
     int mFocusedTaskIndex = -1;
     int mPrevAccessibilityFocusedIndex = -1;
 
@@ -153,24 +151,8 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
             }
         });
         setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-        mShakeSensorManager = new ShakeSensorManager(mContext, this);
     }
 
-    @Override
-    public synchronized void onShake() {
-        enableShake(false);
-        mStack.removeAllTasks();
-    }
-
-    public static void enableShake(boolean enableShakeClean) {
-        if( mShakeSensorManager == null)
-            return;
-        if (enableShakeClean) {
-            mShakeSensorManager.enable(20);
-        } else {
-            mShakeSensorManager.disable();
-        }
-    }
 
     /** Sets the callbacks */
     void setCallbacks(TaskStackViewCallbacks cb) {

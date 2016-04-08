@@ -51,12 +51,14 @@ import com.android.systemui.recents.model.TaskStack;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.android.systemui.doze.ShakeSensorManager;
+
 /**
  * This view is the the top level layout that contains TaskStacks (which are laid out according
  * to their SpaceNode bounds.
  */
 public class RecentsView extends FrameLayout implements TaskStackView.TaskStackViewCallbacks,
-        RecentsPackageMonitor.PackageCallbacks {
+        RecentsPackageMonitor.PackageCallbacks , ShakeSensorManager.ShakeListener{
 
     private static final String TAG = "RecentsView";
 
@@ -80,6 +82,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     List<TaskStackView> mTaskStackViews = new ArrayList<>();
     RecentsAppWidgetHostView mSearchBar;
     RecentsViewCallbacks mCb;
+    ShakeSensorManager mShakeSensorManager;
 
     public RecentsView(Context context) {
         super(context);
@@ -98,6 +101,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         mConfig = RecentsConfiguration.getInstance();
         mInflater = LayoutInflater.from(context);
         mLayoutAlgorithm = new RecentsViewLayoutAlgorithm(mConfig);
+        mShakeSensorManager = new ShakeSensorManager(mContext, this);
     }
 
     /** Sets the callbacks */
@@ -574,7 +578,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         final Runnable launchRunnable = new Runnable() {
             @Override
             public void run() {
-                TaskStackView.enableShake(false);
+                enableShake(false);
                 if (task.isActive) {
                     // Bring an active task to the foreground
                     ssp.moveTaskToFront(task.key.id, launchOpts);
@@ -720,4 +724,32 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
             stackView.onPackagesChanged(monitor, packageName, userId);
         }
     }
+
+    @Override
+    public synchronized void onShake() {
+        enableShake(false);
+        dismissAllTasksAnimated();
+    }
+
+    public void enableShake(boolean enableShakeClean) {
+        if (mShakeSensorManager == null)
+            return;
+        if (enableShakeClean) {
+            mShakeSensorManager.enable(20);
+        } else {
+            mShakeSensorManager.disable();
+        }
+    }
+
+    public void dismissAllTasksAnimated() {
+        int childCount = getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View child = getChildAt(i);
+            if (child != mSearchBar) {
+                TaskStackView stackView = (TaskStackView) child;
+                stackView.getStack().removeAllTasks();
+            }
+        }
+    }
+
 }

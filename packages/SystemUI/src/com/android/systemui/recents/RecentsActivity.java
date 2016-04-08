@@ -249,7 +249,7 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
             if (mEmptyView == null) {
                 mEmptyView = mEmptyViewStub.inflate();
             }
-            TaskStackView.enableShake(false);
+            mRecentsView.enableShake(false);
             mEmptyView.setVisibility(View.VISIBLE);
             mEmptyView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -263,7 +263,7 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
                 mEmptyView.setVisibility(View.GONE);
                 mEmptyView.setOnClickListener(null);
             }
-            TaskStackView.enableShake(true && enableShakeCleanByUser);
+            mRecentsView.enableShake(true && enableShakeCleanByUser);
             if (!mConfig.searchBarEnabled) {
                 mRecentsView.setSearchBarVisibility(View.GONE);
             } else {
