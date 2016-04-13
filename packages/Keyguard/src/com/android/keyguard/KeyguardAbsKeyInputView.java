@@ -206,6 +206,7 @@ public abstract class KeyguardAbsKeyInputView extends LinearLayout
             public void onChecked(boolean success, int timeoutMs) {
                 setPasswordEntryInputEnabled(true);
                 mPendingLockCheck = null;
+                mPendingLockCheck = null;
                 if (success) {
                     mDismissing = true;
                     mCallback.reportUnlockAttempt(true, 0);
