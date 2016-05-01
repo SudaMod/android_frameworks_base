@@ -15,4 +15,5 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="su_indicator">Superuser indicator</string>
+  <string name="show_headset_icon_title">Headset icon</string>
 </resources>

@@ -15,4 +15,5 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="su_indicator">超级权限图标</string>
+  <string name="show_headset_icon_title">耳机图标</string>
 </resources>

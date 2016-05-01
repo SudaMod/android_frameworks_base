@@ -61,4 +61,9 @@
             android:key="show_su_indicator"
             android:title="@string/su_indicator"
             android:defaultValue="true" />
+
+    <com.android.systemui.tuner.SystemSettingSwitchPreference
+            android:key="show_headset_icon"
+            android:title="@string/show_headset_icon_title"
+            android:defaultValue="true" />
 </PreferenceScreen>
