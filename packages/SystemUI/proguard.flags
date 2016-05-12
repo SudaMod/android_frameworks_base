@@ -15,3 +15,4 @@
 -keep class com.android.systemui.recents.*
 
 -dontwarn com.squareup.okhttp.**
+-dontwarn com.cyngn.**
