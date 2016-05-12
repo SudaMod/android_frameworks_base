@@ -11,7 +11,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := Keyguard \
     org.cyanogenmod.platform.internal \
     android-support-v7-palette \
     android-support-v4 \
-    libSudaSdk
+    libSudaSdk \
     uicommon
 
 LOCAL_JAVA_LIBRARIES := telephony-common
