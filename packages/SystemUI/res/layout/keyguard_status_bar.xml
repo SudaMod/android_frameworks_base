@@ -74,7 +74,7 @@
             android:importantForAccessibility="noHideDescendants"/>
     </LinearLayout>
 
-    <com.android.keyguard.CarrierText
+    <com.android.systemui.statusbar.widget.CarrierLabel
         android:id="@+id/keyguard_carrier_text"
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_header_height_keyguard"
