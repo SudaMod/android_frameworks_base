@@ -916,9 +916,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mShakeSensorManager = new ShakeSensorManager(mContext, this);
         Resources res = context.getResources();
 
-        mScreenWidth = (float) context.getResources().getDisplayMetrics().widthPixels;
-        mMinBrightness = context.getResources().getInteger(
-                com.android.internal.R.integer.config_screenBrightnessDim);
+        mScreenWidth = (float) res.getDisplayMetrics().widthPixels;
+        mMinBrightness = res.getInteger(com.android.internal.R.integer.config_screenBrightnessDim);
 
         updateDisplaySize(); // populates mDisplayMetrics
         updateResources(null);
