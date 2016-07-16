@@ -118,7 +118,7 @@ public class PreventRunningUtils {
     }
 
     public static int onStartActivity(int res, IApplicationThread caller, Intent intent) {
-        if (res >= 0 && intent != null && intent.hasCategory(Intent.CATEGORY_HOME)) {
+        if (res >= 0 && intent != null && (intent.hasCategory(Intent.CATEGORY_HOME) || intent.hasCategory(Intent.CATEGORY_LAUNCHER))) {
             ProcessRecord callerApp = mAm.getRecordForAppLocked(caller);
             if (callerApp != null) {
                 mPreventRunning.onStartHomeActivity(callerApp.info.packageName);
