@@ -3081,7 +3081,7 @@ public class NotificationPanelView extends PanelView implements
         return getSharedPreferenceBoolean(KEY_USER_RETURNED_FROM_LLS, false);
     }
 
-    private boolean shouldShowScreenOnHints() {
+    public boolean shouldShowScreenOnHints() {
         return mScreenOnHintsEnabled && mStatusBar.isDeviceProvisioned() &&
                 mStatusBarState == StatusBarState.KEYGUARD;
     }
