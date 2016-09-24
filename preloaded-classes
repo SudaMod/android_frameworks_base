@@ -1472,6 +1472,9 @@ android.media.session.MediaSession$Token
 android.media.session.MediaSessionManager
 android.media.soundtrigger.SoundTriggerManager
 android.media.tv.TvInputManager
+android.suda.hardware.ProximitySensorManager
+android.suda.location.PhoneLocation
+android.suda.utils.SudaUtils
 android.mtp.MtpDatabase
 android.mtp.MtpDevice
 android.mtp.MtpDeviceInfo
