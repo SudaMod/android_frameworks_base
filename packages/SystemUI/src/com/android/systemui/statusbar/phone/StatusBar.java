@@ -6189,6 +6189,8 @@ public class StatusBar extends SystemUI implements DemoMode,
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
+             super.onChange(selfChange, uri);
+
             update();
         }
 

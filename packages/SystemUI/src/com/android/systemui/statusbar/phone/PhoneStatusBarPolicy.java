@@ -83,6 +83,8 @@ import com.android.systemui.statusbar.policy.RotationLockController.RotationLock
 import com.android.systemui.statusbar.policy.SuController;
 import com.android.systemui.statusbar.policy.UserInfoController;
 import com.android.systemui.statusbar.policy.ZenModeController;
+import com.android.systemui.tuner.TunerService;
+import com.android.systemui.tuner.TunerServiceImpl;
 import com.android.systemui.util.NotificationChannels;
 
 import java.util.List;
@@ -94,7 +96,7 @@ import java.util.List;
  */
 public class PhoneStatusBarPolicy implements Callback, Callbacks,
         RotationLockControllerCallback, Listener, LocationChangeCallback,
-        ZenModeController.Callback, DeviceProvisionedListener, KeyguardMonitor.Callback {
+        ZenModeController.Callback, DeviceProvisionedListener, KeyguardMonitor.Callback, TunerService.Tunable {
     private static final String TAG = "PhoneStatusBarPolicy";
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
@@ -147,6 +149,10 @@ public class PhoneStatusBarPolicy implements Callback, Callbacks,
     private boolean mManagedProfileInQuietMode = false;
 
     private BluetoothController mBluetooth;
+    private boolean mSuIndicatorVisible;
+
+    private static final String SHOW_SU_INDICATOR =
+            "system:" + Settings.System.SHOW_SU_INDICATOR;
 
     public PhoneStatusBarPolicy(Context context, StatusBarIconController iconController) {
         mContext = context;
@@ -268,6 +274,22 @@ public class PhoneStatusBarPolicy implements Callback, Callbacks,
             mDockedStackExists = exists;
             updateForegroundInstantApps();
         });
+
+        Dependency.get(TunerService.class).addTunable(this,
+                SHOW_SU_INDICATOR);
+   }
+
+    @Override
+    public void onTuningChanged(String key, String newValue) {
+        switch (key) {
+            case SHOW_SU_INDICATOR:
+                mSuIndicatorVisible =
+                        newValue == null || Integer.parseInt(newValue) != 0;
+                updateSu();
+                break;
+            default:
+                break;
+        }
     }
 
     public void destroy() {
@@ -688,7 +710,7 @@ public class PhoneStatusBarPolicy implements Callback, Callbacks,
     };
 
     private void updateSu() {
-        mIconController.setIconVisibility(mSlotSu, mSuController.hasActiveSessions());
+        mIconController.setIconVisibility(mSlotSu, mSuController.hasActiveSessions() && mSuIndicatorVisible);
     }
 
     private final CastController.Callback mCastCallback = new CastController.Callback() {
