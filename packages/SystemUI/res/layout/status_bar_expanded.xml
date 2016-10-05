@@ -26,6 +26,19 @@
     android:background="@android:color/transparent"
     >
 
+    <com.android.systemui.statusbar.widget.CarrierLabel
+        android:id="@+id/carrier_label"
+        android:layout_height="@dimen/carrier_label_height"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/close_handle_height"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:visibility="invisible"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#999999" />
+
     <include
         layout="@layout/keyguard_status_view"
         android:layout_height="wrap_content"
