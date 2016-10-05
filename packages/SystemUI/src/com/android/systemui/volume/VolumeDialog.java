@@ -143,6 +143,9 @@ public class VolumeDialog implements TunerService.Tunable {
     private boolean mShowFullZen;
     private TunerZenModePanel mZenPanel;
 
+    // Volume dialog alpha
+    private int mVolumeDialogAlpha;
+
     public VolumeDialog(Context context, int windowType, VolumeDialogController controller,
                         ZenModeController zenModeController, Callback callback) {
         mContext = context;
@@ -613,6 +616,7 @@ public class VolumeDialog implements TunerService.Tunable {
         final VolumeRow activeRow = getActiveRow();
         updateFooterH();
         updateExpandButtonH();
+        setVolumeAlpha();
         if (!mShowing) {
             trimObsoleteH();
         }
@@ -1271,5 +1275,13 @@ public class VolumeDialog implements TunerService.Tunable {
     public interface Callback {
         void onZenSettingsClicked();
         void onZenPrioritySettingsClicked();
+    }
+
+    private void setVolumeAlpha() {
+        mVolumeDialogAlpha = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.TRANSPARENT_VOLUME_DIALOG, 255);
+        if (mDialogView != null) {
+            mDialogView.getBackground().setAlpha(mVolumeDialogAlpha);
+        }
     }
 }
