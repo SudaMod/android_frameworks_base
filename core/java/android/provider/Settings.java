@@ -3671,6 +3671,12 @@ public final class Settings {
          */
         public static final String QS_TRANSPARENT_SHADE = "qs_transparent_shade";
 
+         /**
+         * Transparent volume dialog
+         * @hide
+         */
+        public static final String TRANSPARENT_VOLUME_DIALOG = "transparent_volume_dialog";
+
         /**
          * I am the lolrus.
          * <p>
