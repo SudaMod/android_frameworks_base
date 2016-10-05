@@ -3678,6 +3678,12 @@ public final class Settings {
         /** @hide */
         public static final Validator LOCK_TO_APP_ENABLED_VALIDATOR = sBooleanValidator;
 
+        /**
+         * show traffic in statusbar. The value is
+         * int (0: Hide  or 1: Only Rx 2: Rx&Tx).
+         */
+        public static final String STATUS_BAR_NETWORK_TRAFFIC_STYLE = "status_bar_network_traffic_style";
+
           /**
          * whether to enable torch on lockscreen
          * @hide
