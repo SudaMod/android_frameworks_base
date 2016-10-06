@@ -97,7 +97,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-
+import com.sudamod.sdk.recenttask.RecentTaskHelper;
 
 /* The visual representation of a task stack view */
 public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCallbacks,
@@ -375,8 +375,6 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
         for (int i = 0; i < childCount; i++) {
             View v = getChildAt(i);
             if (v instanceof TaskView) {
-            Task task = ((TaskView)v).getTask();
-            if (!task.isLockedTask)
                 mTaskViews.add((TaskView) v);
             }
         }
@@ -1757,6 +1755,7 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
     }
 
     public final void onBusEvent(final DismissAllTaskViewsEvent event) {
+        RecentTaskHelper mRecentTaskHelper = RecentTaskHelper.getHelper(null);
         // Keep track of the tasks which will have their data removed
         ArrayList<Task> tasks = new ArrayList<>(mStack.getStackTasks());
         mAnimationHelper.startDeleteAllTasksAnimation(getTaskViews(), event.getAnimationTrigger());
@@ -1770,7 +1769,9 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                 // Remove all tasks and delete the task data for all tasks
                 mStack.removeAllTasks();
                 for (int i = tasks.size() - 1; i >= 0; i--) {
-                    EventBus.getDefault().send(new DeleteTaskDataEvent(tasks.get(i)));
+                    Task t = tasks.get(i);
+                    if (!mRecentTaskHelper.isLockedTask(t.pkgName))
+                        EventBus.getDefault().send(new DeleteTaskDataEvent(t));
                 }
 
                 MetricsLogger.action(getContext(), MetricsEvent.OVERVIEW_DISMISS_ALL);
