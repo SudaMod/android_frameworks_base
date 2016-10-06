@@ -650,9 +650,8 @@ public class TaskStack {
             Task t = tasks.get(i);
             if(!mRecentTaskHelper.isLockedTask(t.pkgName)) {
                 removeTaskImpl(mStackTaskList, t);
-			} else {
-                mRawTaskList.remove(t);
-            }
+				mRawTaskList.remove(t);
+			}
         }
         if (mCb != null) {
             // Notify that all tasks have been removed
