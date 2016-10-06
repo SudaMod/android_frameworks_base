@@ -45,6 +45,14 @@
         android:ellipsize="marquee"
         android:fadingEdge="horizontal"
         android:forceHasOverlappingRendering="false" />
+    <com.android.systemui.recents.views.FixedSizeImageView 
+        android:id="@+id/set_lock_app" 
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="4dp"
+        android:padding="12dip" 
+        android:layout_gravity="end|center" 
+        android:background="?android:selectableItemBackground"/>
     <com.android.systemui.recents.views.FixedSizeImageView
         android:id="@+id/move_task"
         android:layout_width="wrap_content"
