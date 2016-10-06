@@ -375,9 +375,9 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
         for (int i = 0; i < childCount; i++) {
             View v = getChildAt(i);
             if (v instanceof TaskView) {
-			    Task task = ((TaskView)v).getTask();
-			    if (!task.isLockedTask)
-                    mTaskViews.add((TaskView) v);
+            Task task = ((TaskView)v).getTask();
+            if (!task.isLockedTask)
+                mTaskViews.add((TaskView) v);
             }
         }
     }
