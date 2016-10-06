@@ -69,6 +69,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import com.sudamod.sdk.recenttask.RecentTaskHelper;
 
 /**
  * An interface for a task filter to query whether a particular task should show in a stack.
@@ -643,11 +644,15 @@ public class TaskStack {
      * Removes all tasks from the stack.
      */
     public void removeAllTasks() {
+        RecentTaskHelper mRecentTaskHelper = RecentTaskHelper.getHelper(null);
         ArrayList<Task> tasks = mStackTaskList.getTasks();
         for (int i = tasks.size() - 1; i >= 0; i--) {
             Task t = tasks.get(i);
-            removeTaskImpl(mStackTaskList, t);
-            mRawTaskList.remove(t);
+            if(!mRecentTaskHelper.isLockedTask(t.pkgName)) {
+                removeTaskImpl(mStackTaskList, t);
+			} else {
+                mRawTaskList.remove(t);
+            }
         }
         if (mCb != null) {
             // Notify that all tasks have been removed
