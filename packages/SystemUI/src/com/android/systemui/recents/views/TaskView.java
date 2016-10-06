@@ -207,6 +207,10 @@ public class TaskView extends FixedSizeFrameLayout implements Task.TaskCallbacks
         return mTask;
     }
 
+    public TaskViewHeader getTaskViewHeader() {
+        return mHeaderView;
+    }
+	
     /* Create an outline provider to clip and outline the view */
     protected AnimateableViewBounds createOutlineProvider() {
         return new AnimateableViewBounds(this, mContext.getResources().getDimensionPixelSize(
