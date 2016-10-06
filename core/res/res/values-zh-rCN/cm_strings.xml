@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2012-2014 The CyanogenMod Project
+     Copyright (c) 2013, The Linux Foundation. All rights reserved.
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- Long-press back kill application -->
+    <string name="app_killed_message">强制杀死应用程序</string>
+
+    <!-- label for item that screenshots in phone options dialog -->
+    <string name="global_action_screenshot">截图</string>
+
+    <!-- Title of a category of application permissions, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permgrouplab_security">安全</string>
+    <!-- Description of a category of application permissions, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permgroupdesc_security">每个任务相关的设备的安全信息.</string>
+
+    <!-- [CHAR LIMIT=NONE] Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permlab_readPhoneBlacklist">读取手机黑名单</string>
+    <!-- [CHAR LIMIT=NONE] Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_readPhoneBlacklist">允许应用程序读取被阻塞的来电或消息的电话号码的信息.</string>
+
+    <!-- [CHAR LIMIT=NONE] Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permlab_changePhoneBlacklist">更改手机黑名单</string>
+    <!-- [CHAR LIMIT=NONE] Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_changePhoneBlacklist">允许应用程序更改被阻塞的来电或消息的电话号码.</string>
+
+    <!-- label for item that opens the profile choosing dialog -->
+    <string name="global_action_choose_profile">简况</string>
+
+    <!-- label for item that reboots the phone in phone options dialog -->
+    <string name="global_action_reboot">重新启动</string>
+
+    <!-- Reboot menu -->
+    <!-- Button to reboot the phone, within the Reboot Options dialog -->
+    <string name="reboot_reboot">重新启动</string>
+    <!-- Button to reboot the phone into recovery, within the Reboot Options dialog -->
+    <string name="reboot_recovery">恢复</string>
+    <!-- Button to reboot the phone into bootloader, within the Reboot Options dialog -->
+    <string name="reboot_bootloader">引导程序</string>
+    <!-- Button to reboot the phone into download, within the Reboot Options dialog -->
+    <string name="reboot_download">下载</string>
+    <!-- Button to soft reboot the device, within the Reboot Options dialog -->
+    <string name="reboot_soft">软启动</string>
+
+    <!-- Title of dialog to confirm rebooting. -->
+    <string name="reboot_title">重新启动</string>
+
+    <!-- Reboot Confirmation Dialog.  When the user chooses to reboot the device, there will
+         be a confirmation dialog.  This is the message. -->
+    <string name="reboot_confirm" product="tablet">您的平板电脑将重新启动.</string>
+    <string name="reboot_confirm" product="default">您的手机将重新启动.</string>
+
+    <!-- Reboot Progress Dialog. This is shown if the user chooses to reboot the phone. -->
+    <string name="reboot_progress">重新启动 \u2026</string>
+
+    <!-- ADB over network notification -->
+    <string name="adb_net_active_notification_title">ADB网络功能</string>
+    <!-- ADB over USB and network notification -->
+    <string name="adb_both_active_notification_title">ADB over USB &amp; network enabled</string>
+    <!-- ADB notification message-->
+    <string name="adb_active_generic_notification_message">触摸禁用调试.</string>
+
+    <!-- Privacy Guard -->
+    <string name="permlab_changePrivacyGuardState">启用或禁用隐私保护</string>
+    <string name="permdesc_changePrivacyGuardState">允许应用程序改变是否有另一个应用程序运行与隐私保护。当一个应用程序运行与隐私保护，它将无法访问到的个人数据，如联系人，通话记录，或消息.</string>
+    <string name="privacy_guard_notification">隐私保护活动</string>
+    <string name="privacy_guard_notification_detail"><xliff:g id="app">%1$s</xliff:g> will not be able to access personal data</string>
+    <string name="privacy_guard_dialog_title">隐私保护</string>
+    <string name="privacy_guard_dialog_summary"><xliff:g id="app">%1$s</xliff:g> would like to <xliff:g id="op">%2$s</xliff:g>.</string>
+
+    <!-- App ops requests -->
+    <string name="app_ops_access_camera">访问摄像头</string>
+    <string name="app_ops_access_location">访问您的位置</string>
+    <string name="app_ops_access_notifications">读你的通知</string>
+    <string name="app_ops_activate_vpn">激活一个VPN</string>
+    <string name="app_ops_auto_start">启动电源启动</string>
+    <string name="app_ops_delete_call_log">删除您的通话记录</string>
+    <string name="app_ops_delete_contacts">删除您的联系人</string>
+    <string name="app_ops_delete_mms">删除您的短信</string>
+    <string name="app_ops_delete_sms">删除您的短信</string>
+    <string name="app_ops_draw_on_top">顶部画窗</string>
+    <string name="app_ops_get_usage_stats">获取应用程序的使用统计</string>
+    <string name="app_ops_keep_device_awake">保持你的设备清醒</string>
+    <string name="app_ops_make_phone_call">打一个电话</string>
+    <string name="app_ops_modify_calendar">更新你的日历</string>
+    <string name="app_ops_modify_call_log">更新调用日志</string>
+    <string name="app_ops_modify_clipboard">修改剪贴板</string>
+    <string name="app_ops_modify_contacts">更新您的联系人</string>
+    <string name="app_ops_modify_settings">更新系统设置</string>
+    <string name="app_ops_mute_unmute_microphone">静音/取消麦克风</string>
+    <string name="app_ops_play_audio">播放音频</string>
+    <string name="app_ops_post_notification">后一个通知</string>
+    <string name="app_ops_project_media">项目的媒体</string>
+    <string name="app_ops_read_calendar">读你的日历</string>
+    <string name="app_ops_read_call_log">读取调用日志</string>
+    <string name="app_ops_read_clipboard">读取剪贴板</string>
+    <string name="app_ops_read_contacts">读你的联系人</string>
+    <string name="app_ops_read_mms">阅读你的短信</string>
+    <string name="app_ops_read_sms">阅读你的短信</string>
+    <string name="app_ops_receive_sms">收到一条短信</string>
+    <string name="app_ops_record_audio">音频记录</string>
+    <string name="app_ops_send_mms">发送一个消息</string>
+    <string name="app_ops_send_sms">发送一个短信</string>
+    <string name="app_ops_start_at_bootup">启动电源启动</string>
+    <string name="app_ops_toast_window">消息toast显示</string>
+    <string name="app_ops_toggle_bluetooth">蓝牙切换</string>
+    <string name="app_ops_toggle_mobile_data">切换蜂窝数据</string>
+    <string name="app_ops_toggle_nfc">NFC切换</string>
+    <string name="app_ops_toggle_wifi">Wi-Fi切换</string>
+    <string name="app_ops_use_alarm_volume">控制声音音量</string>
+    <string name="app_ops_use_audio_focus">控制音频焦点</string>
+    <string name="app_ops_use_bluetooth_volume">控制蓝牙音量</string>
+    <string name="app_ops_use_master_volume">控制主音量</string>
+    <string name="app_ops_use_media_buttons">使用媒体按钮</string>
+    <string name="app_ops_use_media_volume">控制媒体音量</string>
+    <string name="app_ops_use_notification_volume">控制音量的通知</string>
+    <string name="app_ops_use_ring_volume">控制铃声音量</string>
+    <string name="app_ops_use_vibrate">使用触觉反馈</string>
+    <string name="app_ops_use_voice_volume">控制语音通话音量</string>
+    <string name="app_ops_write_mms">编写彩信</string>
+    <string name="app_ops_write_sms">编写短信</string>
+    <string name="app_ops_use_fingerprint">使用指纹</string>
+    <string name="app_ops_add_voicemail">添加语音邮件</string>
+    <string name="app_ops_read_phone_state">访问手机状态</string>
+    <string name="app_ops_scan_wifi">扫描无线网络</string>
+    <string name="app_ops_change_wallpaper">更改壁纸</string>
+    <string name="app_ops_assist_structure">使用辅助结构</string>
+    <string name="app_ops_assist_screenshot">屏幕截图</string>
+    <string name="app_ops_use_body_sensors">使用身体传感器</string>
+    <string name="app_ops_read_cell_broadcasts">读取小区广播</string>
+    <string name="app_ops_mock_location">模拟你的位置</string>
+    <string name="app_ops_read_external_storage">读取外部存储</string>
+    <string name="app_ops_write_external_storage">写入外部存储</string>
+    <string name="app_ops_turn_on_screen">打开屏幕</string>
+    <string name="app_ops_get_accounts">获取设备的帐户</string>
+    <string name="app_ops_run_in_background">在后台运行</string>
+    <string name="app_ops_wifi_change">改变Wi-Fi状态</string>
+    <string name="app_ops_su">获得root权限</string>
+
+    <!-- Protected Apps Notification -->
+    <string name="notify_package_component_protected_title">活动推出受阻</string>
+    <string name="notify_package_component_protected_text"><xliff:g id="app_name">%1$s</xliff:g> is protected from being launched. Tap to authenticate and launch the application.</string>
+
+    <!-- Notify user that they are in Lock-to-app (for devices without navbar) -->
+    <string name="lock_to_app_toast_no_navbar">要取消固定这个屏幕，触摸并按住后退按钮.</string>
+</resources>
