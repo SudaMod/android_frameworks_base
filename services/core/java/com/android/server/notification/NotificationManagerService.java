@@ -1616,6 +1616,19 @@ public class NotificationManagerService extends SystemService {
         }
 
         @Override
+        public void setPackagePriority(String pkg, int uid, int priority) {
+            checkCallerIsSystem();
+            mRankingHelper.setPriority(pkg, uid, priority);
+            savePolicyFile();
+        }
+
+        @Override
+        public int getPackagePriority(String pkg, int uid) {
+            checkCallerIsSystem();
+            return mRankingHelper.getPriority(pkg, uid);
+        }
+
+        @Override
         public void setVisibilityOverride(String pkg, int uid, int visibility) {
             checkCallerIsSystem();
             mRankingHelper.setVisibilityOverride(pkg, uid, visibility);

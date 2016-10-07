@@ -47,6 +47,8 @@ interface INotificationManager
 
     void setNotificationsEnabledForPackage(String pkg, int uid, boolean enabled);
     boolean areNotificationsEnabledForPackage(String pkg, int uid);
+    void setPackagePriority(String pkg, int uid, int priority);
+    int getPackagePriority(String pkg, int uid);
     boolean areNotificationsEnabled(String pkg);
 
     void setVisibilityOverride(String pkg, int uid, int visibility);
