@@ -18501,7 +18501,7 @@ public final class ActivityManagerService extends ActivityManagerNative
              broadcastIntentLocked(callerApp,
                      callerApp != null ? callerApp.info.packageName : null,
                      intent, resolvedType, resultTo, resultCode, resultData, resultExtras,
-                     requiredPermissions, appOp, null, serialized, sticky,
+                     requiredPermissions, appOp, bOptions, serialized, sticky,
                      callingPid, callingUid, userId), intent);
             Binder.restoreCallingIdentity(origId);
             return res;
