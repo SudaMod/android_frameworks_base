@@ -29,7 +29,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+<<<<<<< HEAD
+=======
+import android.net.Uri;
+import android.os.Handler;
+>>>>>>> 1df7443... fix compile
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.MathUtils;
 import android.view.GestureDetector;
