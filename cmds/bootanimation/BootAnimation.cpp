@@ -429,7 +429,6 @@ status_t BootAnimation::readyToRun() {
             ((access(getAnimationFileName(IMG_THM), R_OK) == 0) &&
             ((zipFile = ZipFileRO::open(getAnimationFileName(IMG_THM))) != NULL)) ||
 
-
             ((access(getAnimationFileName(IMG_DATA), R_OK) == 0) &&
             ((zipFile = ZipFileRO::open(getAnimationFileName(IMG_DATA))) != NULL)) ||
 
@@ -442,12 +441,14 @@ status_t BootAnimation::readyToRun() {
     // Preload the bootanimation zip on memory, so we don't stutter
     // when showing the animation
     FILE* fd;
-    if (encryptedAnimation && access(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE, R_OK) == 0)
-        fd = fopen(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE, "r");
-    else if (access(OEM_BOOTANIMATION_FILE, R_OK) == 0)
-        fd = fopen(OEM_BOOTANIMATION_FILE, "r");
-    else if (access(SYSTEM_BOOTANIMATION_FILE, R_OK) == 0)
-        fd = fopen(SYSTEM_BOOTANIMATION_FILE, "r");
+    if (encryptedAnimation && access(getAnimationFileName(IMG_ENC), R_OK) == 0)
+        fd = fopen(getAnimationFileName(IMG_ENC), "r");
+    else if (access(getAnimationFileName(IMG_THM), R_OK) == 0)
+        fd = fopen(getAnimationFileName(IMG_THM), "r");
+    else if (access(getAnimationFileName(IMG_DATA), R_OK) == 0)
+        fd = fopen(getAnimationFileName(IMG_DATA), "r");
+    else if (access(getAnimationFileName(IMG_SYS), R_OK) == 0)
+        fd = fopen(getAnimationFileName(IMG_SYS), "r");
     else
         return NO_ERROR;
 
@@ -644,11 +645,16 @@ bool BootAnimation::movie()
         char path[ANIM_ENTRY_NAME_MAX];
         char color[7] = "000000"; // default to black if unspecified
 
+        char value[PROPERTY_VALUE_MAX];
         char pathType;
+
+        property_get("persist.bootanimation.scale", value, "1");
+        double bas = atof(value);
+
         if (sscanf(l, "%d %d %d", &width, &height, &fps) == 3) {
             // ALOGD("> w=%d, h=%d, fps=%d", width, height, fps);
-            animation.width = width;
-            animation.height = height;
+            animation.width = width * bas;
+            animation.height = height * bas;
             animation.fps = fps;
         }
         else if (sscanf(l, " %c %d %d %s #%6s", &pathType, &count, &pause, path, color) >= 4) {
