@@ -22,13 +22,16 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.ActivityManager;
 import android.app.StatusBarManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.util.AttributeSet;
 import android.util.MathUtils;
@@ -223,14 +226,11 @@ public class NotificationPanelView extends PanelView implements
     };
     private NotificationGroupManager mGroupManager;
 
-<<<<<<< HEAD
     // QS alpha
     private int mQSShadeAlpha;
     private Handler mHandler = new Handler();
     private SettingsObserver mSettingsObserver;
 
-=======
->>>>>>> cac7ffc96e3f82290e1eea73f1029d0b49ece2c7
     private int mOneFingerQuickSettingsIntercept;
     private boolean mDoubleTapToSleepEnabled;
     private int mStatusBarHeaderHeight;
@@ -244,6 +244,7 @@ public class NotificationPanelView extends PanelView implements
         super(context, attrs);
         setWillNotDraw(!DEBUG);
         mFalsingManager = FalsingManager.getInstance(context);
+        mSettingsObserver = new SettingsObserver(mHandler);
 
         mDoubleTapGesture = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -397,6 +398,7 @@ public class NotificationPanelView extends PanelView implements
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        mSettingsObserver.observe();
         TunerService.get(mContext).addTunable(this,
                 STATUS_BAR_QUICK_QS_PULLDOWN,
                 DOUBLE_TAP_SLEEP_GESTURE,
@@ -406,6 +408,7 @@ public class NotificationPanelView extends PanelView implements
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mSettingsObserver.unobserve();
         TunerService.get(mContext).removeTunable(this);
         mWeatherController.removeCallback(this);
     }
@@ -2456,15 +2459,9 @@ public class NotificationPanelView extends PanelView implements
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(CMSettings.System.getUriFor(
-                    CMSettings.System.STATUS_BAR_QUICK_QS_PULLDOWN), false, this);
-            resolver.registerContentObserver(CMSettings.System.getUriFor(
-                    CMSettings.System.DOUBLE_TAP_SLEEP_GESTURE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_TRANSPARENT_SHADE),
                     false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(CMSettings.Secure.getUriFor(
-                    CMSettings.Secure.LOCK_SCREEN_WEATHER_ENABLED), false, this);
             update();
         }
 
@@ -2485,19 +2482,8 @@ public class NotificationPanelView extends PanelView implements
 
         public void update() {
             ContentResolver resolver = mContext.getContentResolver();
-            mOneFingerQuickSettingsIntercept = CMSettings.System.getInt(
-                    resolver, CMSettings.System.STATUS_BAR_QUICK_QS_PULLDOWN, 1);
-            mDoubleTapToSleepEnabled = CMSettings.System.getInt(
-                    resolver, CMSettings.System.DOUBLE_TAP_SLEEP_GESTURE, 1) == 1;
             mQSShadeAlpha = Settings.System.getInt(
                     resolver, Settings.System.QS_TRANSPARENT_SHADE, 255);
-            boolean wasKeyguardWeatherEnabled = mKeyguardWeatherEnabled;
-            mKeyguardWeatherEnabled = CMSettings.Secure.getInt(
-                    resolver, CMSettings.Secure.LOCK_SCREEN_WEATHER_ENABLED, 0) == 1;
-            if (mWeatherController != null
-                    && wasKeyguardWeatherEnabled != mKeyguardWeatherEnabled) {
-                onWeatherChanged(mWeatherController.getWeatherInfo());
-            }
             setQSBackgroundAlpha();
         }
     }
