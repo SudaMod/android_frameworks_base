@@ -30,7 +30,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 1df7443... fix compile
 import android.net.Uri;
 import android.os.Handler;
 >>>>>>> 1df7443... fix compile
