@@ -32,8 +32,7 @@ public class PreventRunningUtils {
 
     public static boolean isExcludingStopped(Intent intent) {
         String action = intent.getAction();
-        return ((intent.getFlags() & (Intent.FLAG_EXCLUDE_STOPPED_PACKAGES | Intent.FLAG_INCLUDE_STOPPED_PACKAGES)) == Intent.FLAG_EXCLUDE_STOPPED_PACKAGES)
-                && action != null && mPreventRunning.isExcludingStopped(action);
+        return intent.isExcludingStopped() && action != null && mPreventRunning.isExcludingStopped(action);
     }
 
     public static int match(IntentFilter filter, String action, String type, String scheme, Uri data, Set<String> categories, String tag) {
@@ -63,8 +62,12 @@ public class PreventRunningUtils {
         mPreventRunning.onAppDied(app);
     }
 
-    public static boolean returnFalse() {
-        return false;
+    public static boolean returnFalse(boolean res) {
+        if (mPreventRunning.isActiviated()) {
+            return false;
+        } else {
+            return res;
+        }
     }
 
     public static void onCleanUpRemovedTask(Intent intent) {
@@ -118,12 +121,7 @@ public class PreventRunningUtils {
     }
 
     private static ActivityRecord forToken(IBinder token) {
-        // please delete unused condition in aosp build
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return ActivityRecord.forTokenLocked(token);
-        } else {
-            return ActivityRecord.forToken(token);
-        }
+        return ActivityRecord.forTokenLocked(token);
     }
 
 }
