@@ -66,6 +66,7 @@ import com.android.systemui.statusbar.GestureRecorder;
 import com.android.systemui.statusbar.KeyguardAffordanceView;
 import com.android.systemui.statusbar.NotificationData;
 import com.android.systemui.statusbar.StatusBarState;
+import com.android.systemui.statusbar.notification.NotificationUtils;
 import com.android.systemui.statusbar.policy.HeadsUpManager;
 import com.android.systemui.statusbar.policy.KeyguardUserSwitcher;
 import com.android.systemui.statusbar.policy.WeatherController;
@@ -94,11 +95,10 @@ public class NotificationPanelView extends PanelView implements
     private static final int CAP_HEIGHT = 1456;
     private static final int FONT_HEIGHT = 2163;
 
-    private static final float HEADER_RUBBERBAND_FACTOR = 2.05f;
     private static final float LOCK_ICON_ACTIVE_SCALE = 1.2f;
 
-    private static final String COUNTER_PANEL_OPEN = "panel_open";
-    private static final String COUNTER_PANEL_OPEN_QS = "panel_open_qs";
+    static final String COUNTER_PANEL_OPEN = "panel_open";
+    static final String COUNTER_PANEL_OPEN_QS = "panel_open_qs";
     private static final String COUNTER_PANEL_OPEN_PEEK = "panel_open_peek";
 
     private static final String STATUS_BAR_QUICK_QS_PULLDOWN =
@@ -212,6 +212,7 @@ public class NotificationPanelView extends PanelView implements
     private boolean mExpandingFromHeadsUp;
     private boolean mCollapsedOnDown;
     private int mPositionMinSideMargin;
+    private int mMaxFadeoutHeight;
     private int mLastOrientation = -1;
     private boolean mClosingWithAlphaFadeOut;
     private boolean mHeadsUpAnimatingAway;
@@ -336,6 +337,8 @@ public class NotificationPanelView extends PanelView implements
         mPositionMinSideMargin = getResources().getDimensionPixelSize(
                 R.dimen.notification_panel_min_side_margin);
         mStatusBarHeaderHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_header_height);
+        mMaxFadeoutHeight = getResources().getDimensionPixelSize(
+                R.dimen.max_notification_fadeout_height);
     }
 
     public void updateResources() {
@@ -628,7 +631,9 @@ public class NotificationPanelView extends PanelView implements
     protected void flingToHeight(float vel, boolean expand, float target,
             float collapseSpeedUpFactor, boolean expandBecauseOfFalsing) {
         mHeadsUpTouchHelper.notifyFling(!expand);
-        setClosingWithAlphaFadeout(!expand && getFadeoutAlpha() == 1.0f);
+        setClosingWithAlphaFadeout(!expand
+                && mNotificationStackScroller.getFirstChildIntrinsicHeight() <= mMaxFadeoutHeight
+                && getFadeoutAlpha() == 1.0f);
         super.flingToHeight(vel, expand, target, collapseSpeedUpFactor, expandBecauseOfFalsing);
     }
 
@@ -1109,7 +1114,7 @@ public class NotificationPanelView extends PanelView implements
             mKeyguardStatusBar.setAlpha(1f);
             mKeyguardStatusBar.setVisibility(keyguardShowing ? View.VISIBLE : View.INVISIBLE);
             if (keyguardShowing && oldState != mStatusBarState) {
-                mKeyguardBottomArea.updateLeftAffordance();
+                mKeyguardBottomArea.onKeyguardShowingChanged();
                 mAfforanceHelper.updatePreviews();
             }
         }
@@ -1392,7 +1397,7 @@ public class NotificationPanelView extends PanelView implements
         }
     }
 
-    private void flingSettings(float vel, boolean expand) {
+    public void flingSettings(float vel, boolean expand) {
         flingSettings(vel, expand, null, false /* isClick */);
     }
 
@@ -1473,8 +1478,7 @@ public class NotificationPanelView extends PanelView implements
         int min = mStatusBarMinHeight;
         if (mStatusBar.getBarState() != StatusBarState.KEYGUARD
                 && mNotificationStackScroller.getNotGoneChildCount() == 0) {
-            int minHeight = (int) ((mQsMinExpansionHeight + getOverExpansionAmount())
-                    * HEADER_RUBBERBAND_FACTOR);
+            int minHeight = (int) (mQsMinExpansionHeight + getOverExpansionAmount());
             min = Math.max(min, minHeight);
         }
         int maxHeight;
@@ -1487,8 +1491,12 @@ public class NotificationPanelView extends PanelView implements
         return maxHeight;
     }
 
-    private boolean isInSettings() {
+    public boolean isInSettings() {
         return mQsExpanded;
+    }
+
+    public boolean isExpanding() {
+        return mIsExpanding;
     }
 
     @Override
@@ -1645,15 +1653,8 @@ public class NotificationPanelView extends PanelView implements
         if (mStatusBar.getBarState() == StatusBarState.KEYGUARD) {
             return 0;
         }
-        if (mNotificationStackScroller.getNotGoneChildCount() == 0) {
-            return Math.min(0, mExpandedHeight / HEADER_RUBBERBAND_FACTOR - mQsMinExpansionHeight);
-        }
-        float stackTranslation = mNotificationStackScroller.getStackTranslation();
-        float translation = stackTranslation / HEADER_RUBBERBAND_FACTOR;
-        if (mHeadsUpManager.hasPinnedHeadsUp() || mIsExpansionFromHeadsUp) {
-            translation = mNotificationStackScroller.getTopPadding() + stackTranslation
-                    - mQsMinExpansionHeight;
-        }
+        float translation = NotificationUtils.interpolate(-mQsMinExpansionHeight, 0,
+                mNotificationStackScroller.getAppearFraction(mExpandedHeight));
         return Math.min(0, translation);
     }
 
@@ -1713,6 +1714,9 @@ public class NotificationPanelView extends PanelView implements
         if (mQsExpanded) {
             onQsExpansionStarted();
         }
+        // Since there are QS tiles in the header now, we need to make sure we start listening
+        // immediately so they can be up to date.
+        mQsContainer.setHeaderListening(true);
     }
 
     @Override
@@ -2057,7 +2061,7 @@ public class NotificationPanelView extends PanelView implements
         if (mNotificationStackScroller.getNotGoneChildCount() > 0) {
             return mNotificationStackScroller.getPeekHeight();
         } else {
-            return mQsMinExpansionHeight * HEADER_RUBBERBAND_FACTOR;
+            return mQsMinExpansionHeight;
         }
     }
 
@@ -2206,6 +2210,7 @@ public class NotificationPanelView extends PanelView implements
         onEmptySpaceClick(x);
     }
 
+    @Override
     protected boolean onMiddleClicked() {
         switch (mStatusBar.getBarState()) {
             case StatusBarState.KEYGUARD:
@@ -2355,6 +2360,7 @@ public class NotificationPanelView extends PanelView implements
         mStatusBar.clearNotificationEffects();
     }
 
+    @Override
     protected boolean isPanelVisibleBecauseOfHeadsUp() {
         return mHeadsUpManager.hasPinnedHeadsUp() || mHeadsUpAnimatingAway;
     }
