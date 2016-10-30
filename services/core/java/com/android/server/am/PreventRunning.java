@@ -19,17 +19,12 @@ public class PreventRunning implements PreventRunningHook {
 
     private static final String TAG = "Prevent";
 
-    private static final int VERSION = 20160406;
+    public static final int VERSION = 20161024;
 
     private PreventRunningHook mPreventRunning;
 
     private static String[] APKS = {
-            "/data/app/me.piebridge.prevent-1/base.apk",
-            "/data/app/me.piebridge.prevent-2/base.apk",
-            "/data/app/me.piebridge.prevent-3/base.apk",
-            "/data/app/me.piebridge.prevent-1.apk",
-            "/data/app/me.piebridge.prevent-2.apk",
-            "/data/app/me.piebridge.prevent-3.apk",
+            "/system/app/ForceStop/ForceStop.apk",
     };
 
     public PreventRunning() {
