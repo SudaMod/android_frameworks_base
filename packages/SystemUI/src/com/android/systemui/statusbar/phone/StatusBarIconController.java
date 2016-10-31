@@ -548,7 +548,7 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
         mBatteryMeterView.setDarkIntensity(
                 isInArea(mTintArea, mBatteryMeterView) ? mDarkIntensity : 0);
         mCarrierLabel.setTextColor(mIconTint);
-        mClockController.setTextColor(mTintArea, mIconTint);
+        mClockController.setTextColor(mIconTint);
         mBatteryLevelView.setTextColor(getTint(mTintArea, mBatteryLevelView, mIconTint));
     }
 
