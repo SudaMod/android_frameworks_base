@@ -25,6 +25,12 @@ public class PreventRunning implements PreventRunningHook {
 
     private static String[] APKS = {
             "/system/app/ForceStop/ForceStop.apk",
+            "/data/app/me.piebridge.prevent-1/base.apk",
+            "/data/app/me.piebridge.prevent-2/base.apk",
+            "/data/app/me.piebridge.prevent-3/base.apk",
+            "/data/app/me.piebridge.prevent-1.apk",
+            "/data/app/me.piebridge.prevent-2.apk",
+            "/data/app/me.piebridge.prevent-3.apk",
     };
 
     public PreventRunning() {
