@@ -2340,8 +2340,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.END_BUTTON_BEHAVIOR,
                     Settings.System.END_BUTTON_BEHAVIOR_DEFAULT,
                     UserHandle.USER_CURRENT);
+ 
             mCustomBackKillTimeout = Settings.Secure.getIntForUser(resolver,
                     Settings.Secure.KILL_APP_LONGPRESS_TIMEOUT, mBackKillTimeout, UserHandle.USER_CURRENT);
+ 
+            mIncallPowerBehavior = Settings.Secure.getIntForUser(resolver,
+                    Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR,
+                    Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR_DEFAULT,
+                    UserHandle.USER_CURRENT);
             mHomeWakeScreen = (CMSettings.System.getIntForUser(resolver,
                     CMSettings.System.HOME_WAKE_SCREEN, 1, UserHandle.USER_CURRENT) == 1) &&
                     ((mDeviceHardwareWakeKeys & KEY_MASK_HOME) != 0);
@@ -4059,17 +4065,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     private boolean unpinActivity(boolean checkOnly) {
-        if (!hasNavigationBar()) {
-            try {
-                if (ActivityManagerNative.getDefault().isInLockTaskMode()) {
-                    if (!checkOnly) {
-                        ActivityManagerNative.getDefault().stopSystemLockTaskMode();
-                    }
-                    return true;
+        try {
+            if (ActivityManagerNative.getDefault().isInLockTaskMode()) {
+                if (!checkOnly) {
+                    ActivityManagerNative.getDefault().stopSystemLockTaskMode();
                 }
-            } catch (RemoteException e) {
-                // ignore
+                return true;
             }
+        } catch (RemoteException e) {
+            // ignore
         }
         return false;
     }
