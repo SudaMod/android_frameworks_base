@@ -439,7 +439,7 @@ public class RecentsActivity extends Activity implements ViewTreeObserver.OnPreD
     @Override
     protected void onPause() {
         super.onPause();
-
+        mRecentsView.enableShake(false);
         mIgnoreAltTabRelease = false;
         mIterateTrigger.stopDozing();
     }
