@@ -3786,6 +3786,11 @@ public final class Settings {
         public static final String STATUS_BAR_AM_PM = "status_bar_am_pm";
 
         /**
+         * @hide
+         */
+        public static final String STATUS_BAR_CLOCK_SHOW_SECOND = "status_bar_clock_show_second";
+
+        /**
 		 * Shows custom date before clock time
          * 0 - No Date
          * 1 - Small Date
@@ -3873,6 +3878,7 @@ public final class Settings {
             ACCELEROMETER_ROTATION,
             STATUS_BAR_CLOCK,
             STATUS_BAR_AM_PM,
+            STATUS_BAR_CLOCK_SHOW_SECOND,
             STATUS_BAR_CLOCK_DATE_DISPLAY,
             STATUS_BAR_CLOCK_DATE_STYLE,
             STATUS_BAR_CLOCK_DATE_FORMAT

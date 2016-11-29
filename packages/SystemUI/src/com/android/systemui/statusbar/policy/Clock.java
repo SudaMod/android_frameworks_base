@@ -78,6 +78,16 @@ public class Clock extends TextView implements DemoMode {
     private int mClockDateStyle = CLOCK_DATE_STYLE_REGULAR;
     private int mAmPmStyle = AM_PM_STYLE_GONE;
 
+    private boolean mShowSecond;
+    private final Handler handler = new Handler();
+
+    private Runnable secondUpdateRunnable = new Runnable() {
+        public void run() {
+            updateClock();
+            handler.postDelayed(this, 1000);
+        }
+    };
+
     public Clock(Context context) {
         this(context, null);
     }
@@ -165,6 +175,12 @@ public class Clock extends TextView implements DemoMode {
 
         SimpleDateFormat sdf;
         String format = is24 ? d.timeFormat_Hm : d.timeFormat_hm;
+
+        // replace seconds directly in format, not in result
+        if (mShowSecond) {
+            format = format.replaceFirst("mm", "mm:ss");
+        }
+
         if (!format.equals(mClockFormatString)) {
             mContentDescriptionFormat = new SimpleDateFormat(format);
             /*
@@ -311,6 +327,14 @@ public class Clock extends TextView implements DemoMode {
     public void setClockDateStyle(int style) {
         mClockDateStyle = style;
         updateClock();
+    }
+
+    public void setClockSecond(boolean show) {
+        mShowSecond = show;
+        handler.removeCallbacks(secondUpdateRunnable); // Unique runnable
+        if (mShowSecond) {
+            handler.post(secondUpdateRunnable);
+        }
     }
 }
 
