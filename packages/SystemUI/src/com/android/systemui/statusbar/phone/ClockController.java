@@ -35,6 +35,7 @@ public class ClockController {
     private int mAmPmStyle;
 	private int mClockDateStyle;
     private int mClockDateDisplay;
+    private boolean mShowSecond;
     private int mIconTint = DEFAULT_ICON_TINT;
     private final Rect mTintArea = new Rect();
 
@@ -59,6 +60,9 @@ public class ClockController {
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CLOCK_DATE_FORMAT),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_CLOCK_SHOW_SECOND),
                     false, this, UserHandle.USER_ALL);
             updateSettings();
         }
@@ -112,6 +116,7 @@ public class ClockController {
         mActiveClock = getClockForCurrentLocation();
         mActiveClock.setVisibility(View.VISIBLE);
         mActiveClock.setAmPmStyle(mAmPmStyle);
+        mActiveClock.setClockSecond(mShowSecond);
 		mActiveClock.setClockDateDisplay(mClockDateDisplay);
         mActiveClock.setClockDateStyle(mClockDateStyle);
 
@@ -125,6 +130,9 @@ public class ClockController {
         mAmPmStyle = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_AM_PM, Clock.AM_PM_STYLE_GONE,
                 UserHandle.USER_CURRENT);
+        mShowSecond = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_CLOCK_SHOW_SECOND, 0,
+                UserHandle.USER_CURRENT) == 1;
         mClockLocation = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_CLOCK, STYLE_CLOCK_RIGHT,
                 UserHandle.USER_CURRENT);
