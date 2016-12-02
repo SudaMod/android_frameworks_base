@@ -42,21 +42,18 @@ public class SudaUtils {
         System.loadLibrary(LIBNAME);
     }
 
-    //2015年法定节假日
+    //2017年法定节假日
+    private static int YEAR = 2017;
     //一月
-    private static int[] JANH = {1, 2, 3};
+    private static int[] JANH = {1, 2, 27, 28, 29, 30, 31};
     //二月
-    private static int[] FEBH = {18, 19, 20, 21, 22, 23, 24};
+    private static int[] FEBH = {1, 2};
     //四月
-    private static int[] APRH = {4, 5, 6};
+    private static int[] APRH = {2, 3, 4, 29, 30};
     //五月
-    private static int[] MAYH = {1, 2, 3};
-    //六月
-    private static int[] JUNH = {20, 21, 22};
-    //九月
-    private static int[] SEPH = {26, 27};
+    private static int[] MAYH = {1, 28, 29, 30};
     //十月
-    private static int[] OCTH = {1, 2, 3, 4, 5, 6, 7};
+    private static int[] OCTH = {1, 2, 3, 4, 5, 6, 7, 8};
 
     public static native boolean isSupportLanguage(boolean excludeTW);
 
@@ -101,7 +98,8 @@ public class SudaUtils {
 
     public static boolean isChineseHoliday(int y, int m, int d) {
         boolean bResult = false;
-        if( y == 2015 ){
+        if( y == YEAR-1 && m == 12 && d == 31 ) return ture;
+        if( y == YEAR ){
             switch(m) {
                 case 1:
                   for(int tmp:JANH){
@@ -126,18 +124,12 @@ public class SudaUtils {
                   }
                 break;
                 case 6:
-                  for(int tmp:JUNH){
-                      if(d == tmp) bResult=true;
-                  }
                 break;
                 case 7:
                 break;
                 case 8:
                 break;
                 case 9:
-                  for(int tmp:SEPH){
-                      if(d == tmp) bResult=true;
-                  }
                 break;
                 case 10:
                   for(int tmp:OCTH){
