@@ -98,7 +98,7 @@ public class SudaUtils {
 
     public static boolean isChineseHoliday(int y, int m, int d) {
         boolean bResult = false;
-        if( y == YEAR-1 && m == 12 && d == 31 ) return ture;
+        if( y == YEAR-1 && m == 12 && d == 31 ) return true;
         if( y == YEAR ){
             switch(m) {
                 case 1:
