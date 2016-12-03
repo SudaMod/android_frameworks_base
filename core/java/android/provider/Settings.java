@@ -3665,7 +3665,13 @@ public final class Settings {
          */
         public static final String STATUS_BAR_NETWORK_TRAFFIC_STYLE = "status_bar_network_traffic_style";
 
- 	/**
+        /**
+         * location of the clear all rectents button
+         * @hide
+         */
+        public static final String  RECENTS_CLEAR_ALL_LOCATION = "recents_clear_all_location";
+
+          /**
          * Three Finger Gesture from Oppo
          *
          * @hide
@@ -3677,6 +3683,12 @@ public final class Settings {
          * @hide
          */
         public static final String SHAKE_CLEAN_NOTIFICATION = "shake_clean_notification";
+
+        /**
+         * show clear all recents button
+         *  @hide
+         */
+        public static final String SHOW_CLEAR_ALL_RECENTS = "show_clear_all_recents";
 
           /**
          * show carrier in statusbar. The value is
