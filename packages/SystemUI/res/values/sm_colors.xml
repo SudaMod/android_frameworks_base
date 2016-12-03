@@ -2,5 +2,7 @@
 <resources>
 
     <color name="keyguard_carrier_text_color">#ffffff</color>
-
+    <!-- Floating action button -->
+    <color name="fab_color">#ffffffff</color>
+    <color name="floating_action_button_icon_color">@*android:color/accent_material_dark</color>
 </resources>
