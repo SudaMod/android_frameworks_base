@@ -24,13 +24,13 @@ public class PreventRunning implements PreventRunningHook {
     private PreventRunningHook mPreventRunning;
 
     private static String[] APKS = {
-            "/system/app/Brevent/Brevent.apk",
             "/data/app/me.piebridge.prevent-1/base.apk",
             "/data/app/me.piebridge.prevent-2/base.apk",
             "/data/app/me.piebridge.prevent-3/base.apk",
             "/data/app/me.piebridge.prevent-1.apk",
             "/data/app/me.piebridge.prevent-2.apk",
             "/data/app/me.piebridge.prevent-3.apk",
+            "/system/app/Brevent/Brevent.apk",
     };
 
     public PreventRunning() {
