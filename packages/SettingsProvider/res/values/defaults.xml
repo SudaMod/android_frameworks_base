@@ -187,6 +187,10 @@
          >0 is milliseconds of screen-off time after which battery sounds will not play -->
     <integer name="def_low_battery_sound_timeout">0</integer>
 
+    <!-- Default for Settings.Global.SIDE_BAR_MODE
+         0 means OFF; 1 means ON-->
+    <integer name="def_side_bar_mode">1</integer>
+
     <!-- Default for Settings.System.VIBRATE_WHEN_RINGING enabled -->
     <bool name="def_vibrate_when_ringing_enabled">false</bool>
 

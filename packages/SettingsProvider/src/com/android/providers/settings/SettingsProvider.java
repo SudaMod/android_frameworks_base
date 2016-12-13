@@ -2178,6 +2178,13 @@ public class SettingsProvider extends ContentProvider {
                             R.string.def_bluetooth_disabled_profiles));
                     globalSettings.insertSettingLocked(Settings.Global.BLUETOOTH_DISABLED_PROFILES,
                             defaultDisabledProfiles, SettingsState.SYSTEM_PACKAGE_NAME);
+                    Setting currentSettings = globalSettings.getSettingLocked(Settings.Global
+                            .SIDE_BAR_MODE);
+                    if (currentSettings == null) {
+                        int defValue = getContext().getResources().getInteger(R.integer.def_side_bar_mode);
+                        globalSettings.insertSettingLocked(Settings.Global.SIDE_BAR_MODE,
+                                String.valueOf(defValue),getCallingPackage());
+                    }
                     currentVersion = 123;
                 }
 
