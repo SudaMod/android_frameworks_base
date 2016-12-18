@@ -14,6 +14,5 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="su_indicator">Superuser indicator</string>
-  <!-- ActionBar action to edit the current selection [CHAR LIMIT=10] -->
+  <string name="edit">Edit</string>
 </resources>
