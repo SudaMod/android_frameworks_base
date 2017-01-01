@@ -30,6 +30,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.UserHandle;
+import android.provider.Settings;
 import android.util.ArraySet;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -175,9 +176,11 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
     }
 
     public void enableShake(boolean enableShakeClean) {
-        if( mShakeSensorManager == null)
+        if (mShakeSensorManager == null)
             return;
-        if (enableShakeClean) {
+        boolean enableShakeCleanByUser = Settings.System.getInt(getContentResolver(),
+                Settings.System.SHAKE_CLEAN_RECENT, 1) == 1;
+        if (enableShakeClean && enableShakeCleanByUser) {
             mShakeSensorManager.enable(20);
         } else {
             mShakeSensorManager.disable();
