@@ -178,7 +178,7 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
     public void enableShake(boolean enableShakeClean) {
         if (mShakeSensorManager == null)
             return;
-        boolean enableShakeCleanByUser = Settings.System.getInt(getContentResolver(),
+        boolean enableShakeCleanByUser = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.SHAKE_CLEAN_RECENT, 1) == 1;
         if (enableShakeClean && enableShakeCleanByUser) {
             mShakeSensorManager.enable(20);
