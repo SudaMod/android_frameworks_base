@@ -191,3 +191,4 @@ public class ClockController {
         StatusBarIconController.getTint(mTintArea, mActiveClock, mIconTint);
     }
 }
+
