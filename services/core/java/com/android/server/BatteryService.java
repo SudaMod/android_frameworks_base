@@ -62,6 +62,7 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.FileNotFoundException;
 
 import cyanogenmod.providers.CMSettings;
 
@@ -368,6 +369,8 @@ public final class BatteryService extends SystemService {
             vbattNow =  vbattNow / 1000;
             br.close();
             fileReader.close();
+        } catch (FileNotFoundException e) {
+            Slog.e(TAG, "Failure in reading battery voltage", e);
         } catch (IOException e) {
             Slog.e(TAG, "Failure in reading battery voltage", e);
         }
