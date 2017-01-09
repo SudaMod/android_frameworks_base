@@ -136,7 +136,7 @@ public class DateView extends TextView {
             Calendar cal = Calendar.getInstance();
 	    cal.setTime(mCurrentTime);
             Lunar lunar = new Lunar(cal);
-            zhDate = " " + lunar.toString();
+            zhDate = " " + lunar.toShortenSrting();
 	}
 	
         if (getContext().getResources().getBoolean(com.android.internal.R.bool.config_dateformat)) {

@@ -193,6 +193,14 @@ public class Lunar {
                 + getChinaDayString(day);
     }
 
+    public String toShortenSrting() {
+        String run1 =  Constant. getLeap();
+        String month1 = Constant.STATUS_MONTH_CN;
+        return (leap ? run1 : "") + lunarMonthName[month - 1]
+                + month1
+                + getChinaDayString(day);
+    }
+	
     public boolean isBigMonth(String lunarFestivalStr) {
         if (monthDays(year, month) == 30) {
             return true;
