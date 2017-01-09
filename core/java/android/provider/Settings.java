@@ -3819,7 +3819,25 @@ public final class Settings {
          * @hide
          */
         public static final String STATUS_BAR_CLOCK_DATE_FORMAT = "statusbar_clock_date_format";
- 
+
+	 	/**
+          * whether to display SU icon in statusbar
+          * @hide
+          */
+        public static final String SHOW_SU_INDICATOR = "show_su_indicator";
+
+       /**
+         * Force expanded notifications on all apps that support it.
+         * @hide
+         */
+        public static final String FORCE_EXPANDED_NOTIFICATIONS = "force_expanded_notifications";
+
+       /**
+         * Whether to vibrate when quick settings tile is pressed.
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_TILES_VIBRATE = "quick_settings_vibrate";
+
         /**
          * Option to hide stk sufix
          * @hide
