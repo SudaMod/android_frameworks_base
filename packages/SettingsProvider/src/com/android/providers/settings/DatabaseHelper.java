@@ -1497,6 +1497,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
                             Settings.Global.CALL_AUTO_RETRY,
                             Settings.Global.DEBUG_APP,
                             Settings.Global.WAIT_FOR_DEBUGGER,
+                            Settings.Global.SHOW_PROCESSES,
                             Settings.Global.ALWAYS_FINISH_ACTIVITIES,
                     };
                     String[] secureToGlobal = {
