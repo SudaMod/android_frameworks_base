@@ -3822,6 +3822,18 @@ public final class Settings {
           */
         public static final String SHOW_SU_INDICATOR = "show_su_indicator";
 
+       /**
+         * Force expanded notifications on all apps that support it.
+         * @hide
+         */
+        public static final String FORCE_EXPANDED_NOTIFICATIONS = "force_expanded_notifications";
+
+       /**
+         * Whether to vibrate when quick settings tile is pressed.
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_TILES_VIBRATE = "quick_settings_vibrate";
+
         /**
          * Option to hide stk sufix
          * @hide
