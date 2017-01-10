@@ -31,6 +31,7 @@ import android.util.Slog;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.GridLayout;
+import android.content.ContentResolver;
 import android.widget.TextClock;
 import android.widget.TextView;
 
@@ -49,7 +50,8 @@ public class KeyguardStatusView extends GridLayout {
     private TextClock mDateView;
     private TextClock mClockView;
     private TextView mOwnerInfo;
-
+    private TextView mChineseDate;
+	
     //On the first boot, keyguard will start to receiver TIME_TICK intent.
     //And onScreenTurnedOff will not get called if power off when keyguard is not started.
     //Set initial value to false to skip the above case.
@@ -78,12 +80,18 @@ public class KeyguardStatusView extends GridLayout {
             setEnableMarquee(true);
             enableRefresh = true;
             refresh();
+            boolean mShow = Settings.System.getIntForUser(getContext().getContentResolver(),
+                  Settings.System.CHINESE_DATE_VIEW, 1, UserHandle.USER_CURRENT) == 1;
+            mChineseDate.setVisibility(mShow ? View.VISIBLE : View.GONE);
         }
 
         @Override
         public void onFinishedGoingToSleep(int why) {
             setEnableMarquee(false);
             enableRefresh = false;
+            boolean mShow = Settings.System.getIntForUser(getContext().getContentResolver(),
+                  Settings.System.CHINESE_DATE_VIEW, 1, UserHandle.USER_CURRENT) == 1;
+            mChineseDate.setVisibility(mShow ? View.VISIBLE : View.GONE);
         }
 
         @Override
@@ -122,6 +130,7 @@ public class KeyguardStatusView extends GridLayout {
         mDateView.setShowCurrentUserTime(true);
         mClockView.setShowCurrentUserTime(true);
         mOwnerInfo = (TextView) findViewById(R.id.owner_info);
+        mChineseDate = (TextView) findViewById(R.id.date_chinese);
 
         boolean shouldMarquee = KeyguardUpdateMonitor.getInstance(mContext).isDeviceInteractive();
         setEnableMarquee(shouldMarquee);

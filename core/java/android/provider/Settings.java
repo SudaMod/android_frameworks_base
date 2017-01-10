@@ -3728,6 +3728,18 @@ public final class Settings {
          */
         public static final String TRANSPARENT_VOLUME_DIALOG = "transparent_volume_dialog";
 
+         /**
+          * Chinese date view
+          * @hide
+          */
+         public static final String CHINESE_DATE_VIEW = "chinese_date_view";
+ 
+        /**
+         * Whether to use the custom quick unlock screen control
+         * @hide
+         */
+        public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen_quick_unlock_control";
+ 
         /**
          * I am the lolrus.
          * <p>
