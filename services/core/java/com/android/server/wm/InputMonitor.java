@@ -169,7 +169,7 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
 
     private void addInputWindowHandleLw(final InputWindowHandle inputWindowHandle,
             final WindowState child, int flags, final int type, final boolean isVisible,
-            final boolean hasFocus, final boolean hasWallpaper) {
+            final boolean hasFocus, final boolean hasWallpaper, final boolean inThumbMode) {
         // Add a window to our list of input windows.
         inputWindowHandle.name = child.toString();
         final boolean modal = (flags & (WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
@@ -179,6 +179,9 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
             flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
             child.getStackBounds(mTmpRect);
             inputWindowHandle.touchableRegion.set(mTmpRect);
+            if (child.isHiddenWindow()) {
+                inputWindowHandle.touchableRegion.set(new Rect(0, 0, 1, 1));
+            }
         } else {
             // Not modal or full screen modal
             child.getTouchableRegion(inputWindowHandle.touchableRegion);
@@ -210,7 +213,7 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
         } else {
             inputWindowHandle.scaleFactor = 1;
         }
-
+        inputWindowHandle.inThumbMode = inThumbMode;
 
         addInputWindowHandleLw(inputWindowHandle);
     }
@@ -292,14 +295,15 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
                         && !disableWallpaperTouchEvents;
                 final boolean onDefaultDisplay = (child.getDisplayId() == Display.DEFAULT_DISPLAY);
 
+                final boolean inThumbMode = child.isWinInThumbMode();
                 // If there's a drag in progress and 'child' is a potential drop target,
                 // make sure it's been told about the drag
-                if (inDrag && isVisible && onDefaultDisplay) {
+                if (mService.mDragState != null && isVisible && onDefaultDisplay) {
                     mService.mDragState.sendDragStartedIfNeededLw(child);
                 }
 
                 addInputWindowHandleLw(inputWindowHandle, child, flags, type, isVisible, hasFocus,
-                        hasWallpaper);
+                        hasWallpaper, inThumbMode);
             }
         }
 

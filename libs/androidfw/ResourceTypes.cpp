@@ -3534,7 +3534,7 @@ void ResTable::Theme::dumpToLog() const
 }
 
 ResTable::ResTable()
-    : mError(NO_INIT), mNextPackageId(2)
+    : mError(NO_INIT), mNextPackageId(Res_FIRSTLIBPACKAGEID)
 {
     memset(&mParams, 0, sizeof(mParams));
     memset(mPackageMap, 0, sizeof(mPackageMap));
@@ -3544,7 +3544,7 @@ ResTable::ResTable()
 }
 
 ResTable::ResTable(const void* data, size_t size, const int32_t cookie, bool copyData)
-    : mError(NO_INIT), mNextPackageId(2)
+    : mError(NO_INIT), mNextPackageId(Res_FIRSTLIBPACKAGEID)
 {
     memset(&mParams, 0, sizeof(mParams));
     memset(mPackageMap, 0, sizeof(mPackageMap));
@@ -5141,7 +5141,7 @@ bool ResTable::stringToValue(Res_value* outValue, String16* outString,
                 }
 
                 uint32_t packageId = Res_GETPACKAGE(rid) + 1;
-                if (isDynamicPackageId(packageId)) {
+                if (packageId == 0x00) {
                     outValue->dataType = Res_value::TYPE_DYNAMIC_REFERENCE;
                 }
                 outValue->data = rid;
@@ -5162,7 +5162,7 @@ bool ResTable::stringToValue(Res_value* outValue, String16* outString,
                         outValue->data = rid;
                         outValue->dataType = Res_value::TYPE_DYNAMIC_REFERENCE;
                         return true;
-                    } else if (!isDynamicPackageId(packageId)) {
+                    } else if (packageId != 0x00) {
                         // We accept packageId's generated as 0x01 in order to support
                         // building the android system resources
                         outValue->data = rid;
@@ -6393,6 +6393,7 @@ DynamicRefTable::DynamicRefTable(uint8_t packageId)
     mLookupTable[OVERLAY_SYS_PACKAGE_ID] = OVERLAY_SYS_PACKAGE_ID;
     mLookupTable[OVERLAY_COMMON_PACKAGE_ID] = OVERLAY_COMMON_PACKAGE_ID;
     mLookupTable[OVERLAY_CMSDK_PACKAGE_ID] = OVERLAY_CMSDK_PACKAGE_ID;
+	mLookupTable[0x02] = 0x02;
 }
 
 status_t DynamicRefTable::load(const ResTable_lib_header* const header)

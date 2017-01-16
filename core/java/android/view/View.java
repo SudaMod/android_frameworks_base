@@ -12185,8 +12185,10 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * Determines whether the given point, in local coordinates is inside the view.
      */
     /*package*/ final boolean pointInView(float localX, float localY) {
-        return localX >= 0 && localX < (mRight - mLeft)
-                && localY >= 0 && localY < (mBottom - mTop);
+        final int lX = (int)localX;
+        final int lY = (int)localY;
+        return lX >= 0 && lX <= (mRight - mLeft)
+                && lY >= 0 && lY <= (mBottom - mTop);
     }
 
     /**
@@ -19593,6 +19595,22 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      */
     public final boolean startDrag(ClipData data, DragShadowBuilder shadowBuilder,
             Object myLocalState, int flags) {
+        return startDrag(data, shadowBuilder, myLocalState, flags, 0, 0);
+    }
+
+    /**
+     * @hide
+     */
+    public final boolean startDrag(ClipData data, DragShadowBuilder shadowBuilder,
+            Object myLocalState, int flags, float delX, float delY) {
+        return startDrag(data, shadowBuilder, myLocalState, flags, delX, delY, 0);
+    }
+
+    /**
+     * @hide
+     */
+    public final boolean startDrag(ClipData data, DragShadowBuilder shadowBuilder,
+            Object myLocalState, int flags, float delX, float delY, int showAnimDelay) {
         if (ViewDebug.DEBUG_DRAG) {
             Log.d(VIEW_LOG_TAG, "startDrag: data=" + data + " flags=" + flags);
         }
@@ -19614,7 +19632,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         Surface surface = new Surface();
         try {
             IBinder token = mAttachInfo.mSession.prepareDrag(mAttachInfo.mWindow,
-                    flags, shadowSize.x, shadowSize.y, surface);
+                    flags, shadowSize.x, shadowSize.y, surface, delX, delY, showAnimDelay);
             if (ViewDebug.DEBUG_DRAG) Log.d(VIEW_LOG_TAG, "prepareDrag returned token=" + token
                     + " surface=" + surface);
             if (token != null) {
@@ -19706,7 +19724,14 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     }
 
     boolean canAcceptDrag() {
-        return (mPrivateFlags2 & PFLAG2_DRAG_CAN_ACCEPT) != 0;
+        return mAlwaysCanAcceptDrag || (mPrivateFlags2 & PFLAG2_DRAG_CAN_ACCEPT) != 0;
+    }
+
+    private boolean mAlwaysCanAcceptDrag = false;
+
+    /** @hide */
+    public void setAlwaysCanAcceptDrag(boolean can){
+        mAlwaysCanAcceptDrag = can;
     }
 
     /**
@@ -21129,7 +21154,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         public void run() {
             if (isPressed() && (mParent != null)
                     && mOriginalWindowAttachCount == mWindowAttachCount) {
-                if (performLongClick()) {
+                if (!getRootView().isLongPressSwipe() && performLongClick()) {
                     mHasPerformedLongPress = true;
                 }
             }
@@ -22559,4 +22584,49 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         stream.addProperty("accessibility:labelFor", getLabelFor());
         stream.addProperty("accessibility:importantForAccessibility", getImportantForAccessibility());
     }
+
+    /** @hide */
+    public boolean isLongPressSwipe() {
+        return false;
+    }
+
+    /** @hide */
+    public View dispatchFindView(float x, float y, boolean findImage) {
+        return null;
+    }
+
+    /** @hide */
+    public void setFindText(String str) {
+        mFindText = str;
+    }
+
+    /** @hide */
+    public String getFindText() {
+        return mFindText;
+    }
+
+    /** @hide */
+    public int getFindTextIndex() {
+        return mFindTextIndex;
+    }
+
+    /** @hide */
+    public void setFindTextIndex(int index) {
+        mFindTextIndex = index;
+    }
+
+    /** @hide */
+    protected boolean isHandlingTouchEvent() {
+        return mIsHandlingTouchEvent;
+    }
+
+    /** @hide */
+    protected void setHandlingTouchEvent(boolean b) {
+        mIsHandlingTouchEvent = b;
+    }
+
+    private boolean mIsHandlingTouchEvent = false;
+    private String mFindText;
+    private int mFindTextIndex = -1;
+
 }

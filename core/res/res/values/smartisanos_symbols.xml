@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- added for smartisanos. we should put our symbols here -->
+<resources>
+
+  <java-symbol type="dimen" name="sidebar_width" />
+
+  <!-- TextView/Editor Symbol -->
+  <java-symbol type="layout" name="smartisan_drag_text_popup" />
+  <java-symbol type="id" name="drag_text_id" />
+  <java-symbol type="dimen" name="drag_text_popup_vertival_offset" />
+  <java-symbol type="dimen" name="drag_touch_point_offset" />
+  <java-symbol type="dimen" name="drag_normal_arrow_point_offset" />
+  <java-symbol type="dimen" name="drag_scale_margin" />
+
+  <java-symbol type="dimen" name="sidebar_start_threshold_x_a" />
+  <java-symbol type="dimen" name="sidebar_start_threshold_y_a" />
+  <java-symbol type="dimen" name="sidebar_start_threshold_x_b" />
+  <java-symbol type="dimen" name="sidebar_start_threshold_y_b" />
+
+  <!-- TextView/Editor Symbol -->
+
+  <java-symbol type="drawable" name="sidebar_background" />
+  <java-symbol type="dimen" name="drag_image_size"/>
+
+  <!-- Status Bar -->
+  <java-symbol type="anim" name="dock_fade_enter" />
+  <java-symbol type="anim" name="dock_fade_exit" />
+
+  <!-- Thumb Mode -->
+  <java-symbol type="style" name="Animation.Thumbwallpaper" />
+  <java-symbol type="drawable" name="shadow_thumb_mode"/>
+
+  <!-- text boom -->
+  <java-symbol type="drawable" name="smartisan_boom_loop" />
+  <java-symbol type="drawable" name="smartisan_boom_circle" />
+  <java-symbol type="array" name="text_boom_trigger_area" />
+  <java-symbol type="array" name="ocr_black_list" />
+  <!-- SideBar drag text Wechat sight -->
+  <java-symbol type="string" name="sidebar_wechat_sight" />
+
+</resources>

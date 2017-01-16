@@ -2984,6 +2984,16 @@ class DatabaseHelper extends SQLiteOpenHelper {
                     R.bool.def_guest_user_enabled);
             loadSetting(stmt, Settings.Global.ENHANCED_4G_MODE_ENABLED,
                     ImsConfig.FeatureValueConstants.ON);
+
+            /*
+             * IMPORTANT: Do not add any more upgrade steps here as the global,
+             * secure, and system settings are no longer stored in a database
+             * but are kept in memory and persisted to XML.
+             *
+             * See: SettingsProvider.UpgradeController#onUpgradeLocked
+             */
+            loadIntegerSetting(stmt, Settings.Global.SIDE_BAR_MODE, R.integer.def_side_bar_mode);
+
             /*
              * IMPORTANT: Do not add any more upgrade steps here as the global,
              * secure, and system settings are no longer stored in a database
