@@ -56,6 +56,7 @@ import com.android.systemui.utils.NetworkTrafficSpan;
  *
  */
 public class NetworkTraffic extends TextView {
+    private ConnectivityManager mConnectivityService;
     public static final int MASK_UP = 0x00000001; // Least valuable bit
     public static final int MASK_DOWN = 0x00000002; // Second least valuable bit
     public static final int MASK_PERIOD = 0xFFFF0000; // Most valuable 16 bits
@@ -77,6 +78,7 @@ public class NetworkTraffic extends TextView {
 
     private int mState = 0;
     private boolean mAttached;
+    private boolean mVpnConnected;
     private long totalRxBytes;
     private long totalTxBytes;
     private long lastUpdateTime;
@@ -111,7 +113,10 @@ public class NetworkTraffic extends TextView {
             long newTotalTxBytes = TrafficStats.getTotalTxBytes();
             long rxData = newTotalRxBytes - totalRxBytes;
             long txData = newTotalTxBytes - totalTxBytes;
-
+            if (mVpnConnected) {
+                rxData = rxData / 2;
+                txData = txData / 2;
+            }
             // If bit/s convert from Bytes to bits
             String symbol = "B/s";
 
@@ -155,15 +160,11 @@ public class NetworkTraffic extends TextView {
                     Spannable spannable = new SpannableString(output);
                     spannable.setSpan(new AbsoluteSizeSpan(txtSizeMulti), 0, upIndex,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannable.setSpan((new NetworkTrafficSpan(-0.05)), 0, upIndex,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     spannable.setSpan(new AbsoluteSizeSpan((int) (txtSizeMulti * 0.7)), upIndex,
                             lineIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     spannable.setSpan(new NetworkTrafficSpan(-0.4), upIndex, lineIndex,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     spannable.setSpan(new AbsoluteSizeSpan(txtSizeMulti), lineIndex, downIndex,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannable.setSpan((new NetworkTrafficSpan(0.05)), lineIndex, downIndex,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     spannable.setSpan(new AbsoluteSizeSpan((int) (txtSizeMulti * 0.7)), downIndex,
                             output.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -252,6 +253,7 @@ public class NetworkTraffic extends TextView {
     public NetworkTraffic(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         final Resources resources = getResources();
+        mConnectivityService = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         txtSizeSingle = resources.getDimensionPixelSize(R.dimen.net_traffic_single_text_size);
         txtSizeMulti = resources.getDimensionPixelSize(R.dimen.net_traffic_multi_text_size);
         Handler mHandler = new Handler();
@@ -304,7 +306,14 @@ public class NetworkTraffic extends TextView {
         if (isSet(mState, MASK_UP) || isSet(mState, MASK_DOWN)) {
             if (SudaUtils.isOnline(mContext)) {
                 if (mAttached) {
+                    NetworkInfo vpnInfo = mConnectivityService.getNetworkInfo(ConnectivityManager.TYPE_VPN);
+                    if (vpnInfo != null && vpnInfo.isConnected()) {
+                        mVpnConnected = true;
+                    } else {
+                        mVpnConnected = false;
+                    }
                     totalRxBytes = TrafficStats.getTotalRxBytes();
+                    totalTxBytes = TrafficStats.getTotalTxBytes();
                     lastUpdateTime = SystemClock.elapsedRealtime();
                     mTrafficHandler.sendEmptyMessage(1);
                 }
