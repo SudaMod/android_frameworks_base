@@ -15,4 +15,34 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="su_indicator">超级权限</string>
+    <!-- Brightness QS Tile -->
+    <string name="quick_settings_brightness">亮度</string>
+
+    <!-- Caffeine QS Tile -->
+    <string name="quick_settings_caffeine_label">咖啡时间</string>
+    <string name="accessibility_quick_settings_caffeine_off">咖啡时间关闭.</string>
+    <string name="accessibility_quick_settings_caffeine_on">咖啡时间开启.</string>
+
+    <!-- IME selector Tile -->
+    <string name="quick_settings_ime_label">输入法</string>
+
+    <!-- NFC QS tile -->
+    <string name="quick_settings_nfc_label">NFC</string>
+    <string name="accessibility_quick_settings_nfc_off">NFC关闭.</string>
+    <string name="accessibility_quick_settings_nfc_on">NFC打开.</string>
+    <string name="accessibility_quick_settings_nfc_changed_off">NFC已关闭.</string>
+    <string name="accessibility_quick_settings_nfc_changed_on">NFC已打开.</string>
+
+    <!-- Reboot/Recovery QS Tile -->
+    <string name="quick_settings_reboot_label">重启</string>
+    <string name="quick_settings_reboot_recovery_label">恢复模式</string>
+
+    <!-- Screenshot QS tile -->
+    <string name="quick_settings_screenshot_label">截屏</string>
+
+    <!-- Sound QS Tile -->
+    <string name="quick_settings_sound_label">声音</string>
+    <string name="quick_settings_sound_ring">铃声</string>
+    <string name="quick_settings_sound_vibrate">振动</string>
+    <string name="quick_settings_sound_dnd">勿扰</string>
 </resources>
