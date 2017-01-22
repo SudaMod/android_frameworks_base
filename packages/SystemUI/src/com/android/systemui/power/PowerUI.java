@@ -16,8 +16,6 @@
 
 package com.android.systemui.power;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -39,6 +37,8 @@ import android.util.Slog;
 
 import com.android.systemui.SystemUI;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
+
+import cyanogenmod.providers.CMSettings;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -220,6 +220,7 @@ public class PowerUI extends SystemUI {
                 mWarnings.userSwitched();
             } else if (Intent.ACTION_POWER_CONNECTED.equals(action)
                     || Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
+
                 final ContentResolver cr = mContext.getContentResolver();
 
                 if (mIgnoreFirstPowerEvent) {
@@ -247,8 +248,9 @@ public class PowerUI extends SystemUI {
                 powerRingtone.play();
             }
         }
-        if (Settings.Global.getInt(cr,
-                Settings.Global.POWER_NOTIFICATIONS_VIBRATE, 0) == 1) {
+
+        if (CMSettings.Global.getInt(mContext.getContentResolver(),
+                CMSettings.Global.POWER_NOTIFICATIONS_VIBRATE, 0) == 1) {
             Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
             if (vibrator != null) {
                 vibrator.vibrate(250);
