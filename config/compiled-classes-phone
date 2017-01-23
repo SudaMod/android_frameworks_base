@@ -2797,6 +2797,8 @@ android.media.tv.TvInputHardwareInfo$Builder
 android.media.tv.TvInputManager
 android.media.tv.TvStreamConfig
 android.media.tv.TvStreamConfig$Builder
+android.suda.location.PhoneLocation
+android.suda.utils.SudaUtils
 android.metrics.LogMaker
 android.mtp.MtpDatabase
 android.mtp.MtpDevice

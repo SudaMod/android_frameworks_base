@@ -1564,6 +1564,8 @@ android.media.session.PlaybackState$Builder
 android.media.session.PlaybackState$CustomAction$1
 android.media.soundtrigger.SoundTriggerManager
 android.media.tv.TvInputManager
+android.suda.location.PhoneLocation
+android.suda.utils.SudaUtils
 android.metrics.LogMaker
 android.mtp.MtpDeviceInfo
 android.mtp.MtpEvent
