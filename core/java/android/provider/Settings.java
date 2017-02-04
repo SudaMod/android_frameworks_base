@@ -3673,12 +3673,6 @@ public final class Settings {
         public static final String STATUS_BAR_NETWORK_TRAFFIC_STYLE = "status_bar_network_traffic_style";
 
         /**
-         * whether to enable torch on lockscreen
-         * @hide
-         */
-        public static final String KEYGUARD_TOGGLE_TORCH = "keyguard_toggle_torch";
-
-        /**
          * show clear all recents button
          *  @hide
          */
