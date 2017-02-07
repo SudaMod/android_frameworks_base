@@ -17,5 +17,6 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="BatteryMeterViewDrawable.Solid"/>
+    <style name="BatteryMeterViewDrawable.aokp"/>
 
 </resources>
