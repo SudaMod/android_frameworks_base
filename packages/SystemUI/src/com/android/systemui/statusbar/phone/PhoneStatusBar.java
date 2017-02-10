@@ -482,6 +482,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SHAKE_CLEAN_NOTIFICATION),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SHOW_SU_INDICATOR),
+                    false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                    Settings.Secure.QS_ROWS_PORTRAIT),
                    false, this, UserHandle.USER_ALL);
@@ -494,6 +497,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         @Override
         public void onChange(boolean selfChange, Uri uri) {
             super.onChange(selfChange, uri);
+           if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.SHOW_SU_INDICATOR))) {
+                    UpdateSomeViews();
+           }
             if (uri.equals(Settings.Secure.getUriFor(
                     Settings.Secure.QS_ROWS_PORTRAIT))) {
                     updateResources();
@@ -5185,6 +5192,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mStackScroller.setAnimationsEnabled(true);
         mNotificationPanel.setTouchDisabled(false);
         updateVisibleToUser();
+    }
+
+    public void UpdateSomeViews() {
+        onDensityOrFontScaleChanged();
+        updateNotifications();
+        updateRowStates();
+        updateSpeedbump();
     }
 
     public void onScreenTurningOn() {
