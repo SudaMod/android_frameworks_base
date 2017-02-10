@@ -3693,6 +3693,12 @@ public final class Settings {
         public static final String THREE_FINGER_GESTURE = "three_finger_gesture";
 
           /**
+         * Clean notification by shake
+         * @hide
+         */
+        public static final String SHAKE_CLEAN_NOTIFICATION = "shake_clean_notification";
+
+          /**
          * show carrier in statusbar. The value is
          * int (1: Show or 0: Hide).
          */
