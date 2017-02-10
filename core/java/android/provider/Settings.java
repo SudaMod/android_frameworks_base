@@ -6541,6 +6541,20 @@ public final class Settings {
                 "managed_profile_contact_remote_search";
 
         /**
+         * Number of rows used for the Quick Settings (portrait)
+         *
+         * @hide
+         */
+        public static final String QS_ROWS_PORTRAIT = "qs_rows_portrait";
+
+        /**
+         * Number of columns used for the Quick Settings
+         *
+         * @hide
+         */
+        public static final String QS_COLUMNS = "qs_columns";
+
+        /**
          * Whether or not the automatic storage manager is enabled and should run on the device.
          *
          * @hide
