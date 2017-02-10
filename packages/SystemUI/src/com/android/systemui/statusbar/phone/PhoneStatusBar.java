@@ -318,8 +318,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             "cmsystem:" + CMSettings.System.STATUS_BAR_BRIGHTNESS_CONTROL;
     private static final String NAVBAR_LEFT_IN_LANDSCAPE =
             "cmsystem:" + CMSettings.System.NAVBAR_LEFT_IN_LANDSCAPE;
-    private static final String SHOW_SU_INDICATOR =
-            "system:" + Settings.System.SHOW_SU_INDICATOR;
 
     static {
         boolean onlyCoreApps;
@@ -477,6 +475,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         void observe() {
            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SHOW_SU_INDICATOR),
+                    false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                    Settings.Secure.QS_ROWS_PORTRAIT),
                    false, this, UserHandle.USER_ALL);
@@ -489,6 +490,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         @Override
         public void onChange(boolean selfChange, Uri uri) {
             super.onChange(selfChange, uri);
+           if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.SHOW_SU_INDICATOR))) {
+                    UpdateSomeViews();
+           }
             if (uri.equals(Settings.Secure.getUriFor(
                     Settings.Secure.QS_ROWS_PORTRAIT))) {
                     updateResources();
@@ -856,8 +861,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         TunerService.get(mContext).addTunable(this,
                 SCREEN_BRIGHTNESS_MODE,
                 NAVBAR_LEFT_IN_LANDSCAPE,
-                STATUS_BAR_BRIGHTNESS_CONTROL,
-                SHOW_SU_INDICATOR);
+                STATUS_BAR_BRIGHTNESS_CONTROL);
 
         if (mSettingsObserver == null) {
             mSettingsObserver = new SettingsObserver(new Handler());
@@ -5164,6 +5168,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         updateVisibleToUser();
     }
 
+    public void UpdateSomeViews() {
+        onDensityOrFontScaleChanged();
+        updateNotifications();
+        updateRowStates();
+        updateSpeedbump();
+    }
+
     public void onScreenTurningOn() {
         mScreenTurningOn = true;
         mFalsingManager.onScreenTurningOn();
@@ -5514,9 +5525,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 break;
             case STATUS_BAR_BRIGHTNESS_CONTROL:
                 mBrightnessControl = newValue != null && Integer.parseInt(newValue) == 1;
-                break;
-            case SHOW_SU_INDICATOR:
-                updateNotifications();
                 break;
             default:
                 break;
