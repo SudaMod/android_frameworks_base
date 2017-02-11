@@ -117,7 +117,7 @@
   <string name="app_ops_modify_call_log">actualizar el registro de llamadas</string>
   <string name="app_ops_modify_clipboard">modificar el portapapeles</string>
   <string name="app_ops_modify_contacts">actualizar tus contactos</string>
-  <string name="app_ops_modify_settings">actualizar configuración del sistema</string>
+  <string name="app_ops_modify_settings">actualizar ajustes del sistema</string>
   <string name="app_ops_mute_unmute_microphone">silenciar / activar el micrófono</string>
   <string name="app_ops_play_audio">reproducir el audio</string>
   <string name="app_ops_post_notification">publicar una notificación</string>
