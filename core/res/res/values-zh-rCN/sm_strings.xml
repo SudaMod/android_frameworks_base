@@ -15,4 +15,8 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="edit">编辑</string>
+  <!-- Single handed mode -->
+  <string name="singlehandmode_click_hint_message">点击黑边退出迷你视窗</string>
+  <string name="singlehandmode_slide_hint_message">在导航栏左右滑动手指切换迷你视窗显示位置</string>
+
 </resources>
