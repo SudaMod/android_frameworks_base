@@ -23,6 +23,9 @@
     <!-- label for item that screenshots in phone options dialog -->
     <string name="global_action_screenshot">Screenshot</string>
 
+    <!-- label for item that screerecord in phone options dialog -->
+    <string name="global_action_screenrecord">Screen Record</string>
+
     <!-- label for item that restarts the phone in phone options dialog -->
     <string name="global_action_reboot">Restart</string>
     <!-- label for current user in phone options dialog -->
