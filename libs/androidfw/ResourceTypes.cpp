@@ -59,7 +59,7 @@ namespace android {
 #endif
 
 #define IDMAP_MAGIC             0x504D4449
-#define IDMAP_CURRENT_VERSION   0x00000001
+#define IDMAP_CURRENT_VERSION   0x00000003
 
 #define APP_PACKAGE_ID      0x7f
 #define CMSDK_PACKAGE_ID    0x3f
@@ -3147,6 +3147,8 @@ struct ResTable::Entry {
 
     StringPoolRef typeStr;
     StringPoolRef keyStr;
+
+    bool isFromOverlay;
 };
 
 struct ResTable::Type
@@ -4411,6 +4413,62 @@ ssize_t ResTable::getBagLocked(uint32_t resID, const bag_entry** outBag,
         set->numAttrs = curEntry;
     }
 
+    // If this style was overridden by a theme then we need to compare our bag with
+    // the bag from the original and add any missing attributes to our bag
+    if (entry.isFromOverlay) {
+        const bag_entry* originalBag;
+        uint32_t originalTypeSpecFlags = 0;
+        const ssize_t NO = getBagLocked(resID, &originalBag,
+                &originalTypeSpecFlags);
+        if (NO <= 0) {
+            ALOGW("Failed to retrieve original bag for 0x%08x", resID);
+        }
+
+        // Now merge in the original attributes...
+        bag_entry* entries = (bag_entry*)(set+1);
+        size_t curEntry = 0;
+        for (int i = 0; i < NO; i++) {
+            const uint32_t newName = originalBag[i].map.name.ident;
+            bool isInside;
+            uint32_t oldName = 0;
+            curEntry = 0;
+
+            while ((isInside=(curEntry < set->numAttrs))
+                    && (oldName=entries[curEntry].map.name.ident) < newName) {
+                curEntry++;
+            }
+
+            if ((!isInside) || oldName != newName) {
+                // This is a new attribute...  figure out what to do with it.
+                // Need to alloc more memory...
+                size_t prevEntry = curEntry;
+                curEntry = set->availAttrs;
+                set->availAttrs++;
+                const size_t newAvail = set->availAttrs;
+                set = (bag_set*)realloc(set,
+                                        sizeof(bag_set)
+                                        + sizeof(bag_entry)*newAvail);
+                if (set == NULL) {
+                    return NO_MEMORY;
+                }
+                entries = (bag_entry*)(set+1);
+                if (isInside) {
+                    // Going in the middle, need to make space.
+                    memmove(entries+prevEntry+1, entries+prevEntry,
+                            sizeof(bag_entry)*(set->numAttrs-prevEntry));
+                }
+
+                bag_entry* cur = entries+curEntry;
+
+                cur->stringBlock = originalBag[i].stringBlock;
+                cur->map.name.ident = originalBag[i].map.name.ident;
+                cur->map.value = originalBag[i].map.value;
+                set->typeSpecFlags |= originalTypeSpecFlags;
+                set->numAttrs = set->availAttrs;
+            }
+        }
+    }
+
     // And this is it...
     typeSet[e] = set;
     if (set) {
@@ -4667,6 +4725,12 @@ uint32_t ResTable::findEntry(const PackageGroup* group, ssize_t typeIndex, const
     const size_t typeCount = typeList.size();
     for (size_t i = 0; i < typeCount; i++) {
         const Type* t = typeList[i];
+
+        // Skip packages loaded as overlays.
+        if (t->idmapEntries.hasEntries()) {
+            continue;
+        }
+
         const ssize_t ei = t->package->keyStrings.indexOfString(name, nameLen);
         if (ei < 0) {
             continue;
@@ -5986,6 +6050,7 @@ status_t ResTable::getEntry(
     uint8_t actualTypeIndex = typeIndex;
     ResTable_config bestConfig;
     memset(&bestConfig, 0, sizeof(bestConfig));
+    bool currentTypeIsOverlay = false;
 
     // Iterate over the Types of each package.
     const size_t typeCount = typeList.size();
@@ -5994,7 +6059,6 @@ status_t ResTable::getEntry(
 
         int realEntryIndex = entryIndex;
         int realTypeIndex = typeIndex;
-        bool currentTypeIsOverlay = false;
 
         // Runtime overlay packages provide a mapping of app resource
         // ID to package resource ID.
@@ -6128,6 +6192,7 @@ status_t ResTable::getEntry(
         outEntry->package = bestPackage;
         outEntry->typeStr = StringPoolRef(&bestPackage->typeStrings, actualTypeIndex - bestPackage->typeIdOffset);
         outEntry->keyStr = StringPoolRef(&bestPackage->keyStrings, dtohl(entry->key.index));
+        outEntry->isFromOverlay = currentTypeIsOverlay;
     }
     return NO_ERROR;
 }
@@ -6167,8 +6232,9 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
 
     uint32_t id = dtohl(pkg->id);
     KeyedVector<uint8_t, IdmapEntries> idmapEntries;
+    const bool isOverlayPackage = header->resourceIDMap != NULL;
 
-    if (header->resourceIDMap != NULL) {
+    if (isOverlayPackage) {
         uint8_t targetPackageId = 0;
         status_t err = parseIdmap(header->resourceIDMap, header->resourceIDMapSize, &targetPackageId, &idmapEntries);
         if (err != NO_ERROR) {
@@ -6295,6 +6361,7 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
             if (newEntryCount > 0) {
                 uint8_t typeIndex = typeSpec->id - 1;
                 ssize_t idmapIndex = idmapEntries.indexOfKey(typeSpec->id);
+                LOG_ALWAYS_FATAL_IF(isOverlayPackage && idmapIndex < 0);
                 if (idmapIndex >= 0) {
                     typeIndex = idmapEntries[idmapIndex].targetTypeId() - 1;
                 }
@@ -6363,6 +6430,7 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
             if (newEntryCount > 0) {
                 uint8_t typeIndex = type->id - 1;
                 ssize_t idmapIndex = idmapEntries.indexOfKey(type->id);
+                LOG_ALWAYS_FATAL_IF(isOverlayPackage && idmapIndex < 0);
                 if (idmapIndex >= 0) {
                     typeIndex = idmapEntries[idmapIndex].targetTypeId() - 1;
                 }
@@ -6601,6 +6669,7 @@ status_t ResTable::createIdmap(const ResTable& overlay,
         return UNKNOWN_ERROR;
     }
 
+    bool isDangerous = false;
     KeyedVector<uint8_t, IdmapTypeMap> map;
 
     // overlaid packages are assumed to contain only one package group
@@ -6675,6 +6744,13 @@ status_t ResTable::createIdmap(const ResTable& overlay,
                 }
             }
             typeMap.entryMap.add(Res_GETENTRY(overlayResID));
+
+            Entry entry;
+            if (getEntry(pg, typeIndex, entryIndex, NULL, &entry)) {
+                return UNKNOWN_ERROR;
+            }
+            isDangerous = isDangerous ||
+                ((dtohs(entry.entry->flags) & ResTable_entry::FLAG_OVERLAY) == 0);
         }
 
         if (!typeMap.entryMap.isEmpty()) {
@@ -6690,6 +6766,41 @@ status_t ResTable::createIdmap(const ResTable& overlay,
         return UNKNOWN_ERROR;
     }
 
+    // add an empty block for each type in the overlay package that doesn't
+    // have any matching entries; this ensures parsePackage gets a unique type
+    // ID for each type
+    for (size_t typeIndex = 0; typeIndex < overlay.mPackageGroups[0]->types.size(); ++typeIndex) {
+        const TypeList& typeList = overlay.mPackageGroups[0]->types[typeIndex];
+        if (typeList.isEmpty()) {
+            continue;
+        }
+        bool alreadyInIdmap = false;
+        for (size_t i = 0; i < map.size(); ++i) {
+            const IdmapTypeMap& type = map.valueAt(i);
+            if (type.overlayTypeId == static_cast<ssize_t>(typeIndex) + 1) {
+                alreadyInIdmap = true;
+                break;
+            }
+        }
+        if (!alreadyInIdmap) {
+            uint8_t unusedKey;
+            for (unusedKey = 0; unusedKey < 0xff; unusedKey++) {
+                if (map.indexOfKey(unusedKey) < 0) {
+                    IdmapTypeMap typeMap;
+                    typeMap.overlayTypeId = typeIndex + 1;
+                    typeMap.entryOffset = 0;
+                    map.add(unusedKey, typeMap);
+                    *outSize += 4 * sizeof(uint16_t);
+                    break;
+                }
+            }
+            if (unusedKey == 0xff) {
+                ALOGE("idmap: failed to find an unused key for type 0x%02zx", typeIndex);
+                return UNKNOWN_ERROR;
+            }
+        }
+    }
+
     if ((*outData = malloc(*outSize)) == NULL) {
         return NO_MEMORY;
     }
@@ -6697,6 +6808,7 @@ status_t ResTable::createIdmap(const ResTable& overlay,
     uint32_t* data = (uint32_t*)*outData;
     *data++ = htodl(IDMAP_MAGIC);
     *data++ = htodl(IDMAP_CURRENT_VERSION);
+    *data++ = htodl(isDangerous ? 1 : 0);
     *data++ = htodl(targetCrc);
     *data++ = htodl(overlayCrc);
     const char* paths[] = { targetPath, overlayPath };
@@ -6705,7 +6817,7 @@ status_t ResTable::createIdmap(const ResTable& overlay,
         const char* path = paths[j];
         const size_t I = strlen(path);
         if (I > 255) {
-            ALOGV("path exceeds expected 255 characters: %s\n", path);
+            ALOGV("idmap: path exceeds expected 255 characters: %s\n", path);
             return UNKNOWN_ERROR;
         }
         for (size_t i = 0; i < 256; ++i) {
@@ -6737,7 +6849,7 @@ status_t ResTable::createIdmap(const ResTable& overlay,
 }
 
 bool ResTable::getIdmapInfo(const void* idmap, size_t sizeBytes,
-                            uint32_t* pVersion,
+                            uint32_t* pVersion, uint32_t* pDangerous,
                             uint32_t* pTargetCrc, uint32_t* pOverlayCrc,
                             String8* pTargetPath, String8* pOverlayPath)
 {
@@ -6748,17 +6860,20 @@ bool ResTable::getIdmapInfo(const void* idmap, size_t sizeBytes,
     if (pVersion) {
         *pVersion = dtohl(map[1]);
     }
+    if (pDangerous) {
+        *pDangerous = dtohl(map[2]);
+    }
     if (pTargetCrc) {
-        *pTargetCrc = dtohl(map[2]);
+        *pTargetCrc = dtohl(map[3]);
     }
     if (pOverlayCrc) {
-        *pOverlayCrc = dtohl(map[3]);
+        *pOverlayCrc = dtohl(map[4]);
     }
     if (pTargetPath) {
-        pTargetPath->setTo(reinterpret_cast<const char*>(map + 4));
+        pTargetPath->setTo(reinterpret_cast<const char*>(map + 5));
     }
     if (pOverlayPath) {
-        pOverlayPath->setTo(reinterpret_cast<const char*>(map + 4 + 256 / sizeof(uint32_t)));
+        pOverlayPath->setTo(reinterpret_cast<const char*>(map + 5 + 256 / sizeof(uint32_t)));
     }
     return true;
 }
@@ -7084,6 +7199,9 @@ void ResTable::print(bool inclValues) const
 
                     if ((dtohs(ent->flags)&ResTable_entry::FLAG_PUBLIC) != 0) {
                         printf(" (PUBLIC)");
+                    }
+                    if ((dtohs(ent->flags)&ResTable_entry::FLAG_OVERLAY) != 0) {
+                        printf(" (OVERLAY)");
                     }
                     printf("\n");
 
