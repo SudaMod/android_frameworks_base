@@ -572,7 +572,7 @@ public class TaskViewHeader extends FrameLayout
     /** Animates this task bar if the user does not interact with the stack after a certain time. */
     void startNoUserInteractionAnimation() {
         int duration = getResources().getInteger(R.integer.recents_task_enter_from_app_duration);
-        mDismissButton.setVisibility(View.VISIBLE);
+        //mDismissButton.setVisibility(View.VISIBLE);
         mDismissButton.setClickable(true);
         if (mDismissButton.getVisibility() == VISIBLE) {
             mDismissButton.animate()
@@ -602,8 +602,8 @@ public class TaskViewHeader extends FrameLayout
      * Mark this task view that the user does has not interacted with the stack after a certain
      * time.
      */
-    public void setNoUserInteractionState() {
-        mDismissButton.setVisibility(View.VISIBLE);
+    void setNoUserInteractionState() {
+        //mDismissButton.setVisibility(View.VISIBLE);
         mDismissButton.animate().cancel();
         mDismissButton.setAlpha(1f);
         mDismissButton.setClickable(true);
