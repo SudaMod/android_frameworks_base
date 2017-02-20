@@ -3764,7 +3764,7 @@ public final class Settings {
          public static final String VOLUME_KEY_CURSOR_CONTROL = "volume_key_cursor_control";
 
         /**
-		 * Whether to hide the clock, show it in the right or left
+         * Whether to hide the clock, show it in the right or left
          * position or show it in the center
          * 0: don't show the clock
          * 1: show the clock in the right position (LTR)
@@ -3808,6 +3808,13 @@ public final class Settings {
          * @hide
          */
         public static final String STATUS_BAR_CLOCK_DATE_FORMAT = "statusbar_clock_date_format";
+ 
+        /**
+         * Option to hide stk sufix
+         * @hide
+         */
+        public static final String DISABLE_STK_DIALOG_AUTO_OPEN = "disable_stk_dialog_auto_open";
+
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
