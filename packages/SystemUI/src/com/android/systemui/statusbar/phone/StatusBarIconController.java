@@ -550,10 +550,10 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
         mSignalCluster.setIconTint(mIconTint, mDarkIntensity, mTintArea);
         mBatteryMeterView.setDarkIntensity(
                 isInArea(mTintArea, mBatteryMeterView) ? mDarkIntensity : 0);
-        mClockController.setTextColor(mTintArea);
-        mNetworkTraffic.setTextColor(mIconTint);
-        mBatteryLevelView.setTextColor(getTint(mTintArea, mBatteryLevelView, mIconTint));
         mCarrierLabel.setTextColor(mIconTint);
+        mNetworkTraffic.setTextColor(mIconTint);
+        mClockController.setTextColor(mIconTint);
+        mBatteryLevelView.setTextColor(getTint(mTintArea, mBatteryLevelView, mIconTint));
     }
 
     public void appTransitionPending() {
