@@ -22,21 +22,17 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.ActivityManager;
 import android.app.StatusBarManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 1df7443... fix compile
 import android.net.Uri;
 import android.os.Handler;
->>>>>>> 1df7443... fix compile
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.AttributeSet;
@@ -2193,6 +2189,11 @@ public class NotificationPanelView extends PanelView implements
 
         // Hide "No notifications" in QS.
         mNotificationStackScroller.updateEmptyShadeView(mShadeEmpty && !mQsExpanded);
+		if (mStatusBarState == StatusBarState.KEYGUARD
+                && (!mQsExpanded || mQsExpandImmediate || mIsExpanding
+                && mQsExpandedWhenExpandingStarted)) {
+            positionClockAndNotifications();
+        }
     }
 
     public void setQsScrimEnabled(boolean qsScrimEnabled) {
@@ -2469,6 +2470,9 @@ public class NotificationPanelView extends PanelView implements
                     WeatherUtils.formatTemperature(info.temp, info.tempUnit),
                     info.condition));
             mKeyguardWeatherInfo.setVisibility(VISIBLE);
+        }
+    }
+
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
