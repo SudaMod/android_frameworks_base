@@ -26,6 +26,7 @@ import android.graphics.Color;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.BatteryManager;
 import android.os.BatteryStats;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
@@ -228,7 +229,11 @@ public class KeyguardIndicationController {
 
         if (showbatteryInfo) {
             if (mChargingCurrent > 0) {
-                batteryInfo = batteryInfo + mChargingCurrent + "mA";
+			    if (Build.PRODUCT.equals("bacon")){
+				batteryInfo = batteryInfo + mChargingCurrent + "mA";
+				} else {
+                batteryInfo = batteryInfo + (mChargingCurrent /1000) + "mA";
+				}
             }
             if (mChargingVoltage > 0) {
                 batteryInfo = (batteryInfo == "" ? "" : batteryInfo + " · ") +
