@@ -233,7 +233,7 @@ import static android.service.notification.NotificationListenerService.Ranking.i
 
 public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         DragDownHelper.DragDownCallback, ActivityStarter, OnUnlockMethodChangedListener,
-        OnHeadsUpChangedListener, VisualStabilityManager.Callback, TunerService.Tunable {
+        OnHeadsUpChangedListener, VisualStabilityManager.Callback, TunerService.Tunable, ShakeSensorManager.ShakeListener {
     static final String TAG = "PhoneStatusBar";
     public static final boolean DEBUG = BaseStatusBar.DEBUG;
     public static final boolean SPEW = false;
