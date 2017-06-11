@@ -30,6 +30,7 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.CountDownTimer;
@@ -56,11 +57,11 @@ import com.android.systemui.recents.events.ui.ShowApplicationInfoEvent;
 import com.android.systemui.recents.misc.SystemServicesProxy;
 import com.android.systemui.recents.misc.Utilities;
 import com.android.systemui.recents.model.Task;
+import com.android.systemui.recents.model.TaskStack;
 
 import static android.app.ActivityManager.StackId.FREEFORM_WORKSPACE_STACK_ID;
 import static android.app.ActivityManager.StackId.FULLSCREEN_WORKSPACE_STACK_ID;
 import static android.app.ActivityManager.StackId.INVALID_STACK_ID;
-import com.sudamod.sdk.recenttask.RecentTaskHelper;
 
 /* The task bar view */
 public class TaskViewHeader extends FrameLayout
@@ -147,14 +148,12 @@ public class TaskViewHeader extends FrameLayout
     TextView mTitleView;
     ImageView mMoveTaskButton;
     ImageView mDismissButton;
-	ImageView mLockTaskButton;
-
+    ImageView mLockTaskButton;
     FrameLayout mAppOverlayView;
     ImageView mAppIconView;
     ImageView mAppInfoView;
     TextView mAppTitleView;
     ProgressBar mFocusTimerIndicator;
-    Context mContext;
 
     // Header drawables
     @ViewDebug.ExportedProperty(category="recents")
@@ -173,12 +172,14 @@ public class TaskViewHeader extends FrameLayout
     Drawable mDarkFullscreenIcon;
     Drawable mLightInfoIcon;
     Drawable mDarkInfoIcon;
+    Drawable mLightLockedDrawable;
+    Drawable mLightUnlockedDrawable;
+    Drawable mDarkLockedDrawable;
+    Drawable mDarkUnlockedDrawable;
     int mTaskBarViewLightTextColor;
     int mTaskBarViewDarkTextColor;
     int mDisabledTaskBarBackgroundColor;
     int mMoveTaskTargetStackId = INVALID_STACK_ID;
-
-	RecentTaskHelper mRecentTaskHelper;
 
     // Header background
     private HighlightColorDrawable mBackground;
@@ -210,7 +211,6 @@ public class TaskViewHeader extends FrameLayout
         super(context, attrs, defStyleAttr, defStyleRes);
         setWillNotDraw(false);
 
-        mContext = context;
         // Load the dismiss resources
         Resources res = context.getResources();
         mLightDismissDrawable = context.getDrawable(R.drawable.recents_dismiss_light);
@@ -229,6 +229,10 @@ public class TaskViewHeader extends FrameLayout
         mDarkInfoIcon = context.getDrawable(R.drawable.recents_info_dark);
         mDisabledTaskBarBackgroundColor =
                 context.getColor(R.color.recents_task_bar_disabled_background_color);
+        mLightLockedDrawable = context.getDrawable(R.drawable.recents_locked_light);
+        mLightUnlockedDrawable = context.getDrawable(R.drawable.recents_unlocked_light);
+        mDarkLockedDrawable = context.getDrawable(R.drawable.recents_locked_dark);
+        mDarkUnlockedDrawable = context.getDrawable(R.drawable.recents_unlocked_dark);
 
         // Configure the background and dim
         mBackground = new HighlightColorDrawable();
@@ -255,7 +259,7 @@ public class TaskViewHeader extends FrameLayout
         mIconView.setOnLongClickListener(this);
         mTitleView = (TextView) findViewById(R.id.title);
         mDismissButton = (ImageView) findViewById(R.id.dismiss_task);
-        mLockTaskButton = (ImageView) findViewById(R.id.set_lock_app);
+        mLockTaskButton = (ImageView) findViewById(R.id.lock_task);
         if (ssp.hasFreeformWorkspaceSupport()) {
             mMoveTaskButton = (ImageView) findViewById(R.id.move_task);
         }
@@ -327,11 +331,6 @@ public class TaskViewHeader extends FrameLayout
         }
     }
 
-    public void refreshBackground(boolean is_color_light, boolean iswhite) {
-        mLockTaskButton.setImageDrawable(mContext.getDrawable((iswhite ? (is_color_light ? R.drawable.ic_lock_light : R.drawable.ic_lock_dark) 
-            : (is_color_light ? R.drawable.ic_lock_open_light : R.drawable.ic_lock_open_dark))));
-    }
-
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
@@ -372,8 +371,9 @@ public class TaskViewHeader extends FrameLayout
             mMoveTaskButton.setVisibility(showMoveIcon ? View.VISIBLE : View.INVISIBLE);
             mMoveTaskButton.setTranslationX(rightInset);
         }
-        //mDismissButton.setVisibility(showDismissIcon ? View.VISIBLE : View.INVISIBLE);
-        //mDismissButton.setTranslationX(rightInset);
+        mDismissButton.setVisibility(showDismissIcon ? View.VISIBLE : View.INVISIBLE);
+        mDismissButton.setTranslationX(rightInset);
+        mLockTaskButton.setVisibility(showDismissIcon ? View.VISIBLE : View.INVISIBLE);
 
         setLeftTopRightBottom(0, 0, width, getMeasuredHeight());
     }
@@ -469,29 +469,18 @@ public class TaskViewHeader extends FrameLayout
         mShouldDarkenBackgroundColor = flag;
     }
 
+    private void updateLockTaskDrawable() {
+        mLockTaskButton.setImageDrawable(mTask.useLightOnPrimaryColor ?
+                (Recents.sLockedTasks.contains(mTask) ? mLightLockedDrawable : mLightUnlockedDrawable) :
+                (Recents.sLockedTasks.contains(mTask) ? mDarkLockedDrawable : mDarkUnlockedDrawable));
+        ((AnimatedVectorDrawable) mLockTaskButton.getDrawable()).start();
+    }
+
     /**
      * Binds the bar view to the task.
      */
     public void bindToTask(Task t, boolean touchExplorationEnabled, boolean disabledInSafeMode) {
         mTask = t;
-        mRecentTaskHelper = RecentTaskHelper.getHelper(mContext);
-        mTask.pkgName = mTask.key.baseIntent.getComponent().getPackageName();
-        mTask.isLockedTask = mRecentTaskHelper.isLockedTask(mTask.pkgName) ;
-        refreshBackground(mTask.useLightOnPrimaryColor, mTask.isLockedTask);
-        mLockTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (mTask.isLockedTask) {
-                    mRecentTaskHelper.removeLockTask(mTask.pkgName);
-                    mTask.isLockedTask = false;
-                } else {
-                    mRecentTaskHelper.addNewLockTask(mTask.pkgName);
-                    mTask.isLockedTask = true;
-                }
-                refreshBackground(mTask.useLightOnPrimaryColor, mTask.isLockedTask);
-            }
-        });
 
         int primaryColor = disabledInSafeMode
                 ? mDisabledTaskBarBackgroundColor
@@ -511,6 +500,10 @@ public class TaskViewHeader extends FrameLayout
         mDismissButton.setOnClickListener(this);
         mDismissButton.setClickable(false);
         ((RippleDrawable) mDismissButton.getBackground()).setForceSoftware(true);
+        updateLockTaskDrawable();
+        mLockTaskButton.setOnClickListener(this);
+        mLockTaskButton.setClickable(false);
+        ((RippleDrawable) mLockTaskButton.getBackground()).setForceSoftware(true);
 
         // When freeform workspaces are enabled, then update the move-task button depending on the
         // current task
@@ -572,7 +565,7 @@ public class TaskViewHeader extends FrameLayout
     /** Animates this task bar if the user does not interact with the stack after a certain time. */
     void startNoUserInteractionAnimation() {
         int duration = getResources().getInteger(R.integer.recents_task_enter_from_app_duration);
-        //mDismissButton.setVisibility(View.VISIBLE);
+        mDismissButton.setVisibility(View.VISIBLE);
         mDismissButton.setClickable(true);
         if (mDismissButton.getVisibility() == VISIBLE) {
             mDismissButton.animate()
@@ -582,6 +575,17 @@ public class TaskViewHeader extends FrameLayout
                     .start();
         } else {
             mDismissButton.setAlpha(1f);
+        }
+        mLockTaskButton.setVisibility(View.VISIBLE);
+        mLockTaskButton.setClickable(true);
+        if (mLockTaskButton.getVisibility() == VISIBLE) {
+            mLockTaskButton.animate()
+                    .alpha(1f)
+                    .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN)
+                    .setDuration(duration)
+                    .start();
+        } else {
+            mLockTaskButton.setAlpha(1f);
         }
         if (mMoveTaskButton != null) {
             if (mMoveTaskButton.getVisibility() == VISIBLE) {
@@ -602,12 +606,15 @@ public class TaskViewHeader extends FrameLayout
      * Mark this task view that the user does has not interacted with the stack after a certain
      * time.
      */
-
     public void setNoUserInteractionState() {
-        //mDismissButton.setVisibility(View.VISIBLE);
+        mDismissButton.setVisibility(View.VISIBLE);
         mDismissButton.animate().cancel();
         mDismissButton.setAlpha(1f);
         mDismissButton.setClickable(true);
+        mLockTaskButton.setVisibility(View.VISIBLE);
+        mLockTaskButton.animate().cancel();
+        mLockTaskButton.setAlpha(1f);
+        mLockTaskButton.setClickable(true);
         if (mMoveTaskButton != null) {
             mMoveTaskButton.setVisibility(View.VISIBLE);
             mMoveTaskButton.animate().cancel();
@@ -624,6 +631,9 @@ public class TaskViewHeader extends FrameLayout
         mDismissButton.setVisibility(View.INVISIBLE);
         mDismissButton.setAlpha(0f);
         mDismissButton.setClickable(false);
+        mLockTaskButton.setVisibility(View.INVISIBLE);
+        mLockTaskButton.setAlpha(0f);
+        mLockTaskButton.setClickable(false);
         if (mMoveTaskButton != null) {
             mMoveTaskButton.setVisibility(View.INVISIBLE);
             mMoveTaskButton.setAlpha(0f);
@@ -646,11 +656,13 @@ public class TaskViewHeader extends FrameLayout
             EventBus.getDefault().send(new ShowApplicationInfoEvent(mTask));
         } else if (v == mDismissButton) {
             TaskView tv = Utilities.findParent(this, TaskView.class);
-            tv.dismissTask();
+            if (!Recents.sLockedTasks.contains(tv.getTask())) {
+                tv.dismissTask();
 
-            // Keep track of deletions by the dismiss button
-            MetricsLogger.histogram(getContext(), "overview_task_dismissed_source",
-                    Constants.Metrics.DismissSourceHeaderButton);
+                // Keep track of deletions by the dismiss button
+                MetricsLogger.histogram(getContext(), "overview_task_dismissed_source",
+                        Constants.Metrics.DismissSourceHeaderButton);
+            }
         } else if (v == mMoveTaskButton) {
             TaskView tv = Utilities.findParent(this, TaskView.class);
             EventBus.getDefault().send(new LaunchTaskEvent(tv, mTask, null,
@@ -659,6 +671,13 @@ public class TaskViewHeader extends FrameLayout
             EventBus.getDefault().send(new ShowApplicationInfoEvent(mTask));
         } else if (v == mAppIconView) {
             hideAppOverlay(false /* immediate */);
+        } else if (v == mLockTaskButton) {
+            if (Recents.sLockedTasks.contains(mTask)) {
+               Recents.sLockedTasks.remove(mTask);
+            } else {
+               Recents.sLockedTasks.add(mTask);
+            }
+            updateLockTaskDrawable();
         }
     }
 

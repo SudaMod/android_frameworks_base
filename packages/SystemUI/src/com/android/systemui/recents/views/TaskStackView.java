@@ -105,7 +105,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import com.sudamod.sdk.recenttask.RecentTaskHelper;
+
 
 /* The visual representation of a task stack view */
 public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCallbacks,
@@ -1807,11 +1807,18 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
     }
 
     public final void onBusEvent(final DismissAllTaskViewsEvent event) {
-        RecentTaskHelper mRecentTaskHelper = RecentTaskHelper.getHelper(null);
         // Keep track of the tasks which will have their data removed
         ArrayList<Task> tasks = new ArrayList<>(mStack.getStackTasks());
+        ArrayList<TaskView> deletedTasks = new ArrayList<>();
+        ArrayList<TaskView> taskViews = new ArrayList<>(getTaskViews());
+        for (TaskView t : taskViews) {
+            if (Recents.sLockedTasks.contains(t.getTask())) {
+                deletedTasks.add(t);
+            }
+        }
+        taskViews.removeAll(deletedTasks);
         mAnimationHelper.startDeleteAllTasksAnimation(
-                getTaskViews(), useGridLayout(), event.getAnimationTrigger());
+                taskViews, useGridLayout(), event.getAnimationTrigger());
         event.addPostAnimationCallback(new Runnable() {
             @Override
             public void run() {
@@ -1823,8 +1830,8 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                 mStack.removeAllTasks();
                 for (int i = tasks.size() - 1; i >= 0; i--) {
                     Task t = tasks.get(i);
-                    if (!mRecentTaskHelper.isLockedTask(t.pkgName))
-                        EventBus.getDefault().send(new DeleteTaskDataEvent(t));
+                    if (Recents.sLockedTasks.contains(t)) continue;
+                    EventBus.getDefault().send(new DeleteTaskDataEvent(t));
                 }
 
                 MetricsLogger.action(getContext(), MetricsEvent.OVERVIEW_DISMISS_ALL);
