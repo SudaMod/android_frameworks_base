@@ -602,7 +602,8 @@ public class TaskViewHeader extends FrameLayout
      * Mark this task view that the user does has not interacted with the stack after a certain
      * time.
      */
-    void setNoUserInteractionState() {
+
+    public void setNoUserInteractionState() {
         //mDismissButton.setVisibility(View.VISIBLE);
         mDismissButton.animate().cancel();
         mDismissButton.setAlpha(1f);
