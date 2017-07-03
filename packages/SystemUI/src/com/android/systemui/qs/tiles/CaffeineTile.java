@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2016 The CyanogenMod Project
+ * Copyright (c) 2017 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +28,16 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Settings;
 
-import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.qs.QSTile;
 import com.android.systemui.R;
 
+import org.cyanogenmod.internal.logging.CMMetricsLogger;
+
 /** Quick settings tile: Caffeine **/
 public class CaffeineTile extends QSTile<QSTile.BooleanState> {
+
+    private static final Intent NOTIFICATION_SETTINGS =
+            new Intent("android.settings.NOTIFICATION_MANAGER");
 
     private final PowerManager.WakeLock mWakeLock;
     private int mSecondsRemaining;
@@ -113,46 +118,12 @@ public class CaffeineTile extends QSTile<QSTile.BooleanState> {
     }
 
     @Override
-    public void handleLongClick() {
-        // If last user clicks < 5 seconds
-        // we cycle different duration
-        // otherwise toggle on/off
-        if (mWakeLock.isHeld() && (mLastClickTime != -1) &&
-                (SystemClock.elapsedRealtime() - mLastClickTime < 5000)) {
-            // cycle duration
-            mDuration++;
-            if (mDuration >= DURATIONS.length) {
-                // all durations cycled, turn if off
-                mDuration = -1;
-                stopCountDown();
-                if (mWakeLock.isHeld()) {
-                    mWakeLock.release();
-                }
-            } else {
-                // change duration
-                startCountDown(DURATIONS[mDuration]);
-                if (!mWakeLock.isHeld()) {
-                    mWakeLock.acquire();
-                }
-            }
-        } else {
-            // toggle
-            if (mWakeLock.isHeld()) {
-                mWakeLock.release();
-                stopCountDown();
-            } else {
-                mWakeLock.acquire();
-                mDuration = 0;
-                startCountDown(DURATIONS[mDuration]);
-            }
-        }
-        mLastClickTime = SystemClock.elapsedRealtime();
-        refreshState();
+    protected void handleLongClick() {
     }
 
     @Override
     public Intent getLongClickIntent() {
-        return new Intent(Settings.ACTION_DISPLAY_SETTINGS);
+        return null;
     }
 
     @Override
@@ -162,7 +133,7 @@ public class CaffeineTile extends QSTile<QSTile.BooleanState> {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.DISPLAY;
+        return CMMetricsLogger.TILE_CAFFEINE;
     }
 
     private void startCountDown(long duration) {
