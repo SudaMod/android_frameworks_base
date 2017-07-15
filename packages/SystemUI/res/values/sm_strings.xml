@@ -47,4 +47,11 @@
     <string name="quick_settings_sound_ring">Ring</string>
     <string name="quick_settings_sound_vibrate">Vibrate</string>
     <string name="quick_settings_sound_dnd">Do not disturb</string>
+    
+    <!-- Label for quick settings tile for key disabler [CHAR LIMIT=30] -->
+    <string name="key_disabler">Disable keys</string>
+    <!-- Announcement made when the Key Disabler changes to off (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_key_disabler_changed_off">Keys enabled.</string>
+    <!-- Announcement made when the Key Disabler changes to on (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_key_disabler_changed_on">Keys disabled.</string>
 </resources>
