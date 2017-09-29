@@ -3776,6 +3776,12 @@ public final class Settings {
          public static final String DASHBOARD_SUMMARY_DOUBLE_LINES = "dashboard_summary_double_lines";
 
         /**
+         * Remove tile summaries in settings
+         * @hide
+         */
+         public static final String REMOVE_TILE_SUMMARY = "remove_tile_summary";
+
+        /**
          * IMPORTANT: If you add a new public settings you also have to add it to
          * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
          * it to PRIVATE_SETTINGS below. Also add a validator that can validate
