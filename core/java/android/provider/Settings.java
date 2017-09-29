@@ -3770,6 +3770,12 @@ public final class Settings {
         };
 
         /**
+         * Whether to show dashboard summaries in a single line or not
+         * @hide
+         */
+         public static final String DASHBOARD_SUMMARY_DOUBLE_LINES = "dashboard_summary_double_lines";
+
+        /**
          * IMPORTANT: If you add a new public settings you also have to add it to
          * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
          * it to PRIVATE_SETTINGS below. Also add a validator that can validate
