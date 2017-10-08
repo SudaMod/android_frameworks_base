@@ -53,4 +53,8 @@
     <string name="accessibility_quick_settings_key_disabler_changed_off">按键开启.</string>
     <!-- Announcement made when the Key Disabler changes to on (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_key_disabler_changed_on">按键屏蔽.</string>
+
+    <!-- Recents memory bar -->
+    <string name="recents_free_ram">空余内存</string>
+
 </resources>

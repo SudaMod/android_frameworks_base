@@ -18,6 +18,8 @@ package com.android.systemui.recents.views;
 
 import static android.app.ActivityManager.StackId.INVALID_STACK_ID;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.MemoryInfo;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.ActivityOptions.OnAnimationStartedListener;
@@ -45,6 +47,7 @@ import android.view.ViewOutlineProvider;
 import android.view.ViewPropertyAnimator;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.internal.logging.MetricsLogger;
@@ -129,6 +132,10 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
 
     View mFloatingButton;
     View mClearRecents;
+    TextView mMemText;
+    ProgressBar mMemBar;
+    private ActivityManager mAm;
+
     public RecentsView(Context context) {
         this(context, null);
     }
@@ -163,6 +170,7 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
                 @Override
                 public void onClick(View v) {
                     EventBus.getDefault().send(new DismissAllTaskViewsEvent());
+                    updateMemoryStatus();
                 }
             });
             addView(mStackActionButton);
@@ -171,6 +179,7 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
         addView(mEmptyView);
 
         mShakeSensorManager = new ShakeSensorManager(mContext, this);
+        mAm = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
     }
 
     @Override
@@ -241,14 +250,8 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
         // Update the top level view's visibilities
         if (stack.getTaskCount() > 0) {
             hideEmptyView();
-            if (mFloatingButton != null) {
-                mFloatingButton.setVisibility(View.VISIBLE);
-            }
         } else {
             showEmptyView(R.string.recents_empty_message);
-            if (mFloatingButton != null) {
-                mFloatingButton.setVisibility(View.GONE);
-            }
         }
     }
 
@@ -335,10 +338,14 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
         if (RecentsDebugFlags.Static.EnableStackActionButton) {
             mStackActionButton.bringToFront();
         }
+        if (mFloatingButton != null) {
+            mFloatingButton.setVisibility(View.GONE);
+        }
         setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 EventBus.getDefault().send(new ToggleRecentsEvent());
+                updateMemoryStatus();
             }
         });
     }
@@ -353,6 +360,9 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
         if (RecentsDebugFlags.Static.EnableStackActionButton) {
             mStackActionButton.bringToFront();
         }
+        if (mFloatingButton != null) {
+            mFloatingButton.setVisibility(View.VISIBLE);
+        }
         setOnClickListener(null);
     }
 
@@ -360,15 +370,18 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
     protected void onAttachedToWindow() {
         EventBus.getDefault().register(this, RecentsActivity.EVENT_BUS_PRIORITY + 1);
         EventBus.getDefault().register(mTouchHandler, RecentsActivity.EVENT_BUS_PRIORITY + 2);
-        super.onAttachedToWindow();
+        mMemText = (TextView) ((View)getParent()).findViewById(R.id.recents_memory_text);
+        mMemBar = (ProgressBar) ((View)getParent()).findViewById(R.id.recents_memory_bar);
         mFloatingButton = ((View) getParent()).findViewById(R.id.floating_action_button);
         mClearRecents = ((View) getParent()).findViewById(R.id.clear_recents);
         mClearRecents.setVisibility(View.VISIBLE);
         mClearRecents.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 EventBus.getDefault().send(new DismissAllTaskViewsEvent());
+                updateMemoryStatus();
             }
         });
+        super.onAttachedToWindow();
     }
 
     @Override
@@ -388,6 +401,7 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
 
         if (mTaskStackView.getVisibility() != GONE) {
             mTaskStackView.measure(widthMeasureSpec, heightMeasureSpec);
+            showMemDisplay();
         }
 
         // Measure the empty view to the full size of the screen
@@ -721,6 +735,7 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
             // Animate the background away only if we are dismissing Recents to home
             animateBackgroundScrim(0f, DEFAULT_UPDATE_SCRIM_DURATION);
         }
+        updateMemoryStatus();
     }
 
     public final void onBusEvent(ShowStackActionButtonEvent event) {
@@ -914,5 +929,39 @@ public class RecentsView extends FrameLayout implements ShakeSensorManager.Shake
         if (mTaskStackView != null) {
             mTaskStackView.dump(innerPrefix, writer);
         }
+    }
+    private boolean showMemDisplay() {
+        boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
+
+        if (!enableMemDisplay) {
+            mMemText.setVisibility(View.GONE);
+            mMemBar.setVisibility(View.GONE);
+            return false;
+        }
+        mMemText.setVisibility(View.VISIBLE);
+        mMemBar.setVisibility(View.VISIBLE);
+        updateMemoryStatus();
+        return true;
+    }
+
+    private void updateMemoryStatus() {
+        if (mMemText.getVisibility() == View.GONE
+                || mMemBar.getVisibility() == View.GONE) return;
+
+        MemoryInfo memInfo = new MemoryInfo();
+        mAm.getMemoryInfo(memInfo);
+            int available = (int)(memInfo.availMem / 1048576L);
+            int max = (int)(getTotalMemory() / 1048576L);
+            mMemText.setText(String.format(getResources().getString(R.string.recents_free_ram)) + ": " + String.valueOf(available) + "MB");
+            mMemBar.setMax(max);
+            mMemBar.setProgress(available);
+    }
+
+    public long getTotalMemory() {
+        MemoryInfo memInfo = new MemoryInfo();
+        mAm.getMemoryInfo(memInfo);
+        long totalMem = memInfo.totalMem;
+        return totalMem;
     }
 }
