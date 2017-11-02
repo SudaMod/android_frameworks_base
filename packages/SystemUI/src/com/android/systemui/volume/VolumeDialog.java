@@ -636,6 +636,7 @@ public class VolumeDialog implements TunerService.Tunable {
 
     private void updateRowsH(final VolumeRow activeRow) {
         if (D.BUG) Log.d(TAG, "updateRowsH");
+        setVolumeAlpha();
         if (!mShowing) {
             trimObsoleteH();
         }
@@ -1280,5 +1281,15 @@ public class VolumeDialog implements TunerService.Tunable {
     public interface Callback {
         void onZenSettingsClicked();
         void onZenPrioritySettingsClicked();
+    }
+
+    private void setVolumeAlpha() {
+        boolean alphaEnabled = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY , 0) == 1;
+        int alphaPercentage = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.TRANSLUCENT_NOTIFICATIONS_PERCENTAGE_PREFERENCE_KEY, 70);
+        if (mDialogView != null && alphaEnabled) {
+            mDialogView.getBackground().setAlpha(255 - alphaPercentage * 255 / 100);
+        }
     }
 }
