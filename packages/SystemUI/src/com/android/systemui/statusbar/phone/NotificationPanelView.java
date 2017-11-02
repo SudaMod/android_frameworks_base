@@ -49,7 +49,6 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
-import android.os.UserHandle;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -254,11 +253,6 @@ public class NotificationPanelView extends PanelView implements
     private NotificationGroupManager mGroupManager;
 
     private int mOneFingerQuickSettingsIntercept;
-    // QS alpha
-    private int mQSShadeAlpha;
-    private Handler mHandler = new Handler();
-    private SettingsObserver mSettingsObserver;
-
     private boolean mDoubleTapToSleepAnywhere;
     private boolean mDoubleTapToSleepEnabled;
     private int mStatusBarHeaderHeight;
@@ -303,8 +297,6 @@ public class NotificationPanelView extends PanelView implements
         super(context, attrs);
         setWillNotDraw(!DEBUG);
         mFalsingManager = FalsingManager.getInstance(context);
-
-        mSettingsObserver = new SettingsObserver(mHandler);
 
         mDoubleTapGesture = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -369,7 +361,6 @@ public class NotificationPanelView extends PanelView implements
                     }
                 });
                 mNotificationStackScroller.setQsContainer(mQsContainer);
-                setQSBackgroundAlpha();
             }
         });
 
@@ -571,7 +562,6 @@ public class NotificationPanelView extends PanelView implements
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mSettingsObserver.observe();
         TunerService.get(mContext).addTunable(this,
                 STATUS_BAR_QUICK_QS_PULLDOWN,
                 DOUBLE_TAP_SLEEP_GESTURE,
@@ -590,7 +580,6 @@ public class NotificationPanelView extends PanelView implements
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mSettingsObserver.unobserve();
         TunerService.get(mContext).removeTunable(this);
         mWeatherController.removeCallback(this);
     }
@@ -2743,36 +2732,6 @@ public class NotificationPanelView extends PanelView implements
         }
     }
 
-
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QS_TRANSPARENT_SHADE),
-                    false, this, UserHandle.USER_ALL);
-            update();
-        }
-
-        void unobserve() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.unregisterContentObserver(this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            update();
-        }
-
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            update();
-        }
-    }
-
     @Override
     public void onTuningChanged(String key, String newValue) {
         switch (key) {
@@ -2836,25 +2795,6 @@ public class NotificationPanelView extends PanelView implements
                 break;
             default:
                 break;
-        }
-    }
-
-    private void setBlurSettings() {
-        mQSTranslucencyPercentage = 255 - ((mQSTranslucencyPercentage * 255) / 100);
-        handleQuickSettingsBackround();
-    }
-
-
-    public void update() {
-        ContentResolver resolver = mContext.getContentResolver();
-        mQSShadeAlpha = Settings.System.getInt(
-            resolver, Settings.System.QS_TRANSPARENT_SHADE, 255);
-        setQSBackgroundAlpha();
-    }
-
-    private void setQSBackgroundAlpha() {
-        if (mQsContainer != null) {
-            mQsContainer.getBackground().setAlpha(mQSShadeAlpha);
         }
     }
 }

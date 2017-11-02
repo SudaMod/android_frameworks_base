@@ -3724,12 +3724,6 @@ public final class Settings {
          */
         public static final String CARRIER_SIZE = "carrier_size";
 
-          /**
-         * Transparent qs shade
-         * @hide
-         */
-        public static final String QS_TRANSPARENT_SHADE = "qs_transparent_shade";
-
          /**
          * Transparent volume dialog
          * @hide
