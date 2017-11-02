@@ -3725,12 +3725,6 @@ public final class Settings {
         public static final String CARRIER_SIZE = "carrier_size";
 
          /**
-         * Transparent volume dialog
-         * @hide
-         */
-        public static final String TRANSPARENT_VOLUME_DIALOG = "transparent_volume_dialog";
-
-         /**
           * Chinese date view
           * @hide
           */
