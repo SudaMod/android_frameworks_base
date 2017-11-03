@@ -2797,4 +2797,9 @@ public class NotificationPanelView extends PanelView implements
                 break;
         }
     }
+
+    private void setBlurSettings() {
+        mQSTranslucencyPercentage = 255 - ((mQSTranslucencyPercentage * 255) / 100);
+        handleQuickSettingsBackround();
+    }
 }

@@ -1285,9 +1285,9 @@ public class VolumeDialog implements TunerService.Tunable {
 
     private void setVolumeAlpha() {
         boolean alphaEnabled = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY , 0) == 1;
+                    Settings.System.TRANSLUCENT_QUICK_SETTINGS_PREFERENCE_KEY , 0) == 1;
         int alphaPercentage = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.TRANSLUCENT_NOTIFICATIONS_PERCENTAGE_PREFERENCE_KEY, 70);
+                    Settings.System.TRANSLUCENT_QUICK_SETTINGS_PERCENTAGE_PREFERENCE_KEY, 70);
         if (mDialogView != null && alphaEnabled) {
             mDialogView.getBackground().setAlpha(255 - alphaPercentage * 255 / 100);
         }
