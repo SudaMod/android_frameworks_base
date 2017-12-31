@@ -331,7 +331,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private static final String LOCKSCREEN_MEDIA_METADATA =
             "cmsecure:" + CMSettings.Secure.LOCKSCREEN_MEDIA_METADATA;
     private static final String SYSTEMUI_BURNIN_PROTECTION =
-            "cmsecure:" + CMSettings.System.SYSTEMUI_BURNIN_PROTECTION;
+            "cmsystem:" + CMSettings.System.SYSTEMUI_BURNIN_PROTECTION;
     private static final String BLUR_SCALE_PREFERENCE_KEY =
             "system:" + Settings.System.BLUR_SCALE_PREFERENCE_KEY;
     private static final String BLUR_RADIUS_PREFERENCE_KEY =
@@ -944,6 +944,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 NAVBAR_LEFT_IN_LANDSCAPE,
                 STATUS_BAR_BRIGHTNESS_CONTROL,
                 LOCKSCREEN_MEDIA_METADATA,
+                SYSTEMUI_BURNIN_PROTECTION,
                 BLUR_SCALE_PREFERENCE_KEY,
                 BLUR_RADIUS_PREFERENCE_KEY,
                 TRANSLUCENT_QUICK_SETTINGS_PREFERENCE_KEY,
