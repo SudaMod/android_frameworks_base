@@ -1499,6 +1499,7 @@ public class ActivityStackSupervisor extends ConfigurationContainer implements D
                         r.launchedFromPackage, task.voiceInteractor, app.repProcState, r.icicle,
                         r.persistentState, results, newIntents, !andResume,
                         mService.isNextTransitionForward(), profilerInfo);
+                        PreventRunningUtils.onLaunchActivity(r.appToken);
 
                 if ((app.info.privateFlags & ApplicationInfo.PRIVATE_FLAG_CANT_SAVE_STATE) != 0) {
                     // This may be a heavy-weight process!  Note that the package
@@ -2757,6 +2758,17 @@ public class ActivityStackSupervisor extends ConfigurationContainer implements D
     }
 
     void cleanUpRemovedTaskLocked(TaskRecord tr, boolean killProcess, boolean removeFromRecents) {
+        try {
+            cleanUpRemovedTaskLocked$Pr(tr, killProcess, removeFromRecents);
+        } finally {
+            if (killProcess) {
+                PreventRunningUtils.onCleanUpRemovedTask(tr.getBaseIntent());
+            }
+        }
+    }
+
+    private void cleanUpRemovedTaskLocked$Pr(TaskRecord tr, boolean killProcess, boolean removeFromRecents) {
+
         if (removeFromRecents) {
             mRecentTasks.remove(tr);
             tr.removedFromRecents();

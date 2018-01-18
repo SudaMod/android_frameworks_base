@@ -3724,6 +3724,20 @@ public class ActivityManagerService extends IActivityManager.Stub
             boolean knownToBeDead, int intentFlags, String hostingType, ComponentName hostingName,
             boolean allowWhileBooting, boolean isolated, int isolatedUid, boolean keepIfLarge,
             String abiOverride, String entryPoint, String[] entryPointArgs, Runnable crashHandler) {
+        if (PreventRunningUtils.hookStartProcessLocked(processName, info, knownToBeDead, intentFlags, hostingType, hostingName)) {
+            return startProcessLocked$Pr(processName, info,
+                    knownToBeDead, intentFlags, hostingType, hostingName,
+                    allowWhileBooting, isolated, isolatedUid, keepIfLarge,
+                    abiOverride, entryPoint, entryPointArgs, crashHandler);
+        } else {
+            return null;
+        }
+    }
+
+    final ProcessRecord startProcessLocked$Pr(String processName, ApplicationInfo info,
+            boolean knownToBeDead, int intentFlags, String hostingType, ComponentName hostingName,
+            boolean allowWhileBooting, boolean isolated, int isolatedUid, boolean keepIfLarge,
+            String abiOverride, String entryPoint, String[] entryPointArgs, Runnable crashHandler) {
         long startTime = SystemClock.elapsedRealtime();
         ProcessRecord app;
         if (!isolated) {
@@ -4592,6 +4606,14 @@ public class ActivityManagerService extends IActivityManager.Stub
     public final int startActivity(IApplicationThread caller, String callingPackage,
             Intent intent, String resolvedType, IBinder resultTo, String resultWho, int requestCode,
             int startFlags, ProfilerInfo profilerInfo, Bundle bOptions) {
+        return PreventRunningUtils.onStartActivity(startActivity$Pr(caller, callingPackage,
+                    intent, resolvedType, resultTo, resultWho, requestCode,
+                    startFlags, profilerInfo, bOptions), caller, callingPackage, intent);
+    }
+
+    public final int startActivity$Pr(IApplicationThread caller, String callingPackage,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho, int requestCode,
+            int startFlags, ProfilerInfo profilerInfo, Bundle bOptions) {
         return startActivityAsUser(caller, callingPackage, intent, resolvedType, resultTo,
                 resultWho, requestCode, startFlags, profilerInfo, bOptions,
                 UserHandle.getCallingUserId());
@@ -5345,6 +5367,14 @@ public class ActivityManagerService extends IActivityManager.Stub
      * to the process.
      */
     private final void handleAppDiedLocked(ProcessRecord app,
+            boolean restarting, boolean allowRestart) {
+        handleAppDiedLocked$Pr(app, restarting, allowRestart);
+        if (!restarting && allowRestart && !app.killedByAm) {
+            PreventRunningUtils.onAppDied(app);
+        }
+    }
+
+    private final void handleAppDiedLocked$Pr(ProcessRecord app,
             boolean restarting, boolean allowRestart) {
         int pid = app.pid;
         boolean kept = cleanUpApplicationRecordLocked(app, restarting, allowRestart, -1,
@@ -6533,8 +6563,9 @@ public class ActivityManagerService extends IActivityManager.Stub
                 // that match it.  We need to qualify this by the processes
                 // that are running under the specified app and user ID.
                 } else {
-                    final boolean isDep = app.pkgDeps != null
+                    boolean isDep = app.pkgDeps != null
                             && app.pkgDeps.contains(packageName);
+                    isDep = PreventRunningUtils.returnFalse(isDep);
                     if (!isDep && UserHandle.getAppId(app.uid) != appId) {
                         continue;
                     }
@@ -10585,6 +10616,15 @@ public class ActivityManagerService extends IActivityManager.Stub
      */
     @Override
     public boolean moveActivityTaskToBack(IBinder token, boolean nonRoot) {
+        if (moveActivityTaskToBack$Pr(token, nonRoot)) {
+            PreventRunningUtils.onMoveActivityTaskToBack(token);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean moveActivityTaskToBack$Pr(IBinder token, boolean nonRoot) {
         enforceNotIsolatedCaller("moveActivityTaskToBack");
         synchronized(this) {
             final long origId = Binder.clearCallingIdentity();
@@ -18333,6 +18373,20 @@ public class ActivityManagerService extends IActivityManager.Stub
     public ComponentName startService(IApplicationThread caller, Intent service,
             String resolvedType, boolean requireForeground, String callingPackage, int userId)
             throws TransactionTooLargeException {
+        try {
+            PreventRunningUtils.setSender(caller);
+            if (PreventRunningUtils.hookStartService(caller, service)) {
+                return startService$Pr(caller, service, resolvedType, requireForeground, callingPackage, userId);
+            }
+            return null;
+        } finally {
+            PreventRunningUtils.clearSender();
+        }
+    }
+
+    public ComponentName startService$Pr(IApplicationThread caller, Intent service,
+            String resolvedType, boolean requireForeground, String callingPackage, int userId)
+            throws TransactionTooLargeException {
         enforceNotIsolatedCaller("startService");
         // Refuse possible leaked file descriptors
         if (service != null && service.hasFileDescriptors() == true) {
@@ -18481,6 +18535,22 @@ public class ActivityManagerService extends IActivityManager.Stub
     }
 
     public int bindService(IApplicationThread caller, IBinder token, Intent service,
+            String resolvedType, IServiceConnection connection, int flags, String callingPackage,
+            int userId) throws TransactionTooLargeException {
+        try {
+            PreventRunningUtils.setSender(caller);
+            if (PreventRunningUtils.hookBindService(caller, token, service)) {
+                return bindService$Pr(caller, token, service,
+                    resolvedType, connection, flags, callingPackage, userId);
+            } else {
+                return 0;
+            }
+        } finally {
+            PreventRunningUtils.clearSender();
+        }
+    }
+
+    public int bindService$Pr(IApplicationThread caller, IBinder token, Intent service,
             String resolvedType, IServiceConnection connection, int flags, String callingPackage,
             int userId) throws TransactionTooLargeException {
         enforceNotIsolatedCaller("bindService");
@@ -19896,6 +19966,27 @@ public class ActivityManagerService extends IActivityManager.Stub
     }
 
     public final int broadcastIntent(IApplicationThread caller,
+            Intent intent, String resolvedType, IIntentReceiver resultTo,
+            int resultCode, String resultData, Bundle resultExtras,
+            String[] requiredPermissions, int appOp, Bundle bOptions,
+            boolean serialized, boolean sticky, int userId) {
+        try {
+            PreventRunningUtils.setSender(caller);
+            int res = broadcastIntent$Pr(caller,
+                    intent, resolvedType, resultTo,
+                    resultCode, resultData, resultExtras,
+                    requiredPermissions, appOp, bOptions,
+                    serialized, sticky, userId);
+            if (res == 0) {
+                PreventRunningUtils.onBroadcastIntent(intent);
+            }
+            return res;
+        } finally {
+            PreventRunningUtils.clearSender();
+        }
+    }
+
+    public final int broadcastIntent$Pr(IApplicationThread caller,
             Intent intent, String resolvedType, IIntentReceiver resultTo,
             int resultCode, String resultData, Bundle resultExtras,
             String[] requiredPermissions, int appOp, Bundle bOptions,
