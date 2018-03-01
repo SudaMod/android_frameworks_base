@@ -34,6 +34,8 @@ import com.android.systemui.plugins.qs.QSTile.BooleanState;
 import com.android.systemui.qs.tileimpl.QSTileImpl;
 import com.android.systemui.R;
 
+import org.lineageos.internal.logging.LineageMetricsLogger;
+
 /**
  * Lazy Lte Tile
  * Created by Adnan on 1/21/15.
@@ -65,7 +67,7 @@ public class LteTile extends QSTileImpl<BooleanState> {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.EXTENSIONS;
+        return LineageMetricsLogger.TILE_SYNC;
     }
 
     @Override
