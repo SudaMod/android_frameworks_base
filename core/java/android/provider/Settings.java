@@ -3966,6 +3966,12 @@ public final class Settings {
          */
         public static final String SHAKE_CLEAN_RECENT = "shake_clean_recent";
 
+          /**
+         * Clean notification by shake
+         * @hide
+         */
+        public static final String SHAKE_CLEAN_NOTIFICATION = "shake_clean_notification";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
