@@ -94,7 +94,7 @@ public class NetworkMonitor extends StateMachine {
     private static final String DEFAULT_HTTPS_URL     = "https://www.qualcomm.cn/generate_204";
     private static final String DEFAULT_HTTP_URL      =
             "http://www.qualcomm.cn/generate_204";
-    private static final String DEFAULT_FALLBACK_URL  = "http://www.qualcomm.cn/gen_204";
+    private static final String DEFAULT_FALLBACK_URL  = "http://www.qualcomm.cn/generate_204";
     private static final String DEFAULT_OTHER_FALLBACK_URLS =
             "http://www.qualcomm.cn/generate_204";
     private static final String DEFAULT_USER_AGENT    = "Mozilla/5.0 (X11; Linux x86_64) "
