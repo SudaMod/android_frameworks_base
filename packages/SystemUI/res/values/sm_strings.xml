@@ -14,7 +14,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="su_indicator">Superuser indicator</string>
   <!-- ActionBar action to edit the current selection [CHAR LIMIT=10] -->
   <string name="edit">Edit</string>
+
+  <!-- LTE QS Tile -->
+  <string name="qs_lte_label">LTE</string>   
+  <string name="lte_on">LTE ON </string>
+  <string name="lte_off">LTE OFF</string>
 </resources>
