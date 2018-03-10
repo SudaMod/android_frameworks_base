@@ -333,7 +333,7 @@ class SaveImageInBackgroundTask extends AsyncTask<Void, Void, Void> {
             editChooserIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
                     | Intent.FLAG_ACTIVITY_NEW_TASK);
             mNotificationBuilder.addAction(R.drawable.ic_screenshot_edit,
-                    r.getString(com.android.internal.R.string.edit), 
+                    r.getString(com.android.systemui.R.string.edit), 
                     PendingIntent.getActivity(context, 1, editChooserIntent,
                             PendingIntent.FLAG_CANCEL_CURRENT));
 
