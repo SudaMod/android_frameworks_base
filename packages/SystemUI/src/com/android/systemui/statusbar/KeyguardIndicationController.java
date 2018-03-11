@@ -26,12 +26,14 @@ import android.graphics.Color;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.BatteryManager;
 import android.os.BatteryStats;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -86,7 +88,10 @@ public class KeyguardIndicationController {
     private boolean mPowerPluggedIn;
     private boolean mPowerCharged;
     private int mChargingSpeed;
+    private int mChargingCurrent;
+    private double mChargingVoltage;
     private int mChargingWattage;
+    private int mTemperature;
     private String mMessageToShowOnScreenOn;
 
     private KeyguardUpdateMonitorCallback mUpdateMonitorCallback;
@@ -364,12 +369,39 @@ public class KeyguardIndicationController {
                 break;
         }
 
+        String batteryInfo = "";
+        boolean showbatteryInfo = Settings.System.getIntForUser(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_BATTERY_INFO, 0, UserHandle.USER_CURRENT) == 1;
+
+        if (showbatteryInfo) {
+            if (mChargingCurrent > 0) {
+			    if (Build.PRODUCT.equals("bacon")){
+				batteryInfo = batteryInfo + mChargingCurrent + "mA";
+				} else {
+                batteryInfo = batteryInfo + (mChargingCurrent /1000) + "mA";
+				}
+            }
+            if (mChargingVoltage > 0) {
+                batteryInfo = (batteryInfo == "" ? "" : batteryInfo + " · ") +
+                        String.format("%.1f", (mChargingVoltage / 1000 / 1000)) + "V";
+            }
+            if (mTemperature > 0) {
+                batteryInfo = (batteryInfo == "" ? "" : batteryInfo + " · ") +
+                        mTemperature / 10 + "°C";
+            }
+            if (batteryInfo != "") {
+                batteryInfo = "\n" + batteryInfo;
+            }
+        }
+
         if (hasChargingTime) {
             String chargingTimeFormatted = Formatter.formatShortElapsedTimeRoundingUpToMinutes(
                     mContext, chargingTimeRemaining);
-            return mContext.getResources().getString(chargingId, chargingTimeFormatted);
+            String chargingText = mContext.getResources().getString(chargingId, chargingTimeFormatted);
+            return chargingText + batteryInfo;
         } else {
-            return mContext.getResources().getString(chargingId);
+            String chargingText = mContext.getResources().getString(chargingId);
+            return chargingText + batteryInfo;
         }
     }
 
@@ -420,7 +452,10 @@ public class KeyguardIndicationController {
             boolean wasPluggedIn = mPowerPluggedIn;
             mPowerPluggedIn = status.isPluggedIn() && isChargingOrFull;
             mPowerCharged = status.isCharged();
+            mChargingCurrent = status.maxChargingCurrent;
+            mChargingVoltage = status.maxChargingVoltage;
             mChargingWattage = status.maxChargingWattage;
+            mTemperature = status.temperature;
             mChargingSpeed = status.getChargingSpeed(mSlowThreshold, mFastThreshold);
             updateIndication();
             if (mDozing) {
