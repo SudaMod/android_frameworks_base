@@ -126,7 +126,7 @@
   <string name="app_ops_write_external_storage">écrire sur le stockage externe</string>
   <string name="app_ops_turn_on_screen">allumer l\'écran</string>
   <string name="app_ops_get_accounts">obtenir les comptes de l\'appareil</string>
-  <string name="app_ops_run_in_background">ouvrir en arrière-plan</string>
+  <string name="app_ops_run_in_background">exécuter en arrière-plan</string>
   <string name="app_ops_wifi_change">changer l\'état du Wi-Fi</string>
   <string name="app_ops_su">obtenir l\'accès root</string>
   <!-- Protected Apps Notification -->
@@ -135,12 +135,15 @@
   <!-- Notify user that they are in Lock-to-app (for devices without navbar) -->
   <string name="lock_to_app_toast_no_navbar">Pour déverrouiller l\'écran, appuyez et maintenez le bouton Retour.</string>
   <!-- Message to show the user when their vendor image doesn't match the build's fingerprint. -->
-  <string name="lineage_system_error_manufacturer">Une discordance d\'image fournisseur a été détectée. En général, cela signifie que votre image fournisseur n\'est pas à jour. Veuillez vous assurer que votre image fournisseur correspond à <xliff:g id="fingerprint">%1$s</xliff:g>.</string>
+  <string name="lineage_system_error_manufacturer">Une discordance du fichier vendor.img a été détectée. En général, cela signifie que votre fichier n\'est pas à jour. Veuillez vous assurer que votre fichier vendor.img correspond à <xliff:g id="fingerprint">%1$s</xliff:g>.</string>
   <!-- Single hand mode -->
-  <string name="singlehandmode_click_hint_message">Toucher en dehors de l’écran pour quitter le mode à une seule main</string>
+  <string name="singlehandmode_click_hint_message">Toucher en dehors de l’écran pour quitter le mode d\'utilisation à une main</string>
   <!-- Strings for tethered notification -->
   <!-- Shown when the device is tethered -->
   <string name="tethered_notification_no_device_message">Aucun appareil connecté</string>
   <string name="tethered_notification_one_device_message"><xliff:g id="count">%1$s</xliff:g> appareil connecté</string>
   <string name="tethered_notification_multi_device_message"><xliff:g id="count">%1$s</xliff:g> appareils connectés</string>
+  <!-- Zen mode buttons -->
+  <string name="silent_mode_priority">Priorité</string>
+  <string name="silent_mode_none">Aucun</string>
 </resources>
