@@ -19,6 +19,7 @@ package android.text.format;
 import android.annotation.NonNull;
 import android.annotation.UnsupportedAppUsage;
 import android.content.Context;
+import android.suda.utils.SudaUtils;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.SpannableStringBuilder;
@@ -451,7 +452,11 @@ public class DateFormat {
             switch (c) {
                 case 'A':
                 case 'a':
-                    replacement = localeData.amPm[inDate.get(Calendar.AM_PM) - Calendar.AM];
+                    if (SudaUtils.isSupportLanguage(false)) {
+                        replacement = DateUtils.getAMPMCNString(inDate.get(Calendar.HOUR), inDate.get(Calendar.AM_PM));
+                    } else {
+                        replacement = localeData.amPm[inDate.get(Calendar.AM_PM) - Calendar.AM];
+                    }
                     break;
                 case 'd':
                     replacement = zeroPad(inDate.get(Calendar.DATE), count);
