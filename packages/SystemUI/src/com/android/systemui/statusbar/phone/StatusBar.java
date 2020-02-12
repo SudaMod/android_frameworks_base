@@ -64,6 +64,7 @@ import android.app.WallpaperManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentCallbacks2;
+import android.content.ContentResolver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -73,6 +74,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -131,6 +133,7 @@ import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.RegisterStatusBarResult;
 import com.android.internal.widget.LockPatternUtils;
+import com.android.internal.util.aosip.ShakeSensorManager;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
 import com.android.keyguard.ViewMediatorCallback;
@@ -258,7 +261,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         ColorExtractor.OnColorsChangedListener, ConfigurationListener,
         StatusBarStateController.StateListener, ShadeController,
         ActivityLaunchAnimator.Callback, AppOpsController.Callback,
-        TunerService.Tunable {
+        TunerService.Tunable, ShakeSensorManager.ShakeListener {
     public static final boolean MULTIUSER_DEBUG = false;
 
     public static final boolean ENABLE_CHILD_NOTIFICATIONS
@@ -389,6 +392,10 @@ public class StatusBar extends SystemUI implements DemoMode,
     private final Object mQueueLock = new Object();
 
     protected StatusBarIconController mIconController;
+    private ShakeSensorManager mShakeSensorManager;
+    private Boolean enableShakeCleanByUser;
+    private Boolean enableShakeClean;
+
     @Inject
     InjectionInflationController mInjectionInflater;
     @Inject
@@ -788,7 +795,8 @@ public class StatusBar extends SystemUI implements DemoMode,
         mContext.registerReceiverAsUser(mWallpaperChangedReceiver, UserHandle.ALL,
                 wallpaperChangedFilter, null /* broadcastPermission */, null /* scheduler */);
         mWallpaperChangedReceiver.onReceive(mContext, null);
-
+        mCustomSettingsObserver.observe();
+        mCustomSettingsObserver.update();
         // Set up the initial notification state. This needs to happen before CommandQueue.disable()
         setUpPresenter();
 
@@ -857,6 +865,23 @@ public class StatusBar extends SystemUI implements DemoMode,
                 () -> setUpDisableFlags(disabledFlags1, disabledFlags2));
     }
 
+    @Override
+    public synchronized void onShake() {
+        mNotificationPanel.clearAllNotifications();
+    }
+     public void enableShake(boolean enableShakeClean) {
+        ContentResolver resolver = mContext.getContentResolver();
+        if (mShakeSensorManager == null)
+            return;
+        boolean enableShakeCleanByUser = Settings.System.getInt(resolver,
+                Settings.System.SHAKE_CLEAN_NOTIFICATION, 1) == 1;
+        if (enableShakeClean && enableShakeCleanByUser && mDeviceInteractive) {
+            mShakeSensorManager.enable(20);
+        } else {
+            mShakeSensorManager.disable();
+        }
+    }
+
     // ================================================================================
     // Constructing the view
     // ================================================================================
@@ -870,6 +895,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         mStatusBarWindow.setService(this);
         mStatusBarWindow.setBypassController(mKeyguardBypassController);
         mStatusBarWindow.setOnTouchListener(getStatusBarWindowTouchListener());
+        mShakeSensorManager = new ShakeSensorManager(mContext, this);
 
         mMinBrightness = context.getResources().getInteger(
                 com.android.internal.R.integer.config_screenBrightnessDim);
@@ -1928,6 +1954,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
 
         mExpandedVisible = true;
+        enableShake(true);
 
         // Expand the window to encompass the full screen in anticipation of the drag.
         // This is only possible to do atomically because the status bar is at the top of the screen!
@@ -2091,6 +2118,7 @@ public class StatusBar extends SystemUI implements DemoMode,
 
         mExpandedVisible = false;
         visibilityChanged(false);
+        enableShake(false);
 
         // Shrink the window to the size of the status bar only
         mStatusBarWindowController.setPanelVisible(false);
@@ -4438,6 +4466,32 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     public boolean isDeviceInteractive() {
         return mDeviceInteractive;
+    }
+
+    private CustomSettingsObserver mCustomSettingsObserver = new CustomSettingsObserver(mHandler);
+
+    private class CustomSettingsObserver extends ContentObserver {
+
+        CustomSettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SHAKE_CLEAN_NOTIFICATION),
+                    false, this, UserHandle.USER_ALL);
+            update();
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+	    super.onChange(selfChange, uri);
+           update();
+        }
+
+        public void update() {
+        }
     }
 
     private final BroadcastReceiver mBannerActionBroadcastReceiver = new BroadcastReceiver() {
